@@ -25,6 +25,7 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.util.AnimView
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         factsAboutApelsinka = findViewById(R.id.facts_about_apelsinka)
         changeTheme = findViewById(R.id.change_theme)
 
-        initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this))
+        initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
         setPhotoDeveloper(this)
@@ -89,8 +90,8 @@ class MainActivity : AppCompatActivity() {
         else {
             greetingTextView.text = greetingValue
             Handler(Looper.getMainLooper()).postDelayed({
-                layoutGreeting.visibility = View.GONE
-            }, 5_000)
+                AnimView.animTransitionUp(layoutGreeting)
+            }, 3_000)
         }
     }
     private fun setImageOfTime(image : Int, id : Int) {

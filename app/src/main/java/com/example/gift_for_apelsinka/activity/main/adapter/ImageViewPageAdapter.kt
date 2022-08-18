@@ -12,9 +12,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
 
-class ImageViewPageAdapter(context: Context) : PagerAdapter() {
+class ImageViewPageAdapter(
+    context: Context,
+    private val list: List<Int>
+) : PagerAdapter() {
     private var ctx : Context = context
-    private var imageArray = listOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
+    private var imageArray = list
 
     override fun getCount(): Int {
         return imageArray.size

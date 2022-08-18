@@ -10,9 +10,11 @@ import java.util.*
 
 class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statement>> = MutableLiveData()
+    private var listOfPictures : MutableLiveData<List<Int>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
 
     fun getStatements(): List<Statement> {
+        if(listOfStatements.value != null) return listOfStatements.value!!
         val list = listOf(
             Statement(1, "Не вздумай думать", "Автор : Rylexium"),
             Statement(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
@@ -24,10 +26,17 @@ class MainViewModel : ViewModel() {
             Statement(8, "Ты прикалываешься или рофлишь?", "Автор : Rylexium"),
             Statement(9, "Раньше было раньше", "Автор : Rylexium"),
             Statement(10, "Силы тратятся во время тренеровки. Ману тратить не хочется", "Автор : Илья Каргин"),
-            Statement(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"))
+            Statement(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"),
+            Statement(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК"))
             .shuffled()
         listOfStatements.value = list
         return listOfStatements.value!!
+    }
+
+    fun getPictures(): List<Int> {
+        if(listOfPictures.value != null) return listOfPictures.value!!
+        listOfPictures.value = listOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
+        return listOfPictures.value!!
     }
 
     fun getNowHour() : Int {
