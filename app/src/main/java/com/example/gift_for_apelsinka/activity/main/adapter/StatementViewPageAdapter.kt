@@ -11,7 +11,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.main.model.Statement
 
 
-class StatementViewPageAdapter(context: Context, list : MutableList<Statement>) : PagerAdapter() {
+class StatementViewPageAdapter(context: Context, list : List<Statement>) : PagerAdapter() {
     private var ctx : Context = context
     private var statementList = list
     private lateinit var layoutInflater : LayoutInflater

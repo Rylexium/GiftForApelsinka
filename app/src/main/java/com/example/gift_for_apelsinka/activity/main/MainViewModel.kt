@@ -9,16 +9,23 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainViewModel : ViewModel() {
-    private var listOfStatements : MutableLiveData<MutableList<Statement>> = MutableLiveData()
+    private var listOfStatements : MutableLiveData<List<Statement>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
 
-    fun getStatements(): MutableList<Statement> {
-        val list = mutableListOf( Statement(1, "Не вздумай думать", "Rylexium"),
-            Statement(2, "Хорошо жить, чтобы хорош есть", "Apelsinka"),
-            Statement(3, "Не вздумай думать", "Rylexium"),
-            Statement(4, "Пердечный сриступ", "Apelsinka"),
-            Statement(5, "Не вздумай думать", "Rylexium"),
-            Statement(6, "Хорошо жить, чтобы хорош есть", "Apelsinka"))
+    fun getStatements(): List<Statement> {
+        val list = listOf(
+            Statement(1, "Не вздумай думать", "Автор : Rylexium"),
+            Statement(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
+            Statement(3, "Не каждому дано понять, как думать...", "Автор : Rylexium"),
+            Statement(4, "Пердечный сриступ", "Автор : Apelsinka"),
+            Statement(5, "Мы не выбираем, в каком измерении родиться", "Автор : MrSiaWTF"),
+            Statement(6, "Все русские, все жёсткие", "Автор : Какой-то чел с ММ"),
+            Statement(7, "Лучше быть живой знакомой, чем мёртвой подругой", "Автор : Rylexium"),
+            Statement(8, "Ты прикалываешься или рофлишь?", "Автор : Rylexium"),
+            Statement(9, "Раньше было раньше", "Автор : Rylexium"),
+            Statement(10, "Силы тратятся во время тренеровки. Ману тратить не хочется", "Автор : Илья Каргин"),
+            Statement(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"))
+            .shuffled()
         listOfStatements.value = list
         return listOfStatements.value!!
     }
