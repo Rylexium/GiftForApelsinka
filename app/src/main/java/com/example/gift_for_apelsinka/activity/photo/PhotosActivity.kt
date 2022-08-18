@@ -34,7 +34,6 @@ class PhotosActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("onDestroy", viewModel.getScrollState().toString())
         viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
     }
     private fun initComponents() {

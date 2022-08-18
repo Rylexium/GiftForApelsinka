@@ -1,10 +1,15 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.annotation.SuppressLint
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +24,9 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
+import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPageOfStatement : ViewPager
     private lateinit var greetingTextView : TextView
     private lateinit var photoWithApelsinka : Button
+    private lateinit var changeTheme : Button
     private lateinit var layoutGreeting : LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +59,8 @@ class MainActivity : AppCompatActivity() {
         layoutGreeting = findViewById(R.id.layout_greetings_for_apelsinka)
         greetingTextView = findViewById(R.id.greetings_for_apelsinka)
         photoWithApelsinka = findViewById(R.id.photo_with_apelsinka)
+
+        changeTheme = findViewById(R.id.change_theme)
 
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
@@ -115,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                 enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE)
             }
         })
+
         swipeRefreshLayout.setOnRefreshListener {
             Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
             swipeRefreshLayout.isRefreshing = false
@@ -127,8 +136,23 @@ class MainActivity : AppCompatActivity() {
         photoWithApelsinka.setOnClickListener {
             startActivity(Intent(this, PhotosActivity::class.java))
         }
+        changeTheme.setOnClickListener {
+            setNightMode(this)
+        }
     }
 
+    private fun setNightMode(target: Context) {
+        val uiManager = target.getSystemService(UI_MODE_SERVICE) as UiModeManager
+        Log.e("theme", uiManager.nightMode.toString())
+        if (VERSION.SDK_INT <= 22) {
+            uiManager.enableCarMode(0)
+        }
+        if (uiManager.nightMode == 1) {
+            uiManager.nightMode = UiModeManager.MODE_NIGHT_YES
+        } else {
+            uiManager.nightMode = UiModeManager.MODE_NIGHT_NO
+        }
+    }
     private fun enableDisableSwipeRefresh(enable: Boolean) {
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.isEnabled = enable
