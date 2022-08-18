@@ -14,7 +14,7 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="525dp"
             >
             <LinearLayout
                 android:layout_width="match_parent"
@@ -22,14 +22,37 @@
                 android:orientation="vertical"
                 android:weightSum="1"
                 >
-                <TextView
-                    android:id="@+id/greetings_for_apelsinka"
+                <LinearLayout
+                    android:id="@+id/layout_greetings_for_apelsinka"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Доброе утро, Ксения Александровна!"
-                    android:textSize="24sp"
-                    android:gravity="center"
-                    />
+                    android:layout_height="60dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1"
+                    >
+                    <ImageView
+                        android:id="@+id/image_of_time1"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="match_parent"
+                        />
+
+                    <TextView
+                        android:id="@+id/greetings_for_apelsinka"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:text="Добрый вечер, Ксения Александровна!"
+                        android:textSize="21sp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        />
+                    <ImageView
+                        android:id="@+id/image_of_time2"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="match_parent"
+                        />
+                </LinearLayout>
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/view_pager_of_image"
                     android:layout_width="match_parent"

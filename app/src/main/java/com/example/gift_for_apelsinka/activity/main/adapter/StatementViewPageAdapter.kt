@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.adapter
+package com.example.gift_for_apelsinka.activity.main.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.model.Statement
+import com.example.gift_for_apelsinka.activity.main.model.Statement
 
 
 class StatementViewPageAdapter(context: Context, list : MutableList<Statement>) : PagerAdapter() {

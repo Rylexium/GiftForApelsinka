@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -19,8 +20,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
-import com.example.gift_for_apelsinka.adapter.ImageViewPageAdapter
-import com.example.gift_for_apelsinka.adapter.StatementViewPageAdapter
+import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
+import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPageOfStatement : ViewPager
     private lateinit var greetingTextView : TextView
     private lateinit var photoWithApelsinka : Button
+    private lateinit var layoutGreeting : LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,19 +48,21 @@ class MainActivity : AppCompatActivity() {
         viewPageOfImage = findViewById(R.id.view_pager_of_image)
         viewPageOfStatement = findViewById(R.id.view_pager_of_statement)
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+
+
+        layoutGreeting = findViewById(R.id.layout_greetings_for_apelsinka)
         greetingTextView = findViewById(R.id.greetings_for_apelsinka)
         photoWithApelsinka = findViewById(R.id.photo_with_apelsinka)
 
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
+        setPhotoDeveloper(this)
 
-        Glide.with(this)
-            .load("https://sun9-78.userapi.com/impg/QgrDaDWK9_CvRfUeVWponxtFKP6LYzhPSXl5Aw/uUbMrSVTCvo.jpg?size=1200x1600&quality=95&sign=08262cc283fdb4f7594de83f46527425&type=album")
-            .error(R.drawable.developer)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
-            .into(findViewById(R.id.photo_of_developer))
+        if(viewModel.getNowHour() in 1..5) {
+            val chance = (0..10).random()
+            if(chance in 1..2) Toast.makeText(this, "Хули не спим?!?!?!?", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
@@ -68,14 +72,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setGreeting() {
+        val image = viewModel.getImageOfTime()
+        setImageOfTime(image, R.id.image_of_time1)
+        setImageOfTime(image, R.id.image_of_time2)
+
         val greetingValue = viewModel.getGreetingsForApelsinka()
-        if(greetingValue == null) greetingTextView.visibility = View.GONE
+        if(greetingValue == null) layoutGreeting.visibility = View.GONE
         else {
             greetingTextView.text = greetingValue
             Handler(Looper.getMainLooper()).postDelayed({
-                greetingTextView.visibility = View.GONE
+                layoutGreeting.visibility = View.GONE
             }, 5_000)
         }
+    }
+    private fun setImageOfTime(image : Int, id : Int) {
+        Glide.with(this)
+            .load(image)
+            .into(findViewById(id))
+    }
+
+    private fun setPhotoDeveloper(context : Context) {
+        Glide.with(context)
+            .load("https://sun9-78.userapi.com/impg/QgrDaDWK9_CvRfUeVWponxtFKP6LYzhPSXl5Aw/uUbMrSVTCvo.jpg?size=1200x1600&quality=95&sign=08262cc283fdb4f7594de83f46527425&type=album")
+            .error(R.drawable.developer)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
+            .into(findViewById(R.id.photo_of_developer))
     }
 
     private fun applyEvents() {

@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.adapter
+package com.example.gift_for_apelsinka.activity.main.adapter
 
 import android.content.Context
 import android.view.View
