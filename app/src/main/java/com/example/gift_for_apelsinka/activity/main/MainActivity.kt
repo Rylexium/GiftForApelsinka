@@ -1,6 +1,5 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
@@ -8,8 +7,6 @@ import android.os.Build.VERSION
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
@@ -37,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPageOfStatement : ViewPager
     private lateinit var greetingTextView : TextView
     private lateinit var photoWithApelsinka : Button
+    private lateinit var factsAboutApelsinka : Button
     private lateinit var changeTheme : Button
     private lateinit var layoutGreeting : LinearLayout
 
@@ -60,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         greetingTextView = findViewById(R.id.greetings_for_apelsinka)
         photoWithApelsinka = findViewById(R.id.photo_with_apelsinka)
 
+        factsAboutApelsinka = findViewById(R.id.facts_about_apelsinka)
         changeTheme = findViewById(R.id.change_theme)
 
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this))
@@ -136,6 +136,11 @@ class MainActivity : AppCompatActivity() {
         photoWithApelsinka.setOnClickListener {
             startActivity(Intent(this, PhotosActivity::class.java))
         }
+
+        factsAboutApelsinka.setOnClickListener {
+            startActivity(Intent(this, AboutActivity::class.java))
+        }
+
         changeTheme.setOnClickListener {
             setNightMode(this)
         }
@@ -143,7 +148,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setNightMode(target: Context) {
         val uiManager = target.getSystemService(UI_MODE_SERVICE) as UiModeManager
-        Log.e("theme", uiManager.nightMode.toString())
         if (VERSION.SDK_INT <= 22) {
             uiManager.enableCarMode(0)
         }
