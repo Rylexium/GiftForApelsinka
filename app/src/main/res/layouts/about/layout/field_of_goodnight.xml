@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Желание спокойной ночи"
+            android:text="Желание спокойной ночи 🌙"
             android:gravity="center"
             android:textSize="17sp"
             android:elegantTextHeight="true"
@@ -35,11 +35,6 @@
             android:id="@+id/textview_text_of_goodnight"
             android:layout_marginTop="6dp"
             android:layout_width="match_parent"
-            android:text="Желаю Вам спокойной ночи,
-            \nЧтобы не приснился Игорь в костюме горничной,
-            \nК которому пристаёт Левон
-            \nИ Лев не спросил у них отличие между базой и базисов,
-            \nВ то время, когда их чекает Илюха со своей понамеры"
             android:layout_height="wrap_content"
             />
     </LinearLayout>

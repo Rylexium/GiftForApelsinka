@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Немного меня и Леры"
+            android:text="Немного меня и Леры 🍋"
             android:gravity="center"
             android:textSize="17sp"
             android:elegantTextHeight="true"

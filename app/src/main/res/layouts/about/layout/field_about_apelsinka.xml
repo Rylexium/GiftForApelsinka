@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Про меня"
+            android:text="Про меня 🍊"
             android:gravity="center"
             android:textSize="17sp"
             android:elegantTextHeight="true"
@@ -52,12 +52,11 @@
                 android:layout_weight="0.3"
                 />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/logo_of_apelsinka"
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager_of_image_logo"
             android:layout_width="match_parent"
             android:layout_marginTop="9dp"
             android:layout_height="170dp"
-            android:scaleType="fitXY"
             />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
