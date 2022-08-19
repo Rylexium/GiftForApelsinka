@@ -33,7 +33,6 @@
                     android:id="@+id/photo_of_apelsinka"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:src="@drawable/apelsinka"
                     android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>
             <TextView

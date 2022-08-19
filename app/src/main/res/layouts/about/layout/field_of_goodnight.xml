@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    android:id="@+id/field_of_goodnight"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="9dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Желание спокойной ночи"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:elegantTextHeight="true"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"
+            />
+        <TextView
+            android:id="@+id/textview_text_of_goodnight"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:text="Желаю Вам спокойной ночи,
+            \nЧтобы не приснился Игорь в костюме горничной,
+            \nК которому пристаёт Левон
+            \nИ Лев не спросил у них отличие между базой и базисов,
+            \nВ то время, когда их чекает Илюха со своей понамеры"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -18,6 +18,8 @@
 
         <include layout="@layout/field_about_lexa" />
 
+        <include layout="@layout/field_of_goodnight" />
+
     </LinearLayout>
 
 </ScrollView>

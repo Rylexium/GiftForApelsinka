@@ -26,6 +26,7 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var viewPageOfImageLera : ViewPager
     private lateinit var viewPageOfImageLexa : ViewPager
     private lateinit var textViewAboutApelsinka : TextView
+    private lateinit var textViewTextOfGoodnight : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,10 @@ class AboutActivity : AppCompatActivity() {
         viewPageOfImageLexa = findViewById(R.id.view_pager_of_image_lexa)
 
         textViewAboutApelsinka = findViewById(R.id.textview_about_apelsinka)
+        textViewTextOfGoodnight = findViewById(R.id.textview_text_of_goodnight)
+
         textViewAboutApelsinka.text = viewModel.getTextAboutApelsinka(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+        textViewTextOfGoodnight.text = viewModel.getTextGoodnight(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
 
         initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfOscar()))
         initViewPager(viewPageOfImageLera, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLera()))
@@ -54,12 +58,25 @@ class AboutActivity : AppCompatActivity() {
     private fun applyEvents() {
         textViewAboutApelsinka.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
-                editTextView(textViewAboutApelsinka, this@AboutActivity)
+                editTextView(textViewAboutApelsinka, this@AboutActivity) {
+                    viewModel.setTextAboutApelsinka(
+                        textViewAboutApelsinka.text.toString(),
+                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                }
+            }
+        })
+        textViewTextOfGoodnight.setOnClickListener(object : DoubleClickListener(){
+            override fun onDoubleClick() {
+                editTextView(textViewTextOfGoodnight, this@AboutActivity) {
+                    viewModel.setTextGoodnight(
+                        textViewTextOfGoodnight.text.toString(),
+                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                }
             }
         })
     }
 
-    private fun editTextView(textView: TextView, context : Context) {
+    private fun editTextView(textView: TextView, context : Context, r : Runnable) {
         val editText = EditText(context)
         editText.setText(textView.text)
         val dialog = AlertDialog.Builder(context).create()
@@ -67,7 +84,7 @@ class AboutActivity : AppCompatActivity() {
         dialog.setView(editText)
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить изменения") { _, _ ->
             textView.text = editText.text
-            viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString(), applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+            r.run()
         }
         dialog.show()
     }
