@@ -73,12 +73,12 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getTextGoodnight(sharedPreferences : SharedPreferences): String? {
-//        if(textGoodnight.value != null) return textGoodnight.value
-//        val text = sharedPreferences.getString(KEY_GOODNIGHT, null)
-//        if(text != null) {
-//            textGoodnight.value = text
-//            return textGoodnight.value
-//        }
+        if(textGoodnight.value != null) return textGoodnight.value
+        val text = sharedPreferences.getString(KEY_GOODNIGHT, null)
+        if(text != null) {
+            textGoodnight.value = text
+            return textGoodnight.value
+        }
         textGoodnight.value = "Желаю Вам спокойной ночи, 🌚" +
                 "\nЧтобы не приснился Игорь в костюме горничной, \uD83D\uDC69\u200D" +
                 "\nК которому пристаёт Левон \uD83D\uDD1E" +

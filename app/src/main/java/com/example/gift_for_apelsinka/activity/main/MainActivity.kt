@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         if(viewModel.getNowHour() in 1..5) {
             val chance = (0..10).random()
-            if(chance in 1..2) Toast.makeText(this, "Хули не спим?!?!?!?", Toast.LENGTH_SHORT).show()
+            if(chance in 1..2) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
         }
     }
 
