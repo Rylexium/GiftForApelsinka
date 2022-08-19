@@ -26,6 +26,7 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.InitView.setPhotoDeveloper
 
 
 class MainActivity : AppCompatActivity() {
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
-        setPhotoDeveloper(this)
+        setPhotoDeveloper(findViewById(R.id.photo_of_developer), this)
 
         if(viewModel.getNowHour() in 1..5) {
             val chance = (0..10).random()
@@ -98,15 +99,6 @@ class MainActivity : AppCompatActivity() {
         Glide.with(this)
             .load(image)
             .into(findViewById(id))
-    }
-
-    private fun setPhotoDeveloper(context : Context) {
-        Glide.with(context)
-            .load("https://sun9-78.userapi.com/impg/QgrDaDWK9_CvRfUeVWponxtFKP6LYzhPSXl5Aw/uUbMrSVTCvo.jpg?size=1200x1600&quality=95&sign=08262cc283fdb4f7594de83f46527425&type=album")
-            .error(R.drawable.developer)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
-            .into(findViewById(R.id.photo_of_developer))
     }
 
     private fun applyEvents() {

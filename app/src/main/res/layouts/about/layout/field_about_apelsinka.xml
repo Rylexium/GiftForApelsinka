@@ -42,7 +42,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:text="Я,авфыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыавфы Быкова Ксения Александровна, но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у меня есть собственный логотип."
+                android:clickable="true"
+                android:focusable="true"
                 />
             <ImageView
                 android:id="@+id/mouse_of_apelsinka"

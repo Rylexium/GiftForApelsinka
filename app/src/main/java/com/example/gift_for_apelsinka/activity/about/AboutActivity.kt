@@ -1,71 +1,76 @@
 package com.example.gift_for_apelsinka.activity.about
 
+import android.content.Context
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
-import androidx.viewpager.widget.PagerAdapter
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.adapter.ImageViewOfPersonPageAdapter
+import com.example.gift_for_apelsinka.util.DoubleClickListener
+import com.example.gift_for_apelsinka.util.InitView.initViewPager
+import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.InitView.setImageWithCorners
 
 class AboutActivity : AppCompatActivity() {
+    private lateinit var viewModel: AboutViewModel
     private lateinit var viewPageOfImageOscar : ViewPager
     private lateinit var viewPageOfImageLera : ViewPager
     private lateinit var viewPageOfImageLexa : ViewPager
+    private lateinit var textViewAboutApelsinka : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
         initComponents()
+        applyEvents()
     }
 
     private fun initComponents() {
+        viewModel = ViewModelProvider(this)[AboutViewModel::class.java]
         viewPageOfImageOscar = findViewById(R.id.view_pager_of_image_oscar)
         viewPageOfImageLera = findViewById(R.id.view_pager_of_image_lera)
         viewPageOfImageLexa = findViewById(R.id.view_pager_of_image_lexa)
 
-        initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this,
-            listOf( R.drawable.oscar, R.drawable.oscar1, R.drawable.oscar2,
-                R.drawable.oscar3, R.drawable.oscar4, R.drawable.oscar5,
-                R.drawable.oscar6, R.drawable.oscar7, R.drawable.oscar8, R.drawable.oscar9).shuffled()))
+        textViewAboutApelsinka = findViewById(R.id.textview_about_apelsinka)
+        textViewAboutApelsinka.text = viewModel.getTextAboutApelsinka(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
 
-        initViewPager(viewPageOfImageLera, 65, ImageViewOfPersonPageAdapter(this,
-            listOf(R.drawable.lera_ksixa, R.drawable.lera_ksixa2, R.drawable.lera_ksixa3,
-            R.drawable.lera1, R.drawable.lera2)
-                .shuffled()))
+        initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfOscar()))
+        initViewPager(viewPageOfImageLera, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLera()))
+        initViewPager(viewPageOfImageLexa, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLexa()))
 
-        initViewPager(viewPageOfImageLexa, 65, ImageViewOfPersonPageAdapter(this,
-            listOf(R.drawable.lexa1, R.drawable.lexa2, R.drawable.lexa3, R.drawable.lexa4,
-                R.drawable.lexa_ksixa, R.drawable.lexa_ksixa2, R.drawable.lexa_ksixa3, R.drawable.lexa_ksixa4).shuffled()))
-
-        setImageWithCircle(R.drawable.mouse_of_apelsinka ,findViewById(R.id.mouse_of_apelsinka))
-        setImageWithCorners(R.drawable.logo, findViewById(R.id.logo_of_apelsinka))
+        setImageWithCircle(R.drawable.mouse_of_apelsinka, findViewById(R.id.mouse_of_apelsinka), this)
+        setImageWithCorners(R.drawable.logo, findViewById(R.id.logo_of_apelsinka), this)
     }
 
-    private fun setImageWithCircle(id: Int, imageView: ImageView) {
-        Glide.with(this)
-            .load(id)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
-            .into(imageView)
+    private fun applyEvents() {
+        textViewAboutApelsinka.setOnClickListener(object : DoubleClickListener(){
+            override fun onDoubleClick() {
+                editTextView(textViewAboutApelsinka, this@AboutActivity)
+            }
+        })
     }
 
-    private fun setImageWithCorners(id : Int, imageView : ImageView) {
-        Glide.with(this)
-            .load(id)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(RoundedCorners(40)))
-            .into(imageView)
-    }
-
-    private fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
-        viewPager.adapter = adapter
-        viewPager.clipToPadding = false
-        viewPager.setPadding(65 - padding,0,65 - padding,0)
+    private fun editTextView(textView: TextView, context : Context) {
+        val editText = EditText(context)
+        editText.setText(textView.text)
+        val dialog = AlertDialog.Builder(context).create()
+        dialog.setTitle("Отредактируй информацию о себе")
+        dialog.setView(editText)
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить изменения") { _, _ ->
+            textView.text = editText.text
+            viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString(), applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+        }
+        dialog.show()
     }
 }
+
+
