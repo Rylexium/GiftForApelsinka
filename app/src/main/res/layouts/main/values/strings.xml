@@ -1,4 +1,5 @@
 <resources>
     <string name="https_vk_com_rylexium">ВК : <u><font color="#328fa8">https://vk.com/rylexium </font></u></string>
     <string name="international_agreement"><u><font color="#328fa8">Лицензионное соглашение</font></u></string>
+    <string name="address_developer">Адрес : <u><font color="#328fa8">г.Самара, ул.Енисейская, 41, 8</font></u></string>
 </resources>

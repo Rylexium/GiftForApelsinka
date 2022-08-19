@@ -69,9 +69,10 @@
                         android:elegantTextHeight="true"
                         />
                     <TextView
+                        android:id="@+id/address_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Адрес : г.Самара, ул.Енисейская, 41, 8"
+                        android:text="@string/address_developer"
                         android:elegantTextHeight="true"
                         />
                     <TextView
