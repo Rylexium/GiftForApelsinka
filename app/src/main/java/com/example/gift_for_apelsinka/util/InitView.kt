@@ -21,6 +21,7 @@ object InitView {
             .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
             .into(imageView)
     }
+
     fun setImageWithCorners(id : Int, imageView : ImageView, context: Context) {
         Glide.with(context)
             .load(id)
@@ -28,14 +29,7 @@ object InitView {
             .apply(RequestOptions().transform(RoundedCorners(40)))
             .into(imageView)
     }
-    fun setPhotoDeveloper(imageView : ImageView, context : Context) {
-        Glide.with(context)
-            .load("https://sun9-78.userapi.com/impg/QgrDaDWK9_CvRfUeVWponxtFKP6LYzhPSXl5Aw/uUbMrSVTCvo.jpg?size=1200x1600&quality=95&sign=08262cc283fdb4f7594de83f46527425&type=album")
-            .error(R.drawable.developer)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
-            .into(imageView)
-    }
+
     fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
         viewPager.adapter = adapter
         viewPager.clipToPadding = false

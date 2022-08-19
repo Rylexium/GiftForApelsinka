@@ -3,6 +3,7 @@ package com.example.gift_for_apelsinka.activity.main
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,7 +22,8 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.util.AnimView
-import com.example.gift_for_apelsinka.util.InitView.setPhotoDeveloper
+import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,7 +64,8 @@ class MainActivity : AppCompatActivity() {
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
-        setPhotoDeveloper(findViewById(R.id.photo_of_developer), this)
+        setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
+        setImageWithCircle(R.drawable.icon_of_developer, findViewById(R.id.icon_of_developer),this)
 
         if(viewModel.getNowHour() in 1..5) {
             val chance = (0..10).random()
@@ -118,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.photo_of_developer).setOnClickListener {
-            Toast.makeText(this, "Open my VK?", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Да, это Ryletikum...", Toast.LENGTH_SHORT).show()
         }
 
         photoWithApelsinka.setOnClickListener {
@@ -131,6 +134,20 @@ class MainActivity : AppCompatActivity() {
 
         changeTheme.setOnClickListener {
             setNightMode(this)
+        }
+
+        findViewById<TextView>(R.id.text_vk_developer).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/rylexium")))
+        }
+
+        findViewById<TextView>(R.id.international_agreement).setOnClickListener {
+            Snackbar.make(it, "ВНИМАНИЕ! Данная программа не защищена законами об" +
+                    " авторских правах и международными соглашениями. Копирование не запрещено", Snackbar.LENGTH_LONG)
+                .setTextMaxLines(3)
+                .setAction("Похуй + Похуй") {
+                    Toast.makeText(this, "Теперь Вам похуй", Toast.LENGTH_SHORT).show()
+                }
+                .show()
         }
     }
 

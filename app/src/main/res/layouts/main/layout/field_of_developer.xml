@@ -53,7 +53,7 @@
                         android:id="@+id/text_vk_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="ВК : https://vk.com/rylexium"
+                        android:text="@string/https_vk_com_rylexium"
                         android:elegantTextHeight="true"
                         />
                     <TextView
@@ -62,14 +62,49 @@
                         android:text="Телефон : 8-937-17-27-345"
                         android:elegantTextHeight="true"
                         />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Discord : Rylexium#4763"
+                        android:elegantTextHeight="true"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Адрес : г.Самара, ул.Енисейская, 41, 8"
+                        android:elegantTextHeight="true"
+                        />
+                    <TextView
+                        android:id="@+id/international_agreement"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/international_agreement"
+                        android:gravity="center"
+                        android:elegantTextHeight="true"
+                        />
                 </LinearLayout>
-                <ImageView
-                    android:id="@+id/photo_of_developer"
+                <LinearLayout
+                    android:layout_height="match_parent"
                     android:layout_width="0dp"
                     android:layout_weight="0.2"
-                    android:layout_height="match_parent"
                     android:layout_gravity="center|end"
-                    />
+                    android:orientation="vertical"
+                    android:weightSum="1"
+                    >
+                    <ImageView
+                        android:id="@+id/photo_of_developer"
+                        android:layout_weight="0.5"
+                        android:layout_height="0dp"
+                        android:layout_width="wrap_content"
+                        android:layout_marginBottom="9dp"
+                        />
+                    <ImageView
+                        android:id="@+id/icon_of_developer"
+                        android:layout_weight="0.5"
+                        android:layout_height="0dp"
+                        android:layout_width="wrap_content"
+                        />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
