@@ -1,25 +1,24 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.R.attr.label
 import android.app.UiModeManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build.VERSION
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
@@ -141,9 +140,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setNightMode(target: Context) {
         val uiManager = target.getSystemService(UI_MODE_SERVICE) as UiModeManager
-        if (VERSION.SDK_INT <= 22) {
-            uiManager.enableCarMode(0)
-        }
         if (uiManager.nightMode == 1) {
             uiManager.nightMode = UiModeManager.MODE_NIGHT_YES
         } else {
@@ -151,8 +147,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun enableDisableSwipeRefresh(enable: Boolean) {
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.isEnabled = enable
-        }
+        swipeRefreshLayout.isEnabled = enable
     }
 }
