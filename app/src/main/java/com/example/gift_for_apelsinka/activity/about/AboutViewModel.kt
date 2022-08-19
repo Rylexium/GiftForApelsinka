@@ -9,6 +9,11 @@ class AboutViewModel : ViewModel() {
     private var textAboutApelsinka : MutableLiveData<String> = MutableLiveData()
     private var textGoodnight : MutableLiveData<String> = MutableLiveData()
 
+    private var titleApelsinka : MutableLiveData<String> = MutableLiveData()
+    private var titleOscar : MutableLiveData<String> = MutableLiveData()
+    private var titleLera : MutableLiveData<String> = MutableLiveData()
+    private var titleLexa : MutableLiveData<String> = MutableLiveData()
+
     private var imageOfLogo : MutableLiveData<List<Int>> = MutableLiveData()
     private var imagesOfOscar : MutableLiveData<List<Int>> = MutableLiveData()
     private var imagesOfLera : MutableLiveData<List<Int>> = MutableLiveData()
@@ -16,6 +21,10 @@ class AboutViewModel : ViewModel() {
 
     private val KEY_INFO = "info"
     private val KEY_GOODNIGHT = "goodnight"
+    private val KEY_TITLE_APELSINKA = "title apelsinka"
+    private val KEY_TITLE_OSCAR = "title oscar"
+    private val KEY_TITLE_LERA = "title lera"
+    private val KEY_TITLE_LEXA = "title lexa"
 
     fun getImagesOfLogo() : List<Int> {
         if(imageOfLogo.value != null) return imagesOfOscar.value!!
@@ -56,40 +65,73 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getTextAboutApelsinka(sharedPreferences : SharedPreferences): String? {
-        if(textAboutApelsinka.value != null) return textAboutApelsinka.value
-        val text = sharedPreferences.getString(KEY_INFO, null)
-        if(text != null) {
-            textAboutApelsinka.value = text
-            return textAboutApelsinka.value
-        }
-        textAboutApelsinka.value = "Я, Быкова Ксения Александровна, " +
-                "но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у меня есть собственный логотип."
-        return textAboutApelsinka.value
+        return getWrapper(textAboutApelsinka, KEY_INFO, sharedPreferences,
+            "Я, Быкова Ксения Александровна, " +
+                "но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у меня есть собственный логотип.")
     }
 
     fun setTextAboutApelsinka(text : String, sharedPreferences : SharedPreferences) {
-        textAboutApelsinka.value = text
-        sharedPreferences.edit().putString(KEY_INFO, text).apply()
+        setWrapper(textAboutApelsinka, text, KEY_INFO, sharedPreferences)
     }
 
     fun getTextGoodnight(sharedPreferences : SharedPreferences): String? {
-        if(textGoodnight.value != null) return textGoodnight.value
-        val text = sharedPreferences.getString(KEY_GOODNIGHT, null)
-        if(text != null) {
-            textGoodnight.value = text
-            return textGoodnight.value
-        }
-        textGoodnight.value = "Желаю Вам спокойной ночи, 🌚" +
+        return getWrapper(textGoodnight, KEY_GOODNIGHT, sharedPreferences,
+            "Желаю Вам спокойной ночи, 🌚" +
                 "\nЧтобы не приснился Игорь в костюме горничной, \uD83D\uDC69\u200D" +
                 "\nК которому пристаёт Левон \uD83D\uDD1E" +
                 "\nИ Лев не спросил у них отличие между базой и базисом, \uD83C\uDD98" +
-                "\nВ то время, когда их чекает Илюха со своей понамеры \uD83D\uDC41"
-        return textGoodnight.value
+                "\nВ то время, когда их чекает Илюха со своей понамеры \uD83D\uDC41")
     }
 
     fun setTextGoodnight(text : String, sharedPreferences : SharedPreferences) {
-        textGoodnight.value = text
-        sharedPreferences.edit().putString(KEY_GOODNIGHT, text).apply()
+        setWrapper(textGoodnight, text, KEY_GOODNIGHT, sharedPreferences)
     }
 
+    private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String, sharedPreferences : SharedPreferences) {
+        liveData.value = text
+        sharedPreferences.edit().putString(KEY, text).apply()
+    }
+
+    private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, sharedPreferences: SharedPreferences, default : String): String? {
+        if(liveData.value != null) return liveData.value
+        val text = sharedPreferences.getString(KEY, null)
+        if(text != null) {
+            liveData.value = text
+            return liveData.value
+        }
+        liveData.value = default
+        return liveData.value
+    }
+
+    fun getApelsinkaTitle(sharedPreferences: SharedPreferences): String? {
+        return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, sharedPreferences, "Про меня 🍊")
+    }
+
+    fun setApelsinkaTitle(text : String, sharedPreferences: SharedPreferences) {
+        setWrapper(titleApelsinka, text, KEY_TITLE_APELSINKA, sharedPreferences)
+    }
+
+    fun getOscarTitle(sharedPreferences: SharedPreferences): String? {
+        return getWrapper(titleOscar, KEY_TITLE_OSCAR, sharedPreferences, "Немного меня и Оскара 🐕")
+    }
+
+    fun setOscarTitle(text : String, sharedPreferences: SharedPreferences) {
+        setWrapper(titleOscar, text, KEY_TITLE_OSCAR, sharedPreferences)
+    }
+
+    fun getLeraTitle(sharedPreferences: SharedPreferences): String? {
+        return getWrapper(titleLera, KEY_TITLE_LERA, sharedPreferences, "Немного меня и Леры 🍋")
+    }
+
+    fun setLeraTitle(text : String, sharedPreferences: SharedPreferences) {
+        setWrapper(titleLera, text, KEY_TITLE_LERA, sharedPreferences)
+    }
+
+    fun getLexaTitle(sharedPreferences: SharedPreferences): String? {
+        return getWrapper(titleLexa, KEY_TITLE_LEXA, sharedPreferences, "Немного меня и Лёши 🥨")
+    }
+
+    fun setLexaTitle(text : String, sharedPreferences: SharedPreferences) {
+        setWrapper(titleLexa, text, KEY_TITLE_LEXA, sharedPreferences)
+    }
 }

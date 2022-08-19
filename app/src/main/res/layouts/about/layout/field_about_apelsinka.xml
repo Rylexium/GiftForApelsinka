@@ -19,6 +19,7 @@
         android:padding="9dp"
         >
         <TextView
+            android:id="@+id/field_about_apelsinka_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Про меня 🍊"
