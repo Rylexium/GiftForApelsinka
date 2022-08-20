@@ -4,14 +4,12 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
@@ -23,9 +21,9 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.util.AnimView
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
-import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
 
@@ -48,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         initComponents()
         applyEvents()
+        startService(Intent(this, GoodMorningService::class.java))
     }
 
     private fun initComponents() {
