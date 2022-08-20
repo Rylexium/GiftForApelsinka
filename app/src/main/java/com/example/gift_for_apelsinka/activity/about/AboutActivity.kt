@@ -1,17 +1,15 @@
 package com.example.gift_for_apelsinka.activity.about
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.adapter.ImageViewOfPersonPageAdapter
+import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.DoubleClickListener
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
@@ -30,7 +28,6 @@ class AboutActivity : AppCompatActivity() {
 
     private lateinit var textViewAboutApelsinka : TextView
     private lateinit var textViewTextOfGoodnight : TextView
-    private lateinit var defaultSharedPreferences : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +37,8 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun initComponents() {
-        viewModel = ViewModelProvider(this)[AboutViewModel::class.java]
+        viewModel = ViewModelProvider(this,
+            AboutViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[AboutViewModel::class.java]
         viewPageOfImageOscar = findViewById(R.id.view_pager_of_image_oscar)
         viewPageOfImageLera = findViewById(R.id.view_pager_of_image_lera)
         viewPageOfImageLexa = findViewById(R.id.view_pager_of_image_lexa)
@@ -54,15 +52,13 @@ class AboutActivity : AppCompatActivity() {
         textViewAboutApelsinka = findViewById(R.id.textview_about_apelsinka)
         textViewTextOfGoodnight = findViewById(R.id.textview_text_of_goodnight)
 
-        defaultSharedPreferences = applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
+        textViewAboutApelsinka.text = viewModel.getTextAboutApelsinka()
+        textViewTextOfGoodnight.text = viewModel.getTextGoodnight()
 
-        textViewAboutApelsinka.text = viewModel.getTextAboutApelsinka(defaultSharedPreferences)
-        textViewTextOfGoodnight.text = viewModel.getTextGoodnight(defaultSharedPreferences)
-
-        aboutApelsinkaTitle.text = viewModel.getApelsinkaTitle(defaultSharedPreferences)
-        aboutOscarTitle.text = viewModel.getOscarTitle(defaultSharedPreferences)
-        aboutLeraTitle.text = viewModel.getLeraTitle(defaultSharedPreferences)
-        aboutLexaTitle.text = viewModel.getLexaTitle(defaultSharedPreferences)
+        aboutApelsinkaTitle.text = viewModel.getApelsinkaTitle()
+        aboutOscarTitle.text = viewModel.getOscarTitle()
+        aboutLeraTitle.text = viewModel.getLeraTitle()
+        aboutLexaTitle.text = viewModel.getLexaTitle()
 
         initViewPager(viewPageOfImageLogo, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImagesOfLogo()))
         initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfOscar()))
@@ -85,61 +81,38 @@ class AboutActivity : AppCompatActivity() {
         textViewTextOfGoodnight.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(textViewTextOfGoodnight, this@AboutActivity) {
-                    viewModel.setTextGoodnight(
-                        textViewTextOfGoodnight.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setTextGoodnight(textViewTextOfGoodnight.text.toString())
                 }
             }
         })
         aboutApelsinkaTitle.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(aboutApelsinkaTitle, this@AboutActivity) {
-                    viewModel.setApelsinkaTitle(
-                        textViewTextOfGoodnight.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setApelsinkaTitle(textViewTextOfGoodnight.text.toString())
                 }
             }
         })
         aboutOscarTitle.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(aboutOscarTitle, this@AboutActivity) {
-                    viewModel.setOscarTitle(
-                        aboutOscarTitle.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setOscarTitle(aboutOscarTitle.text.toString())
                 }
             }
         })
         aboutLeraTitle.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(aboutLeraTitle, this@AboutActivity) {
-                    viewModel.setLeraTitle(
-                        aboutLeraTitle.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setLeraTitle(aboutLeraTitle.text.toString())
                 }
             }
         })
         aboutLexaTitle.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(aboutLexaTitle, this@AboutActivity) {
-                    viewModel.setLexaTitle(
-                        aboutLexaTitle.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setLexaTitle(aboutLexaTitle.text.toString())
                 }
             }
         })
-    }
-
-    private fun editTextView(textView: TextView, context : Context, r : Runnable) {
-        val editText = EditText(context)
-        editText.setText(textView.text)
-        val dialog = AlertDialog.Builder(context).create()
-        dialog.setTitle("Редактирование \uD83D\uDD8A️")
-        dialog.setView(editText)
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить изменения") { _, _ ->
-            textView.text = editText.text
-            r.run()
-        }
-        dialog.show()
     }
 }
 

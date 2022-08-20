@@ -14,6 +14,9 @@ import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
+import com.example.gift_for_apelsinka.util.DialogEditText
+import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
+import com.example.gift_for_apelsinka.util.InitView.setImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,11 +40,16 @@ class PhotosAdapter(
 
     override fun onBindViewHolder(holder: PhotosViewHolder, position: Int) {
         val newList = photos[position]
-        holder.title.text = newList.body
-
+        if(newList.title == "")
+            holder.title.visibility = View.GONE
+        else {
+            holder.title.text = newList.title
+            holder.title.visibility = View.VISIBLE
+        }
+        setImage(newList.drawable as Int, holder.photo, context)
         var image: Any?
         CoroutineScope(Dispatchers.IO).launch {
-            image = if (newList.drawable is Int) context.resources.getDrawable(newList.drawable)
+            image = if (newList.drawable is Int) newList.drawable
                     else ConvertClass.convertStringToBitmap(newList.drawable as String)
             Handler(Looper.getMainLooper()).post {
                 Glide.with(context)
@@ -49,6 +57,13 @@ class PhotosAdapter(
                     .format(DecodeFormat.PREFER_RGB_565)
                     .into(holder.photo)
             }
+        }
+
+        holder.photo.setOnLongClickListener {
+            editTextView(holder.title, context, {
+                holder.title.visibility = View.VISIBLE
+            })
+            true
         }
     }
 

@@ -18,7 +18,7 @@ class MainViewModel : ViewModel() {
         val list = listOf(
             Statement(1, "Не вздумай думать", "Автор : Rylexium"),
             Statement(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
-            Statement(3, "Не каждому дано понять, как думать...", "Автор : Rylexium"),
+            Statement(3, "Не каждому дано понять, как думать...", "Автор : Apelsinka"),
             Statement(4, "Пердечный сриступ", "Автор : Apelsinka"),
             Statement(5, "Мы не выбираем, в каком измерении родиться", "Автор : MrSiAWTF"),
             Statement(6, "Все русские, все жёсткие", "Автор : Какой-то чел с ММ"),

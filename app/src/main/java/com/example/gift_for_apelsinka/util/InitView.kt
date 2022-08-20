@@ -30,6 +30,13 @@ object InitView {
             .into(imageView)
     }
 
+    fun setImage(id : Int, imageView : ImageView, context: Context) {
+        Glide.with(context)
+            .load(id)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .into(imageView)
+    }
+
     fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
         viewPager.adapter = adapter
         viewPager.clipToPadding = false

@@ -21,26 +21,20 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-            <androidx.cardview.widget.CardView
+            <ImageView
+                android:id="@+id/photo_of_apelsinka"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="15dp"
-                android:foreground="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                >
-                <ImageView
-                    android:id="@+id/photo_of_apelsinka"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:scaleType="centerCrop" />
-            </androidx.cardview.widget.CardView>
+                android:layout_height="450dp"
+                android:background="@color/black"
+                />
             <TextView
                 android:id="@+id/title_photo"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Заебись выглядит"
+                android:elegantTextHeight="true"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
