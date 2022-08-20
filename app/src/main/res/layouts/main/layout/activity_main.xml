@@ -61,13 +61,15 @@
                     <androidx.viewpager.widget.ViewPager
                         android:id="@+id/view_pager_of_image"
                         android:layout_width="match_parent"
-                        android:layout_height="380dp"
+                        android:layout_height="400dp"
+                        android:layout_marginTop="10dp"
                         />
 
                     <androidx.viewpager.widget.ViewPager
                         android:id="@+id/view_pager_of_statement"
                         android:layout_width="match_parent"
-                        android:layout_height="160dp"
+                        android:layout_height="170dp"
+                        android:layout_gravity="center"
                         />
                 </LinearLayout>
 

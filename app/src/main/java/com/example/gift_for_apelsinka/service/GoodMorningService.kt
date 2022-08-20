@@ -19,9 +19,6 @@ import java.util.*
 
 
 class GoodMorningService : Service() {
-    private lateinit var timer : Timer
-    private lateinit var timerTask: TimerTask
-
     private val KEY_HOUR = "GoodMorningRandomHour"
     private val KEY_MINUTE = "GoodMorningRandomMinute"
 

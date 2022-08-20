@@ -27,6 +27,7 @@ import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
@@ -53,18 +54,18 @@ class MainActivity : AppCompatActivity() {
 
         initComponents()
         applyEvents()
-        requestPermission()
         startServices()
     }
 
     private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            startService(Intent(this, LocationService::class.java))
-        }
+        //requestPermission()
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+//        {
+//            startService(Intent(this, LocationService::class.java))
+//        }
     }
 
     override fun onRequestPermissionsResult(
@@ -87,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         viewPageOfStatement = findViewById(R.id.view_pager_of_statement)
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
-
         layoutGreeting = findViewById(R.id.layout_greetings_for_apelsinka)
         greetingTextView = findViewById(R.id.greetings_for_apelsinka)
         photoWithApelsinka = findViewById(R.id.photo_with_apelsinka)
@@ -101,16 +101,10 @@ class MainActivity : AppCompatActivity() {
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
         setImageWithCircle(R.drawable.icon_of_developer, findViewById(R.id.icon_of_developer),this)
 
-        if(getNowHour() in 1..5) {
+        if(getNowHour() in 0..5) {
             val chance = (0..10).random()
-            if(chance in 1..2) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
+            if(chance in 1..3) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
-        viewPager.adapter = adapter
-        viewPager.clipToPadding = false
-        viewPager.setPadding(65 - padding,0,65 - padding,0)
     }
 
     private fun setGreeting() {
