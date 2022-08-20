@@ -1,40 +1,39 @@
 package com.example.gift_for_apelsinka.service
 
-import android.app.*
-import android.content.BroadcastReceiver
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.InitView
-import com.example.gift_for_apelsinka.util.Notifaction
-import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
-import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
+import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
+import com.example.gift_for_apelsinka.util.WorkWithTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+class RandomQuestionService : Service() {
 
-class GoodMorningService : Service() {
-
-    private val KEY_HOUR = "GoodMorningRandomHour"
-    private val KEY_MINUTE = "GoodMorningRandomMinute"
+    private val KEY_HOUR = "EquationRandomHour"
+    private val KEY_MINUTE = "EquationRandomMinute"
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 8)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)
-
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
         Thread {
             while (true) {
-                val nowHour = getNowHour()
-                val nowMinute = getNowMinute()
+                val nowHour = WorkWithTime.getNowHour()
+                val nowMinute = WorkWithTime.getNowMinute()
                 if(nowHour == randomHour && randomMinute <= nowMinute) {
-                    goodMorningNotification()
-                    randomHour = (8..12).random()
-                    randomMinute = (0..59).random()
+                    equationNotification()
+                    randomHour = (16..23).random()
+                    randomMinute = (System.currentTimeMillis() % 59).toInt()
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
@@ -46,21 +45,22 @@ class GoodMorningService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
-    }
-
-    private fun goodMorningNotification() {
+    private fun equationNotification() {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
-            val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, applicationContext)
+            val id = when((1..3).random()) {
+                1 -> R.drawable.developer
+                2 -> R.drawable.icon_of_developer
+                else -> { R.drawable.lexa1 }
+            }
+            val circleImage = InitView.getCircleImage(id, applicationContext)
             val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_ID")
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
-                .setLargeIcon(circleImageApelsinka)
+                .setLargeIcon(circleImage)
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle(Notifaction.generateTitleOfGoodMorning())
-                .setContentText(Notifaction.generateTextOfGoodMorning())
+                .setContentTitle("Вопросик")
+                .setContentText(generateTextOfEquation())
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
 
@@ -70,5 +70,17 @@ class GoodMorningService : Service() {
             }
             notificationManager.notify(1, notificationGoodMorning)
         }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Log.e("onCreate", "RandomQuestionService create")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("onDestroy", "RandomQuestionService destroy")
+    }
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
     }
 }

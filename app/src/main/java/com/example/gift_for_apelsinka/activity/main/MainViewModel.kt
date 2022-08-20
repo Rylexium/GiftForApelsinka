@@ -60,12 +60,19 @@ class MainViewModel : ViewModel() {
             23 -> result = "Доброй ночи, "
             in 0..4 -> result = "Доброй ночи, "
             in 5..11 -> {
-                when((1..2).random()) {
+                when((1..4).random()) {
                     1 -> result = "Доброе утро, "
                     2 -> result = "Доброе утречка, "
+                    3 -> result = "Доброго утра, "
+                    4 -> result = "Доброго утречка, "
                 }
             }
-            in 12..18 -> result = "Добрый день, "
+            in 12..18 -> {
+                when((1..2).random()) {
+                    1 -> result = "Добрый день, "
+                    2 -> result = "Добрейший денёчек, "
+                }
+            }
             in 19..22 -> result = "Добрый вечер, "
         }
 

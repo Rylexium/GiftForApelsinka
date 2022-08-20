@@ -22,6 +22,7 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.service.GoodMorningService
+import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         initComponents()
         applyEvents()
         startService(Intent(this, GoodMorningService::class.java))
+        startService(Intent(this, RandomQuestionService::class.java))
     }
 
     private fun initComponents() {
