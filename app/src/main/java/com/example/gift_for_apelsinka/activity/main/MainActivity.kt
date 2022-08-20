@@ -1,15 +1,17 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.app.UiModeManager
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
@@ -23,6 +25,8 @@ import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAda
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.util.AnimView
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.Notifaction
+import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -67,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
         setImageWithCircle(R.drawable.icon_of_developer, findViewById(R.id.icon_of_developer),this)
 
-        if(viewModel.getNowHour() in 1..5) {
+        if(getNowHour() in 1..5) {
             val chance = (0..10).random()
             if(chance in 1..2) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
         }
@@ -84,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         setImageOfTime(image, R.id.image_of_time1)
         setImageOfTime(image, R.id.image_of_time2)
 
-        val greetingValue = viewModel.getGreetingsForApelsinka()
+        val greetingValue = viewModel.getGreetingsForApelsinka(false)
         if(greetingValue == null) layoutGreeting.visibility = View.GONE
         else {
             greetingTextView.text = greetingValue

@@ -4,9 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.main.model.Statement
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.gift_for_apelsinka.util.Notifaction
+import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 
 class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statement>> = MutableLiveData()
@@ -36,17 +35,10 @@ class MainViewModel : ViewModel() {
     fun getPictures(): List<Int> {
         if(listOfPictures.value != null) return listOfPictures.value!!
         val list = mutableListOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
-        list.addAll(mutableListOf(R.drawable.mem1, R.drawable.mem2, R.drawable.mem3, R.drawable.mem4, R.drawable.mem5, R.drawable.mem6)
+        list.addAll(mutableListOf(R.drawable.mem1, R.drawable.mem2, R.drawable.mem3, R.drawable.mem4, R.drawable.mem5)
             .shuffled())
         listOfPictures.value = list
         return listOfPictures.value!!
-    }
-
-    fun getNowHour() : Int {
-        val timeFormat: DateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        val timeText: String = timeFormat.format(Date())
-        val listTime = timeText.split(":")
-        return listTime[0].toInt()
     }
 
     fun getImageOfTime(): Int {
@@ -60,13 +52,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getGreetingsForApelsinka(): String? {
-        if(greetingText.value != null) return null
+    fun getGreetingsForApelsinka(flag : Boolean): String? {
+        if(greetingText.value != null && !flag) return null
 
-        val nameOfApelsinka =
-            listOf( "Apelsinka", "Ксюша", "Ксения", "Ксюшенька", "солнышко",
-                    "Мышпаклевка", "\nКсения Александровна", "\nБ.К. Александровна",
-                    "\nАпельсиновый Бог", "Бог", "Апельсин", "\nЦитрусовый Бог")
         var result = ""
         when(getNowHour()) {
             23 -> result = "Доброй ночи, "
@@ -80,7 +68,12 @@ class MainViewModel : ViewModel() {
             in 12..18 -> result = "Добрый день, "
             in 19..22 -> result = "Добрый вечер, "
         }
-        greetingText.value = result + nameOfApelsinka[(System.currentTimeMillis() % nameOfApelsinka.size).toInt()] + "!"
+
+        val value = (System.currentTimeMillis() % Notifaction.nameOfApelsinka.size).toInt()
+        if(value == Notifaction.nameOfApelsinka.size - 1)
+            greetingText.value = result.subSequence(0, result.length - 2).toString() + "!"
+        greetingText.value =  result + Notifaction.nameOfApelsinka[value] + "!"
+
         return greetingText.value!!
     }
 }
