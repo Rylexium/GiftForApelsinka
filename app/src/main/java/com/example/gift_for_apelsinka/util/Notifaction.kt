@@ -1,19 +1,5 @@
 package com.example.gift_for_apelsinka.util
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import androidx.core.app.NotificationCompat
-import com.example.gift_for_apelsinka.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
-
 object Notifaction {
     val nameOfApelsinka =
         listOf(

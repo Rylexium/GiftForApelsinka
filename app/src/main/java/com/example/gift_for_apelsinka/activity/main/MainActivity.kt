@@ -1,16 +1,18 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.app.*
+import android.Manifest
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
@@ -22,6 +24,7 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.service.GoodMorningService
+import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
 import com.example.gift_for_apelsinka.util.InitView.setImage
@@ -43,14 +46,38 @@ class MainActivity : AppCompatActivity() {
     private lateinit var changeTheme : Button
     private lateinit var layoutGreeting : LinearLayout
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initComponents()
         applyEvents()
+        requestPermission()
+        startServices()
+    }
+
+    private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            startService(Intent(this, LocationService::class.java))
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 1 && grantResults.isNotEmpty())
+            startService(Intent(this, LocationService::class.java))
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
     }
 
     private fun initComponents() {
@@ -97,9 +124,6 @@ class MainActivity : AppCompatActivity() {
             greetingTextView.text = greetingValue
             if(greetingValue.length <= 24)
                 greetingTextView.height = dpToPx(65)
-            Log.e("greetingValue", greetingValue)
-            Log.e("greetingValueSize", greetingValue.length.toString())
-            //greetingTextView.height = 60
             Handler(Looper.getMainLooper()).postDelayed({
                 AnimView.animTransitionUp(layoutGreeting)
             }, 3_000)
