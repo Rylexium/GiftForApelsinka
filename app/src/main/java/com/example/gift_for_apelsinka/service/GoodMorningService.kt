@@ -31,7 +31,7 @@ class GoodMorningService : Service() {
                     randomHour = (8..12).random()
                     randomMinute = (0..59).random()
                 }
-                Thread.sleep(180_000)
+                Thread.sleep(120_000)
             }
         }.start()
         return START_STICKY
