@@ -35,7 +35,10 @@ class MainViewModel : ViewModel() {
 
     fun getPictures(): List<Int> {
         if(listOfPictures.value != null) return listOfPictures.value!!
-        listOfPictures.value = listOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
+        val list = mutableListOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
+        list.addAll(mutableListOf(R.drawable.mem1, R.drawable.mem2, R.drawable.mem3, R.drawable.mem4, R.drawable.mem5, R.drawable.mem6)
+            .shuffled())
+        listOfPictures.value = list
         return listOfPictures.value!!
     }
 
@@ -62,8 +65,8 @@ class MainViewModel : ViewModel() {
 
         val nameOfApelsinka =
             listOf( "Apelsinka", "Ксюша", "Ксения", "Ксюшенька", "солнышко",
-                    "Мышпаклевка", "Ксения Александровна", "Б.К. Александровна",
-                    "Апельсиновый Бог", "Бог", "Апельсин", "Цитрусовый Бог")
+                    "Мышпаклевка", "\nКсения Александровна", "\nБ.К. Александровна",
+                    "\nАпельсиновый Бог", "Бог", "Апельсин", "\nЦитрусовый Бог")
         var result = ""
         when(getNowHour()) {
             23 -> result = "Доброй ночи, "

@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.activity.photo.PhotosViewModel
 import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.DialogEditText
@@ -23,7 +25,9 @@ import kotlinx.coroutines.launch
 
 class PhotosAdapter(
     private val context: Context,
-    private val photos: List<FieldPhoto>)
+    private val photos: List<FieldPhoto>,
+    private val viewModel : PhotosViewModel,
+    private val recv : RecyclerView)
     : RecyclerView.Adapter<PhotosAdapter.PhotosViewHolder>() {
 
     inner class PhotosViewHolder(v : View) : RecyclerView.ViewHolder(v) {
@@ -40,12 +44,10 @@ class PhotosAdapter(
 
     override fun onBindViewHolder(holder: PhotosViewHolder, position: Int) {
         val newList = photos[position]
-        if(newList.title == "")
-            holder.title.visibility = View.GONE
-        else {
-            holder.title.text = newList.title
-            holder.title.visibility = View.VISIBLE
-        }
+
+        holder.title.text = if(newList.title == "null") "" else newList.title
+        holder.title.visibility = if(newList.title == "null" || newList.title == "") View.GONE else View.VISIBLE
+
         setImage(newList.drawable as Int, holder.photo, context)
         var image: Any?
         CoroutineScope(Dispatchers.IO).launch {
@@ -60,9 +62,12 @@ class PhotosAdapter(
         }
 
         holder.photo.setOnLongClickListener {
-            editTextView(holder.title, context, {
-                holder.title.visibility = View.VISIBLE
-            })
+            editTextView(holder.title, context) {
+                viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
+                viewModel.changePhotoAtIndex(position, holder.title.text.toString())
+                (recv.layoutManager as LinearLayoutManager)
+                    .onRestoreInstanceState(viewModel.getScrollState())
+            }
             true
         }
     }

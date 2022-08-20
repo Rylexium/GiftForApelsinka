@@ -11,6 +11,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.util.InitView
+import com.example.gift_for_apelsinka.util.InitView.setImageWithCorners
 
 class ImageViewPageAdapter(
     context: Context,
@@ -30,11 +32,7 @@ class ImageViewPageAdapter(
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val imageView = ImageView(ctx)
         imageView.setPadding(18, 9, 18, 9)
-        Glide.with(ctx)
-            .load(imageArray[position])
-            .format(DecodeFormat.PREFER_RGB_565)
-            .apply(RequestOptions().transform(CenterCrop(), RoundedCorners(16)))
-            .into(imageView)
+        setImageWithCorners(imageArray[position], imageView, ctx)
         container.addView(imageView, 0)
         return imageView
     }

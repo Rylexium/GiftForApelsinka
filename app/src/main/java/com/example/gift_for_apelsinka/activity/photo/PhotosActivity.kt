@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.photo
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,35 +21,15 @@ class PhotosActivity : AppCompatActivity() {
         initComponents()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (recv.layoutManager != null)
-            (recv.layoutManager as LinearLayoutManager) //скролим до нужного момента
-                .onRestoreInstanceState(viewModel.getScrollState())
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
-    }
     private fun initComponents() {
-        viewModel = ViewModelProvider(this)[PhotosViewModel::class.java]
+        viewModel = ViewModelProvider(this,
+            PhotosViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[PhotosViewModel::class.java]
         recv = findViewById(R.id.recycler_view_photos)
 
         viewModel.getPhotosList().observe(this) {
-            photosAdapter = PhotosAdapter(this, it)
+            photosAdapter = PhotosAdapter(this, it, viewModel, recv)
             recv.adapter = photosAdapter
             recv.layoutManager = LinearLayoutManager(this)
-            (recv.layoutManager as LinearLayoutManager) //скролим до нужного момента
-                .onRestoreInstanceState(viewModel.getScrollState())
         }
-
     }
-
-
 }
