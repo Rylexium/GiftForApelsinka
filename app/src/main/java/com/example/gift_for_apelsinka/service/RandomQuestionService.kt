@@ -39,10 +39,10 @@ class RandomQuestionService : Service() {
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(120_000)
+                Thread.sleep(5_000)
             }
         }.start()
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun equationNotification() {
@@ -54,7 +54,7 @@ class RandomQuestionService : Service() {
                 else -> { R.drawable.lexa1 }
             }
             val circleImage = InitView.getCircleImage(id, applicationContext)
-            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_ID")
+            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_QUESTION")
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setLargeIcon(circleImage)
@@ -65,21 +65,13 @@ class RandomQuestionService : Service() {
                 .build()
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notifChannel = NotificationChannel("CHANNEL_ID", "CHANNEL_ID", NotificationManager.IMPORTANCE_DEFAULT)
+                val notifChannel = NotificationChannel("CHANNEL_QUESTION", "CHANNEL_QUESTION", NotificationManager.IMPORTANCE_DEFAULT)
                 notificationManager.createNotificationChannel(notifChannel)
             }
-            notificationManager.notify(1, notificationGoodMorning)
+            notificationManager.notify(2, notificationGoodMorning)
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.e("onCreate", "RandomQuestionService create")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("onDestroy", "RandomQuestionService destroy")
-    }
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }

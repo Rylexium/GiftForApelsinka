@@ -23,14 +23,14 @@ object Notifaction {
 
     fun generateTitleOfGoodMorning() : String {
         var res = ""
-        when((1..4).random()) {
-            1 -> res = "Доброе утро, "
-            2 -> res = "Доброе утречка, "
-            3 -> res = "Доброго утра, "
-            4 -> res = "Доброго утречка, "
+        when((System.currentTimeMillis() % 4).toInt()) {
+            0 -> res = "Доброе утро, "
+            1 -> res = "Доброе утречка, "
+            2 -> res = "Доброго утра, "
+            3 -> res = "Доброго утречка, "
         }
         val value = (System.currentTimeMillis() % nameOfApelsinka.size).toInt()
-        if(value == nameOfApelsinka.size - 1)
+        if(value == nameOfApelsinka.size)
             return res.subSequence(0, res.length - 2).toString() + "!"
         return res + nameOfApelsinka[value] + "!"
     }

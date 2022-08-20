@@ -15,9 +15,12 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class GoodMorningService : Service() {
+    private lateinit var timer : Timer
+    private lateinit var timerTask: TimerTask
 
     private val KEY_HOUR = "GoodMorningRandomHour"
     private val KEY_MINUTE = "GoodMorningRandomMinute"
@@ -34,16 +37,17 @@ class GoodMorningService : Service() {
                 if(nowHour == randomHour && randomMinute <= nowMinute) {
                     goodMorningNotification()
                     randomHour = (8..12).random()
-                    randomMinute = (0..59).random()
+                    randomMinute = (System.currentTimeMillis() % 59).toInt()
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(120_000)
+                Thread.sleep(5_000)
             }
         }.start()
-        return START_STICKY
+        super.onStartCommand(intent, flags, startId)
+        return START_REDELIVER_INTENT
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -54,7 +58,7 @@ class GoodMorningService : Service() {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
             val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, applicationContext)
-            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_ID")
+            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_GOOD_MORNING")
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setLargeIcon(circleImageApelsinka)
@@ -65,7 +69,7 @@ class GoodMorningService : Service() {
                 .build()
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notifChannel = NotificationChannel("CHANNEL_ID", "CHANNEL_ID", NotificationManager.IMPORTANCE_DEFAULT)
+                val notifChannel = NotificationChannel("CHANNEL_GOOD_MORNING", "CHANNEL_GOOD_MORNING", NotificationManager.IMPORTANCE_DEFAULT)
                 notificationManager.createNotificationChannel(notifChannel)
             }
             notificationManager.notify(1, notificationGoodMorning)

@@ -28,7 +28,7 @@
                     <LinearLayout
                         android:id="@+id/layout_greetings_for_apelsinka"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:weightSum="1"
                         android:animateLayoutChanges="true"
@@ -44,9 +44,9 @@
                         <TextView
                             android:id="@+id/greetings_for_apelsinka"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_weight="0.6"
-                            android:text="Добрый вечер, Ксения Александровна!"
+                            android:text="Добрый вечер,\nКсения\nАлександровна!"
                             android:textSize="21sp"
                             android:gravity="center"
                             android:layout_gravity="center"

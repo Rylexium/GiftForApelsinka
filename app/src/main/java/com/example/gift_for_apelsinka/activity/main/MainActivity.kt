@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
-import com.bumptech.glide.Glide
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
@@ -24,9 +24,11 @@ import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
@@ -86,24 +88,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun setGreeting() {
         val image = viewModel.getImageOfTime()
-        setImageOfTime(image, R.id.image_of_time1)
-        setImageOfTime(image, R.id.image_of_time2)
+        setImage(image, findViewById(R.id.image_of_time1), this)
+        setImage(image, findViewById(R.id.image_of_time2), this)
 
         val greetingValue = viewModel.getGreetingsForApelsinka(false)
         if(greetingValue == null) layoutGreeting.visibility = View.GONE
         else {
             greetingTextView.text = greetingValue
+            if(greetingValue.length <= 24)
+                greetingTextView.height = dpToPx(65)
+            Log.e("greetingValue", greetingValue)
+            Log.e("greetingValueSize", greetingValue.length.toString())
+            //greetingTextView.height = 60
             Handler(Looper.getMainLooper()).postDelayed({
                 AnimView.animTransitionUp(layoutGreeting)
             }, 3_000)
         }
     }
-    private fun setImageOfTime(image : Int, id : Int) {
-        Glide.with(this)
-            .load(image)
-            .into(findViewById(id))
+    fun dpToPx(dp: Int): Int {
+        val density: Float = resources.displayMetrics.density
+        return (dp.toFloat() * density).roundToInt()
     }
-
     private fun applyEvents() {
         viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
@@ -146,13 +151,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.address_developer).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%95%D0%BD%D0%B8%D1%81%D0%B5%D0%B9%D1%81%D0%BA%D0%B0%D1%8F,+41,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BE%D0%B1%D0%BB.,+443034/@53.2330359,50.2687255,18.24z/data=!4m5!3m4!1s0x41661bd65a8f0227:0x11132f830c4e06a1!8m2!3d53.2326652!4d50.2699214?hl=ru")))
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%95%D0%BD%D0%B8%D1%81%D0%B5%D0%B9%D1%81%D0%BA%D0%B0%D1%8F,+41,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BE%D0%B1%D0%BB.,+443034/@53.2330359,50.2687255,18.24z/data=!4m5!3m4!1s0x41661bd65a8f0227:0x11132f830c4e06a1!8m2!3d53.2326652!4d50.2699214?hl=ru")))
         }
 
         findViewById<TextView>(R.id.international_agreement).setOnClickListener {
             Snackbar.make(it, "ВНИМАНИЕ! Данная программа не защищена законами об" +
                     " авторских правах и международными соглашениями. Копирование не запрещено", Snackbar.LENGTH_LONG)
-                .setTextMaxLines(3)
+                .setTextMaxLines(6)
                 .setAction("Похуй + Похуй") {
                     Toast.makeText(this, "Теперь Вам похуй", Toast.LENGTH_SHORT).show()
                 }

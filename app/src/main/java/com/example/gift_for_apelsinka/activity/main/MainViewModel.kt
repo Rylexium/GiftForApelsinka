@@ -77,9 +77,10 @@ class MainViewModel : ViewModel() {
         }
 
         val value = (System.currentTimeMillis() % Notifaction.nameOfApelsinka.size).toInt()
-        if(value == Notifaction.nameOfApelsinka.size - 1)
-            greetingText.value = result.subSequence(0, result.length - 2).toString() + "!"
-        greetingText.value =  result + Notifaction.nameOfApelsinka[value] + "!"
+        if(value == Notifaction.nameOfApelsinka.size)
+            greetingText.value = "${result.subSequence(0, result.length - 2)}!"
+        else
+            greetingText.value =  result + Notifaction.nameOfApelsinka[value] + "!"
 
         return greetingText.value!!
     }
