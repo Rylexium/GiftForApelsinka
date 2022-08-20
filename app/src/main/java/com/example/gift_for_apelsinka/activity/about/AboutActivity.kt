@@ -72,9 +72,7 @@ class AboutActivity : AppCompatActivity() {
         textViewAboutApelsinka.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(textViewAboutApelsinka, this@AboutActivity) {
-                    viewModel.setTextAboutApelsinka(
-                        textViewAboutApelsinka.text.toString(),
-                        applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE))
+                    viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString())
                 }
             }
         })

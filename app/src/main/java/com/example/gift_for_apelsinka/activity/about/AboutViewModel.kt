@@ -70,7 +70,7 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
                 "но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у меня есть собственный логотип.")
     }
 
-    fun setTextAboutApelsinka(text : String, sharedPreferences : SharedPreferences) {
+    fun setTextAboutApelsinka(text : String) {
         setWrapper(textAboutApelsinka, text, KEY_INFO)
     }
 
