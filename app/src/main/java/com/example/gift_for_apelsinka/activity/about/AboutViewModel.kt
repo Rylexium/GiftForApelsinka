@@ -29,7 +29,7 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
     fun getImagesOfLogo() : List<Int> {
         if(imageOfLogo.value != null) return imagesOfOscar.value!!
 
-        imageOfLogo.value = listOf(R.drawable.logo, R.drawable.logo2, R.drawable.logo3).shuffled()
+        imageOfLogo.value = listOf(R.drawable.logo, R.drawable.logo2).shuffled()
 
         return imageOfLogo.value!!
     }
@@ -37,9 +37,9 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
     fun getImageOfOscar(): List<Int> {
         if(imagesOfOscar.value != null) return imagesOfOscar.value!!
 
-        imagesOfOscar.value = listOf( R.drawable.oscar, R.drawable.oscar1, R.drawable.oscar2,
-            R.drawable.oscar3, R.drawable.oscar4, R.drawable.oscar5,
-            R.drawable.oscar6, R.drawable.oscar7, R.drawable.oscar8, R.drawable.oscar9).shuffled()
+        imagesOfOscar.value = listOf(
+            R.drawable.oscar, R.drawable.oscar1, R.drawable.oscar2,
+            R.drawable.oscar3, R.drawable.oscar4, R.drawable.oscar5).shuffled()
 
         return imagesOfOscar.value!!
     }
@@ -47,10 +47,7 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
     fun getImageOfLera(): List<Int> {
         if(imagesOfLera.value != null) return imagesOfLera.value!!
 
-        imagesOfLera.value = listOf(
-            R.drawable.lera_ksixa, R.drawable.lera_ksixa2, R.drawable.lera_ksixa3,
-            R.drawable.lera1, R.drawable.lera2)
-            .shuffled()
+        imagesOfLera.value = listOf(R.drawable.lera_ksixa1, R.drawable.lera1, R.drawable.lera2).shuffled()
 
         return imagesOfLera.value!!
     }
@@ -58,8 +55,8 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
     fun getImageOfLexa(): List<Int> {
         if(imagesOfLexa.value != null) return imagesOfLexa.value!!
 
-        imagesOfLexa.value = listOf(R.drawable.lexa1, R.drawable.lexa2, R.drawable.lexa3, R.drawable.lexa4,
-            R.drawable.lexa_ksixa, R.drawable.lexa_ksixa2, R.drawable.lexa_ksixa3, R.drawable.lexa_ksixa4).shuffled()
+        imagesOfLexa.value = listOf(R.drawable.lexa1, R.drawable.lexa2,
+            R.drawable.lexa_ksixa, R.drawable.lexa_ksixa2).shuffled()
 
         return imagesOfLexa.value!!
     }

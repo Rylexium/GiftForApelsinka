@@ -35,8 +35,6 @@ class MainViewModel : ViewModel() {
     fun getPictures(): List<Int> {
         if(listOfPictures.value != null) return listOfPictures.value!!
         val list = mutableListOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
-        list.addAll(mutableListOf(R.drawable.mem1, R.drawable.mem2, R.drawable.mem3, R.drawable.mem4, R.drawable.mem5)
-            .shuffled())
         listOfPictures.value = list
         return listOfPictures.value!!
     }
