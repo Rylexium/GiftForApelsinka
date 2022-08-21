@@ -14,9 +14,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.PhotosViewModel
-import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
-import com.example.gift_for_apelsinka.util.DialogEditText
 import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import kotlinx.coroutines.CoroutineScope

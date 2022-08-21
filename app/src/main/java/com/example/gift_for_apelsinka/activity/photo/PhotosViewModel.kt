@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 
 class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var liveDataPhotosList: MutableLiveData<List<FieldPhoto>> = MutableLiveData()
@@ -48,7 +48,8 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
             FieldPhoto(13, sharedPreferences.all["13"].toString(), R.drawable.main_ksixa13),
             FieldPhoto(14, sharedPreferences.all["14"].toString(), R.drawable.main_ksixa14),
             FieldPhoto(15, sharedPreferences.all["15"].toString(), R.drawable.main_ksixa15),
-            FieldPhoto(16, sharedPreferences.all["16"].toString(), R.drawable.main_ksixa16))
+            FieldPhoto(16, sharedPreferences.all["16"].toString(), R.drawable.main_ksixa16)
+        )
             .shuffled()
         liveDataPhotosList.value = list
         return liveDataPhotosList

@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -14,7 +13,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.main.model.Statement
+import com.example.gift_for_apelsinka.db.model.Statement
 
 
 class StatementViewPageAdapter(context: Context, list : List<Statement>) : PagerAdapter() {
@@ -34,12 +33,12 @@ class StatementViewPageAdapter(context: Context, list : List<Statement>) : Pager
         layoutInflater = LayoutInflater.from(ctx)
         val view = layoutInflater.inflate(R.layout.field_of_statement, container, false)
 
-        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].body
+        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].text
         view.findViewById<TextView>(R.id.author_statement).text = statementList[position].author
 
         view.findViewById<CardView>(R.id.field_of_statement).setOnLongClickListener {
             val clipboard: ClipboardManager? = getSystemService(ctx, ClipboardManager::class.java)
-            val clip = ClipData.newPlainText("bodyStatement", statementList[position].body)
+            val clip = ClipData.newPlainText("bodyStatement", statementList[position].text)
             clipboard?.setPrimaryClip(clip)
             Toast.makeText(ctx, "Цитата скопирована", Toast.LENGTH_SHORT).show()
             true

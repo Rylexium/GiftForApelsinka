@@ -1,7 +1,7 @@
 package com.example.gift_for_apelsinka.cache
 
-import com.example.gift_for_apelsinka.activity.main.model.Statement
-import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.model.Statement
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.cache.model.Picture
 
 val statementList : List<Statement>

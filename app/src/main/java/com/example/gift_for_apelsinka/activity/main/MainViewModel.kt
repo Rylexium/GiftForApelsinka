@@ -3,7 +3,7 @@ package com.example.gift_for_apelsinka.activity.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.main.model.Statement
+import com.example.gift_for_apelsinka.db.model.Statement
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 
@@ -26,7 +26,8 @@ class MainViewModel : ViewModel() {
             Statement(9, "Раньше было раньше", "Автор : Rylexium"),
             Statement(10, "Силы тратятся во время тренировки. Ману тратить не хочется", "Автор : Илья Каргин"),
             Statement(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"),
-            Statement(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК"))
+            Statement(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК")
+        )
             .shuffled()
         listOfStatements.value = list
         return listOfStatements.value!!
