@@ -8,9 +8,10 @@ import com.example.gift_for_apelsinka.db.dao.FieldPhotoDao
 import com.example.gift_for_apelsinka.db.dao.HandbookDao
 import com.example.gift_for_apelsinka.db.dao.StatementDao
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
-import com.example.gift_for_apelsinka.db.model.Statement
+import com.example.gift_for_apelsinka.db.model.Handbook
+import com.example.gift_for_apelsinka.db.model.Statements
 
-@Database(entities = [FieldPhoto::class, Statement::class, Statement::class], version = 1, exportSchema = false)
+@Database(entities = [FieldPhoto::class, Statements::class, Handbook::class], version = 1, exportSchema = false)
 abstract class MyDatabase : RoomDatabase() {
     abstract fun fieldPhotoDao() : FieldPhotoDao
     abstract fun handbookDao() : HandbookDao

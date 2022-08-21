@@ -3,30 +3,30 @@ package com.example.gift_for_apelsinka.activity.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.db.model.Statement
+import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 
 class MainViewModel : ViewModel() {
-    private var listOfStatements : MutableLiveData<List<Statement>> = MutableLiveData()
+    private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Int>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
 
-    fun getStatements(): List<Statement> {
+    fun getStatements(): List<Statements> {
         if(listOfStatements.value != null) return listOfStatements.value!!
         val list = listOf(
-            Statement(1, "Не вздумай думать", "Автор : Rylexium"),
-            Statement(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
-            Statement(3, "Не каждому дано понять, как думать...", "Автор : Apelsinka"),
-            Statement(4, "Пердечный сриступ", "Автор : Apelsinka"),
-            Statement(5, "Мы не выбираем, в каком измерении родиться", "Автор : MrSiAWTF"),
-            Statement(6, "Все русские, все жёсткие", "Автор : Какой-то чел с ММ"),
-            Statement(7, "Лучше быть живой знакомой, чем мёртвой подругой", "Автор : Rylexium"),
-            Statement(8, "Ты прикалываешься или рофлишь?", "Автор : Rylexium"),
-            Statement(9, "Раньше было раньше", "Автор : Rylexium"),
-            Statement(10, "Силы тратятся во время тренировки. Ману тратить не хочется", "Автор : Илья Каргин"),
-            Statement(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"),
-            Statement(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК")
+            Statements(1, "Не вздумай думать", "Автор : Rylexium"),
+            Statements(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
+            Statements(3, "Не каждому дано понять, как думать...", "Автор : Apelsinka"),
+            Statements(4, "Пердечный сриступ", "Автор : Apelsinka"),
+            Statements(5, "Мы не выбираем, в каком измерении родиться", "Автор : MrSiAWTF"),
+            Statements(6, "Все русские, все жёсткие", "Автор : Какой-то чел с ММ"),
+            Statements(7, "Лучше быть живой знакомой, чем мёртвой подругой", "Автор : Rylexium"),
+            Statements(8, "Ты прикалываешься или рофлишь?", "Автор : Rylexium"),
+            Statements(9, "Раньше было раньше", "Автор : Rylexium"),
+            Statements(10, "Силы тратятся во время тренировки. Ману тратить не хочется", "Автор : Илья Каргин"),
+            Statements(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"),
+            Statements(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК")
         )
             .shuffled()
         listOfStatements.value = list

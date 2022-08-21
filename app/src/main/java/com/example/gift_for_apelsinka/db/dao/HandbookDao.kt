@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.gift_for_apelsinka.db.model.Handbook
-import com.example.gift_for_apelsinka.db.model.Statement
 
 @Dao
 interface HandbookDao {
@@ -15,4 +14,7 @@ interface HandbookDao {
 
     @Query("SELECT * FROM handbook")
     fun readAllHandbook() : LiveData<List<Handbook>>
+
+    @Query("Delete from handbook")
+    suspend fun clearAllHandbook()
 }

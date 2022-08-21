@@ -1,10 +1,10 @@
 package com.example.gift_for_apelsinka.cache
 
-import com.example.gift_for_apelsinka.db.model.Statement
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.cache.model.Picture
+import com.example.gift_for_apelsinka.db.model.Statements
 
-val statementList : List<Statement>
+val statementList : List<Statements>
     get() {
         TODO()
     }

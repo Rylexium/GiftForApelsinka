@@ -13,10 +13,10 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.db.model.Statement
+import com.example.gift_for_apelsinka.db.model.Statements
 
 
-class StatementViewPageAdapter(context: Context, list : List<Statement>) : PagerAdapter() {
+class StatementViewPageAdapter(context: Context, list : List<Statements>) : PagerAdapter() {
     private var ctx : Context = context
     private var statementList = list
     private lateinit var layoutInflater : LayoutInflater

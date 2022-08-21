@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
 
 class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var liveDataPhotosList: MutableLiveData<List<FieldPhoto>> = MutableLiveData()
@@ -33,22 +33,22 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     fun getPhotosList(): LiveData<List<FieldPhoto>> {
         if(liveDataPhotosList.value != null) return liveDataPhotosList
         val list = listOf(
-            FieldPhoto(1, sharedPreferences.all["1"].toString(), R.drawable.main_ksixa1),
-            FieldPhoto(2, sharedPreferences.all["2"].toString(), R.drawable.main_ksixa2),
-            FieldPhoto(3, sharedPreferences.all["3"].toString(), R.drawable.main_ksixa3),
-            FieldPhoto(4, sharedPreferences.all["4"].toString(), R.drawable.main_ksixa4),
-            FieldPhoto(5, sharedPreferences.all["5"].toString(), R.drawable.main_ksixa5),
-            FieldPhoto(6, sharedPreferences.all["6"].toString(), R.drawable.main_ksixa6),
-            FieldPhoto(7, sharedPreferences.all["7"].toString(), R.drawable.main_ksixa7),
-            FieldPhoto(8, sharedPreferences.all["8"].toString(), R.drawable.main_ksixa8),
-            FieldPhoto(9, sharedPreferences.all["9"].toString(), R.drawable.main_ksixa9),
-            FieldPhoto(10, sharedPreferences.all["10"].toString(), R.drawable.main_ksixa10),
-            FieldPhoto(11, sharedPreferences.all["11"].toString(), R.drawable.main_ksixa11),
-            FieldPhoto(12, sharedPreferences.all["12"].toString(), R.drawable.main_ksixa12),
-            FieldPhoto(13, sharedPreferences.all["13"].toString(), R.drawable.main_ksixa13),
-            FieldPhoto(14, sharedPreferences.all["14"].toString(), R.drawable.main_ksixa14),
-            FieldPhoto(15, sharedPreferences.all["15"].toString(), R.drawable.main_ksixa15),
-            FieldPhoto(16, sharedPreferences.all["16"].toString(), R.drawable.main_ksixa16)
+            FieldPhoto(1,  R.drawable.main_ksixa1,  sharedPreferences.all["1"].toString(), 0),
+            FieldPhoto(2,  R.drawable.main_ksixa2,  sharedPreferences.all["2"].toString(), 0),
+            FieldPhoto(3,  R.drawable.main_ksixa3,  sharedPreferences.all["3"].toString(), 0),
+            FieldPhoto(4,  R.drawable.main_ksixa4,  sharedPreferences.all["4"].toString(), 0),
+            FieldPhoto(5,  R.drawable.main_ksixa5,  sharedPreferences.all["5"].toString(), 0),
+            FieldPhoto(6,  R.drawable.main_ksixa6,  sharedPreferences.all["6"].toString(), 0),
+            FieldPhoto(7,  R.drawable.main_ksixa7,  sharedPreferences.all["7"].toString(), 0),
+            FieldPhoto(8,  R.drawable.main_ksixa8,  sharedPreferences.all["8"].toString(), 0),
+            FieldPhoto(9,  R.drawable.main_ksixa9,  sharedPreferences.all["9"].toString(), 0),
+            FieldPhoto(10, R.drawable.main_ksixa10, sharedPreferences.all["10"].toString(), 0),
+            FieldPhoto(11, R.drawable.main_ksixa11, sharedPreferences.all["11"].toString(), 0),
+            FieldPhoto(12, R.drawable.main_ksixa12, sharedPreferences.all["12"].toString(), 0),
+            FieldPhoto(13, R.drawable.main_ksixa13, sharedPreferences.all["13"].toString(), 0),
+            FieldPhoto(14, R.drawable.main_ksixa14, sharedPreferences.all["14"].toString(), 0),
+            FieldPhoto(15, R.drawable.main_ksixa15, sharedPreferences.all["15"].toString(), 0),
+            FieldPhoto(16, R.drawable.main_ksixa16, sharedPreferences.all["16"].toString(), 0)
         )
             .shuffled()
         liveDataPhotosList.value = list

@@ -14,8 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.PhotosViewModel
-import com.example.gift_for_apelsinka.db.model.FieldPhoto
-import com.example.gift_for_apelsinka.util.ConvertClass
+import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import kotlinx.coroutines.CoroutineScope
@@ -25,8 +24,8 @@ import kotlinx.coroutines.launch
 class PhotosAdapter(
     private val context: Context,
     private val photos: List<FieldPhoto>,
-    private val viewModel : PhotosViewModel,
-    private val recv : RecyclerView)
+    private val viewModel: PhotosViewModel,
+    private val recv: RecyclerView)
     : RecyclerView.Adapter<PhotosAdapter.PhotosViewHolder>() {
 
     inner class PhotosViewHolder(v : View) : RecyclerView.ViewHolder(v) {
@@ -47,11 +46,12 @@ class PhotosAdapter(
         holder.title.text = if(newList.title == "null") "" else newList.title
         holder.title.visibility = if(newList.title == "null" || newList.title == "") View.GONE else View.VISIBLE
 
-        setImage(newList.drawable as Int, holder.photo, context)
+        setImage(newList.picture as Int, holder.photo, context)
         var image: Any?
         CoroutineScope(Dispatchers.IO).launch {
-            image = if (newList.drawable is Int) newList.drawable
-                    else ConvertClass.convertStringToBitmap(newList.drawable as String)
+            image = newList.picture
+//            image = if (newList.picture is Int) newList.picture
+//                    else ConvertClass.convertStringToBitmap(newList.picture as String)
             Handler(Looper.getMainLooper()).post {
                 Glide.with(context)
                     .load(image)

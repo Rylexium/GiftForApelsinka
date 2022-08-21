@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "statements")
-data class Statement(
+data class Statements(
     @PrimaryKey(autoGenerate = false)
     val id : Int,
     val text : String,
