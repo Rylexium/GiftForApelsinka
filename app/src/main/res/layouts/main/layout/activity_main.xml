@@ -65,10 +65,10 @@
                         android:layout_marginTop="10dp"
                         />
 
-                    <androidx.viewpager.widget.ViewPager
+                    <com.example.gift_for_apelsinka.util.views.DynamicViewPager
                         android:id="@+id/view_pager_of_statement"
                         android:layout_width="match_parent"
-                        android:layout_height="170dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         />
                 </LinearLayout>
