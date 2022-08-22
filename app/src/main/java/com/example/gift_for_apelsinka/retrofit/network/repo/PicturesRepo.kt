@@ -5,7 +5,7 @@ import com.google.gson.internal.LinkedTreeMap
 
 interface PicturesRepo {
     suspend fun getAllPictures() : List<FieldPhoto>
-    suspend fun setTitlePicture() : LinkedTreeMap<*, *>
+    suspend fun setTitlePicture(id : Int, title : String) : LinkedTreeMap<*, *>
     suspend fun getAllApelsinkaPicture() : List<FieldPhoto>
     suspend fun getAllOscarPicture() : List<FieldPhoto>
     suspend fun getAllLeraPicture() : List<FieldPhoto>
