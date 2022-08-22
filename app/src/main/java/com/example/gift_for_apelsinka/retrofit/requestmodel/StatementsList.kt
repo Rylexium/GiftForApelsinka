@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.retrofit.model
+package com.example.gift_for_apelsinka.retrofit.requestmodel
 
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.google.gson.annotations.Expose

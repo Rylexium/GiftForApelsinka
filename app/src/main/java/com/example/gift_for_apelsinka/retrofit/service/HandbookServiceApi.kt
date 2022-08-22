@@ -1,17 +1,17 @@
 package com.example.gift_for_apelsinka.retrofit.service
 
 import com.example.gift_for_apelsinka.db.model.Handbook
+import com.example.gift_for_apelsinka.retrofit.requestmodel.HandbookList
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface HandbookServiceApi {
     @GET("handbook")
-    fun getAllHandbook() : Call<List<Handbook>>
+    fun getAllHandbook() : Call<HandbookList>
 
     @GET("handbook/{key}")
-    fun getValueByKey(key : String)
+    fun getValueByKey(@Path("key") key : String) : Call<Handbook>
 
     @POST("handbook")
-    fun setValueByKey(key : String, value : String)
+    fun postHandbook(@Body handbook: Handbook) : Call<Any>
 }

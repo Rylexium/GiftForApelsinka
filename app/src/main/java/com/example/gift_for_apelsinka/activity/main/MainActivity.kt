@@ -4,8 +4,6 @@ import android.Manifest
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Network
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.example.gift_for_apelsinka.R
@@ -25,11 +22,8 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
-import com.example.gift_for_apelsinka.db.model.Statements
-import com.example.gift_for_apelsinka.retrofit.RetrofitInstance
-import com.example.gift_for_apelsinka.retrofit.model.StatementsList
+import com.example.gift_for_apelsinka.retrofit.network.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.NetworkStatements
-import com.example.gift_for_apelsinka.retrofit.service.StatementsServiceApi
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
@@ -42,9 +36,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import kotlin.math.roundToInt
 
 
