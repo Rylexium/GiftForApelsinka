@@ -1,11 +1,10 @@
 package com.example.gift_for_apelsinka.retrofit.service
 
-import com.example.gift_for_apelsinka.db.model.Handbook
-import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.retrofit.model.StatementsList
 import retrofit2.Call
 import retrofit2.http.GET
 
 interface StatementsServiceApi {
     @GET("statements")
-    fun getStatements(): Call<List<Statements>>
+    fun getStatements(): Call<StatementsList>
 }
