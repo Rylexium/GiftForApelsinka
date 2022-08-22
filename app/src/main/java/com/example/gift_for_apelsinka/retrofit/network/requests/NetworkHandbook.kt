@@ -57,6 +57,7 @@ object NetworkHandbook : HandbookRepo {
                 }
 
                 override fun onFailure(call: Call<Any>, t: Throwable) {
+                    it.resumeWithException(t)
                 }
             })
         }
