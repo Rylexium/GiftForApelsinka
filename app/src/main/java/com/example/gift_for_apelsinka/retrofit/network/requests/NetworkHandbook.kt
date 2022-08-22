@@ -1,7 +1,8 @@
-package com.example.gift_for_apelsinka.retrofit.network
+package com.example.gift_for_apelsinka.retrofit.network.requests
 
 import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.retrofit.Services.handbookServiceApi
+import com.example.gift_for_apelsinka.retrofit.network.repo.HandbookRepo
 import com.example.gift_for_apelsinka.retrofit.requestmodel.HandbookList
 import com.google.gson.internal.LinkedTreeMap
 import retrofit2.Call
@@ -11,9 +12,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-object NetworkHandbook  {
+object NetworkHandbook : HandbookRepo {
 
-    suspend fun getHandbook() : List<Handbook> {
+    override suspend fun getHandbook() : List<Handbook> {
         return suspendCoroutine {
             val call = handbookServiceApi!!.getAllHandbook()
             call.enqueue(object : Callback<HandbookList> {
@@ -31,7 +32,7 @@ object NetworkHandbook  {
         }
     }
 
-    suspend fun getValueByKey(key : String) : Handbook? {
+    override suspend fun getValueByKey(key : String) : Handbook? {
         return suspendCoroutine {
             val call = handbookServiceApi!!.getValueByKey(key)
             call.enqueue(object : Callback<Handbook> {
@@ -47,7 +48,7 @@ object NetworkHandbook  {
         }
     }
 
-    suspend fun postHandbook(key: String, value : String) : LinkedTreeMap<*, *> {
+    override suspend fun postHandbook(key: String, value : String) : LinkedTreeMap<*, *> {
         return suspendCoroutine {
             val call = handbookServiceApi?.postHandbook(Handbook(key, value))
             call?.enqueue(object : Callback<Any> {

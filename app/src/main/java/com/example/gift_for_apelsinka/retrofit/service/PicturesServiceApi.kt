@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.retrofit.service
 
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.retrofit.requestmodel.NewTitleById
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -10,7 +11,7 @@ interface PicturesServiceApi {
     fun getAllPictures(): Call<List<FieldPhoto>>
 
     @POST("pictures")
-    fun setTitlePicture(id : Int, newTitle : String)
+    fun setTitlePicture(newTitleById: NewTitleById) : Call<Any>
 
     @GET("pictures/apelsinka")
     fun getAllApelsinkaPicture() : Call<List<FieldPhoto>>
