@@ -1,10 +1,29 @@
 package com.example.gift_for_apelsinka.retrofit.network.requests
 
+import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.repo.MessageRepo
 import com.google.gson.internal.LinkedTreeMap
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
 
 object NetworkMessage : MessageRepo {
     override suspend fun sendMessage(text: String): LinkedTreeMap<*, *> {
-        TODO("Not yet implemented")
+        return suspendCoroutine {
+            val call = Services.messageServiceApi?.sendMessage(text)
+            call?.enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    it.resume(response.body() as LinkedTreeMap<*, *>)
+                }
+
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    it.resumeWithException(t)
+                }
+            })
+        }
     }
 }
