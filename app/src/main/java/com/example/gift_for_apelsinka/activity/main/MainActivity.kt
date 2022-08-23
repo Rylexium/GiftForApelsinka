@@ -4,10 +4,12 @@ import android.Manifest
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +23,8 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
@@ -30,6 +34,9 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 

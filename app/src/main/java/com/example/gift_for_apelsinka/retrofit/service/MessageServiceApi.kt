@@ -1,9 +1,11 @@
 package com.example.gift_for_apelsinka.retrofit.service
 
+import com.example.gift_for_apelsinka.retrofit.requestmodel.MessageText
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface MessageServiceApi {
     @POST("message")
-    fun sendMessage(text : String) : Call<Any>
+    fun sendMessage(@Body messageText: MessageText) : Call<Any>
 }
