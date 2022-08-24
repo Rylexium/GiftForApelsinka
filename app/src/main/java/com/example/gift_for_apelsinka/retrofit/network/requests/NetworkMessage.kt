@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.retrofit.network.requests
 
+import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.repo.MessageRepo
 import com.example.gift_for_apelsinka.retrofit.requestmodel.MessageText
@@ -16,14 +17,13 @@ object NetworkMessage : MessageRepo {
     override suspend fun sendMessage(text: String): LinkedTreeMap<*, *> {
         return suspendCoroutine {
             val call = Services.messageServiceApi?.sendMessage(MessageText(text))
-            call?.enqueue(object : Callback<Any> {
+            call?.enqueue(object : CallbackWithRetry<Any>(call) {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     println(response.body())
                     it.resume(response.body() as LinkedTreeMap<*, *>)
                 }
 
                 override fun onFailure(call: Call<Any>, t: Throwable) {
-                    it.resumeWithException(t)
                 }
             })
         }

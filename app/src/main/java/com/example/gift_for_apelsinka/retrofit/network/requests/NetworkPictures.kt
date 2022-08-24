@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.retrofit.network.requests
 
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.repo.PicturesRepo
 import com.example.gift_for_apelsinka.retrofit.requestmodel.FieldPhotoList
@@ -21,7 +22,7 @@ object NetworkPictures : PicturesRepo {
     override suspend fun setTitlePicture(id : Int, title : String): LinkedTreeMap<*, *> {
         return suspendCoroutine {
             val call = Services.picturesServiceApi?.setTitlePicture(NewTitleById(id, title))
-            call?.enqueue(object : Callback<Any> {
+            call?.enqueue(object : CallbackWithRetry<Any>(call) {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     it.resume(response.body() as LinkedTreeMap<*, *>)
                 }
@@ -60,13 +61,12 @@ object NetworkPictures : PicturesRepo {
     private suspend fun wrapper(callToNetwork : Call<FieldPhotoList>?) : List<FieldPhoto> {
         if(callToNetwork == null) return emptyList()
         return suspendCoroutine {
-            callToNetwork.enqueue(object : Callback<FieldPhotoList>{
+            callToNetwork.enqueue(object : CallbackWithRetry<FieldPhotoList>(callToNetwork){
                 override fun onResponse(call: Call<FieldPhotoList>, response: Response<FieldPhotoList>) {
                     it.resume(response.body()!!.getFieldPhotos())
                 }
 
                 override fun onFailure(call: Call<FieldPhotoList>, t: Throwable) {
-                    it.resumeWithException(t)
                 }
             })
         }

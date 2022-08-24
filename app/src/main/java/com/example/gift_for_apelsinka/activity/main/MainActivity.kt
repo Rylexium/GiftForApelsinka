@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +43,7 @@ import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 import kotlin.math.roundToInt
 
 
@@ -172,10 +174,19 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
             val context = this
             viewModel.viewModelScope.launch {
-                updateDeveloper(viewModel.updateDataOfDeveloper())
-                initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(context, viewModel.updateStatements()))
-                initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
-                Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
+                // SocketTimeoutException
+                try {
+                    updateDeveloper(viewModel.updateDataOfDeveloper())
+                    initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(context, viewModel.updateStatements()))
+                    initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
+                }
+                catch (e : SocketTimeoutException) {
+                    Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Not Refresh", Toast.LENGTH_SHORT).show() }
+                    Log.e("timeout", e.message.toString())
+                }
+                finally {
+                    Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
+                }
             }
         }
 

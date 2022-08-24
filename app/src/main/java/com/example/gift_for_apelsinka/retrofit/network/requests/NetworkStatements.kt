@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.retrofit.network.requests
 
 import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services.statementsServiceApi
 import com.example.gift_for_apelsinka.retrofit.network.repo.StatementsRepo
 import com.example.gift_for_apelsinka.retrofit.requestmodel.StatementsList
@@ -16,15 +17,12 @@ object NetworkStatements : StatementsRepo {
         return suspendCoroutine {
             val call: Call<StatementsList> = statementsServiceApi!!.getStatements()
 
-            call.enqueue(object : Callback<StatementsList> {
-                override fun onResponse(
-                    call: Call<StatementsList>,
-                    response: Response<StatementsList>) {
+            call.enqueue(object : CallbackWithRetry<StatementsList>(call) {
+                override fun onResponse(call: Call<StatementsList>, response: Response<StatementsList>) {
                     it.resume(response.body()!!.getStatements())
                 }
 
                 override fun onFailure(call: Call<StatementsList>, t: Throwable) {
-                    it.resumeWithException(t)
                 }
             })
         }
