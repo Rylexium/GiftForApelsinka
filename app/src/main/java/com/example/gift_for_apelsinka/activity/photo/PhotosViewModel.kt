@@ -27,7 +27,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
         list?.get(index)?.title = title
         sharedPreferences.edit()
             .putString(list?.get(index)?.id.toString(), title).apply()
-        liveDataPhotosList.value = list
+        liveDataPhotosList.value = list!!
     }
 
     fun getPhotosList(): LiveData<List<FieldPhoto>> {
