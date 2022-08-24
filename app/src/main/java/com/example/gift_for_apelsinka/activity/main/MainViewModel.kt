@@ -1,50 +1,47 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
+import com.example.gift_for_apelsinka.cache.defaultListOfStatements
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.db.pictureRealization
 import com.example.gift_for_apelsinka.db.statementRealization
-import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
-    private var listOfPictures : MutableLiveData<List<Int>> = MutableLiveData()
+    private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
 
-    fun getStatements(): List<Statements> {
-        if(listOfStatements.value != null) return listOfStatements.value!!
-        val list = listOf(
-            Statements(1, "Не вздумай думать", "Автор : Rylexium"),
-            Statements(2, "Как же хорошо жить, чтобы хорошо есть!", "Автор : Apelsinka"),
-            Statements(3, "Не каждому дано понять, как думать...", "Автор : Apelsinka"),
-            Statements(4, "Пердечный сриступ", "Автор : Apelsinka"),
-            Statements(5, "Мы не выбираем, в каком измерении родиться", "Автор : MrSiAWTF"),
-            Statements(6, "Все русские, все жёсткие", "Автор : Какой-то чел с ММ"),
-            Statements(7, "Лучше быть живой знакомой, чем мёртвой подругой", "Автор : Rylexium"),
-            Statements(8, "Ты прикалываешься или рофлишь?", "Автор : Rylexium"),
-            Statements(9, "Раньше было раньше", "Автор : Rylexium"),
-            Statements(10, "Силы тратятся во время тренировки. Ману тратить не хочется", "Автор : Илья Каргин"),
-            Statements(11, "Я не ленивая. Просто я храню энергию для того момента, когда она мне будет необходима.", "Автор : \"О Лизе\" в Genshin Impact"),
-            Statements(12, "Союз Советских Соединённых Штатов Российской Федериации", "Автор : Какой-то чел из ВК")
-        )
-            .shuffled()
-        listOfStatements.value = list
-        return listOfStatements.value!!
+    fun getStatements(): List<Statements> = runBlocking {
+        if(listOfStatements.value != null) return@runBlocking listOfStatements.value!!
+        val list = async { statementRealization.getAll() }
+        val res = if(list.await().isEmpty())
+            defaultListOfStatements
+        else
+            list.getCompleted()
+        listOfStatements.value = res.shuffled()
+        return@runBlocking listOfStatements.value!!
     }
 
-    fun getPictures(): List<Int> {
-        if(listOfPictures.value != null) return listOfPictures.value!!
-        val list = mutableListOf(R.drawable.apelsinka, R.drawable.cat1, R.drawable.cat3)
+    fun getPictures(): List<Any> = runBlocking {
+        if(listOfPictures.value != null) return@runBlocking listOfPictures.value!!
+        val list = defaultListOfMainPictures()
+        val task = async { pictureRealization.mainPicture() }
+        if(task.await().isNotEmpty()) {
+            val picturesFromDB = task.getCompleted().shuffled()
+            for (item in picturesFromDB)
+                list.add(item)
+        }
         listOfPictures.value = list
-        return listOfPictures.value!!
+        return@runBlocking listOfPictures.value!!
     }
 
     fun getImageOfTime(): Int {
@@ -91,11 +88,30 @@ class MainViewModel : ViewModel() {
         return greetingText.value!!
     }
 
-    suspend fun updateData() {
+    suspend fun updateStatements(): List<Statements> {
         val statements = NetworkStatements.getStatements()
-        val handbook = NetworkHandbook.getHandbook()
-        Log.e("statements", statements.toString())
-        Log.e("handbook", handbook.toString())
-        Log.e("mail", handbook["mail"].toString())
+        for (statement in statements)
+            statementRealization.insertStatement(Statements(statement.id, statement.text, statement.author))
+        listOfStatements.value = statementRealization.getAll()
+
+        return  if(listOfStatements.value == null) emptyList()
+                else listOfStatements.value!!
+    }
+
+    suspend fun updateMainPictures(): List<Any> {
+        val pictures = NetworkPictures.getAllMainPicture()
+
+        val result = defaultListOfMainPictures()
+        val downloadPictures = mutableListOf<FieldPhoto>()
+        for(picture in pictures) {
+            val fieldPhoto = FieldPhoto(picture.id, picture.picture, if(picture.title == null) "" else picture.title, picture.belongs)
+            downloadPictures.add(fieldPhoto)
+            pictureRealization.insertFieldPhoto(fieldPhoto)
+        }
+        result.addAll(downloadPictures.shuffled())
+        listOfPictures.value = result
+
+        return  if(listOfPictures.value == null) emptyList()
+                else listOfPictures.value!!
     }
 }

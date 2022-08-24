@@ -8,5 +8,5 @@ data class FieldPhoto(
     @PrimaryKey(autoGenerate = false)
     val id : Int,
     val picture : String,
-    var title : String,
+    var title : String?,
     val belongs : Int)

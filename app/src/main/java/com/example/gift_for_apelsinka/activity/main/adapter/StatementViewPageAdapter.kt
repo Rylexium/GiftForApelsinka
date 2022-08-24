@@ -36,7 +36,7 @@ class StatementViewPageAdapter(context: Context, list : List<Statements>) : Page
         layoutInflater = LayoutInflater.from(ctx)
         val view = layoutInflater.inflate(R.layout.field_of_statement, container, false)
 
-        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].text + "\n\n" + statementList[position].author
+        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].text + "\n\nАвтор : " + statementList[position].author
 
         view.findViewById<CardView>(R.id.field_of_statement).setOnLongClickListener {
             val clipboard: ClipboardManager? = getSystemService(ctx, ClipboardManager::class.java)

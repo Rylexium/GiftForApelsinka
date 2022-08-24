@@ -33,6 +33,13 @@ object InitView {
             .apply(RequestOptions().transform(CenterCrop(), RoundedCorners(40)))
             .into(imageView)
     }
+    fun setImageWithCorners(bitmap: Bitmap, imageView : ImageView, context: Context) {
+        Glide.with(context)
+            .load(bitmap)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .apply(RequestOptions().transform(CenterCrop(), RoundedCorners(40)))
+            .into(imageView)
+    }
 
     suspend fun getCircleImage(id : Int, context: Context) : Bitmap {
         return suspendCoroutine {

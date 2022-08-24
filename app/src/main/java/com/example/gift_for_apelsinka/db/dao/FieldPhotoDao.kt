@@ -14,7 +14,7 @@ interface FieldPhotoDao {
     suspend fun updateTitleById(id : Int, title : String)
 
     @Query("SELECT * FROM field_photo where belongs=:belongs")
-    fun readAllFieldPhotoByBelongs(belongs : Int) : LiveData<List<FieldPhoto>>
+    suspend fun readAllFieldPhotoByBelongs(belongs : Int) : List<FieldPhoto>
 
     @Query("Delete FROM field_photo")
     suspend fun deleteAll()

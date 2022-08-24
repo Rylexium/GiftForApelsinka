@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,8 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.db.initDB
+import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.db.statementRealization
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
@@ -32,6 +35,8 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -98,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         factsAboutApelsinka = findViewById(R.id.facts_about_apelsinka)
         changeTheme = findViewById(R.id.change_theme)
 
-        initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, viewModel.getPictures()))
+        initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(applicationContext, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
@@ -148,8 +153,10 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefreshLayout.setOnRefreshListener {
             Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
+            val context = this
             viewModel.viewModelScope.launch {
-                viewModel.updateData()
+                initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(context, viewModel.updateStatements()))
+                initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
                 Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
             }
         }
