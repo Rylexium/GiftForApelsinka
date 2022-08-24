@@ -25,3 +25,22 @@ fun defaultListOfMainPictures(): MutableList<Any> {
         result.add(item)
     return result
 }
+
+val defaultHandbook = mutableMapOf<String, String>().also {
+    it["VK"] = "https://vk.com/rylexium"
+    it["phone"] = "8-937-17-27-345"
+    it["discord"] = "Rylexium#4763"
+    it["address"] = "г.Самара, ул.Енисейская, 41, 8"
+    it["mail"] = "aleksei.azizov@mail.ru"
+    it["url_address_developer"] = "https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%95%D0%BD%D0%B8%D1%81%D0%B5%D0%B9%D1%81%D0%BA%D0%B0%D1%8F,+41,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BE%D0%B1%D0%BB.,+443034/@53.2326306,50.26828,18.25z/data=!4m5!3m4!1s0x41661bd65a8f0227:0x11132f830c4e06a1!8m2!3d53.2326652!4d50.2699214?hl=ru"
+    it["about_apelsinka"] =
+        "Я, Быкова Ксения Александровна, но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у есть собственный логотип."
+    it["about_oscar"] = "Немного меня и Оскара \uD83D\uDC15"
+    it["about_lera"] = "Немного меня и Леры \uD83C\uDF4B"
+    it["about_lexa"] = "Немного меня и Лёши \uD83E\uDD68"
+    it["wish_goodnight"] = "Желаю Вам спокойной ночи, \uD83C\uDF1A\n" +
+            "Чтобы не приснился Игорь в костюме горничной, \uD83D\uDC69\n" +
+            "К которому пристаёт Левон \uD83D\uDD1E\n" +
+            "И Лев не спросил у них отличие между базой и базисом, \uD83C\uDD98\n" +
+            "В то время, когда их чекает Илюха со своей понамеры \uD83D\uDC41️"
+}

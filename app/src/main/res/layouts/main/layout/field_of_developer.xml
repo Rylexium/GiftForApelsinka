@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Создал Rylexium"
+                android:text="Создал Rylexium 🥨"
                 android:elegantTextHeight="true"
                 />
             <View
@@ -44,6 +44,7 @@
                     android:layout_weight="0.8"
                     >
                     <TextView
+                        android:id="@+id/text_mail_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Почта : aleksei.azizov@mail.ru"
@@ -57,19 +58,21 @@
                         android:elegantTextHeight="true"
                         />
                     <TextView
+                        android:id="@+id/text_phone_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Телефон : 8-937-17-27-345"
                         android:elegantTextHeight="true"
                         />
                     <TextView
+                        android:id="@+id/text_discord_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Discord : Rylexium#4763"
                         android:elegantTextHeight="true"
                         />
                     <TextView
-                        android:id="@+id/address_developer"
+                        android:id="@+id/text_address_developer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/address_developer"

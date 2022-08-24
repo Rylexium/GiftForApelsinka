@@ -3,12 +3,16 @@ package com.example.gift_for_apelsinka.activity.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.cache.defaultHandbook
 import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
+import com.example.gift_for_apelsinka.db.handbookRealization
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.db.pictureRealization
 import com.example.gift_for_apelsinka.db.statementRealization
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import com.example.gift_for_apelsinka.util.Notifaction
@@ -16,6 +20,7 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel() {
+    private var mapOfHandbook : MutableLiveData<Map<String, String>> = MutableLiveData()
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
@@ -42,6 +47,16 @@ class MainViewModel : ViewModel() {
         }
         listOfPictures.value = list
         return@runBlocking listOfPictures.value!!
+    }
+
+    fun getHandbook(): Map<String, String> = runBlocking {
+        if(mapOfHandbook.value != null) return@runBlocking mapOfHandbook.value!!
+        val task = async { handbookRealization.allHandbook() }
+        val res =
+            if(task.await().isEmpty()) defaultHandbook
+            else task.getCompleted()
+        mapOfHandbook.value = res
+        return@runBlocking mapOfHandbook.value!!
     }
 
     fun getImageOfTime(): Int {
@@ -114,4 +129,11 @@ class MainViewModel : ViewModel() {
         return  if(listOfPictures.value == null) emptyList()
                 else listOfPictures.value!!
     }
+    suspend fun updateDataOfDeveloper() : Map<String, String> {
+        val dict = NetworkHandbook.getHandbook()
+        for(handbook in dict)
+            handbookRealization.insertHandbook(Handbook(handbook.key, handbook.value))
+        return dict
+    }
+
 }

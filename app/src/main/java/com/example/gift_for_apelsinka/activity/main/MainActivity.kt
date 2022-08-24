@@ -1,18 +1,26 @@
 package com.example.gift_for_apelsinka.activity.main
 
 import android.Manifest
+import android.R.color
+import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.ColorSpace
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import android.text.Html
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -24,8 +32,6 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.db.initDB
-import com.example.gift_for_apelsinka.db.model.Statements
-import com.example.gift_for_apelsinka.db.statementRealization
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
@@ -35,8 +41,6 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -52,6 +56,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var factsAboutApelsinka : Button
     private lateinit var changeTheme : Button
     private lateinit var layoutGreeting : LinearLayout
+
+    private lateinit var textMailDeveloper : TextView
+    private lateinit var textVkDeveloper : TextView
+    private lateinit var textPhoneDeveloper : TextView
+    private lateinit var textDiscordDeveloper : TextView
+    private lateinit var textAddressDeveloper : TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,11 +113,18 @@ class MainActivity : AppCompatActivity() {
         factsAboutApelsinka = findViewById(R.id.facts_about_apelsinka)
         changeTheme = findViewById(R.id.change_theme)
 
+        textMailDeveloper = findViewById(R.id.text_mail_developer)
+        textVkDeveloper = findViewById(R.id.text_vk_developer)
+        textPhoneDeveloper = findViewById(R.id.text_phone_developer)
+        textDiscordDeveloper = findViewById(R.id.text_discord_developer)
+        textAddressDeveloper = findViewById(R.id.text_address_developer)
+
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(applicationContext, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
         setImageWithCircle(R.drawable.icon_of_developer, findViewById(R.id.icon_of_developer),this)
+        updateDeveloper(viewModel.getHandbook())
 
         if(getNowHour() in 0..5) {
             val chance = (0..10).random()
@@ -155,6 +172,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
             val context = this
             viewModel.viewModelScope.launch {
+                updateDeveloper(viewModel.updateDataOfDeveloper())
                 initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(context, viewModel.updateStatements()))
                 initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
                 Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
@@ -177,13 +195,8 @@ class MainActivity : AppCompatActivity() {
             setNightMode(this)
         }
 
-        findViewById<TextView>(R.id.text_vk_developer).setOnClickListener {
+        textVkDeveloper.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/rylexium")))
-        }
-
-        findViewById<TextView>(R.id.address_developer).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%95%D0%BD%D0%B8%D1%81%D0%B5%D0%B9%D1%81%D0%BA%D0%B0%D1%8F,+41,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0,+%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BE%D0%B1%D0%BB.,+443034/@53.2330359,50.2687255,18.24z/data=!4m5!3m4!1s0x41661bd65a8f0227:0x11132f830c4e06a1!8m2!3d53.2326652!4d50.2699214?hl=ru")))
         }
 
         findViewById<TextView>(R.id.international_agreement).setOnClickListener {
@@ -194,6 +207,21 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Теперь Вам похуй", Toast.LENGTH_SHORT).show()
                 }
                 .show()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateDeveloper(map : Map<String, String>) {
+        textMailDeveloper.text = "Почта : ${map["mail"]}"
+
+        textVkDeveloper.text = Html.fromHtml("ВК : <u><font color=\"#328fa8\">${map["VK"]}</font></u>")
+
+        textPhoneDeveloper.text = "Телефон : ${map["phone"]}"
+        textDiscordDeveloper.text = "Discord : ${map["discord"]}"
+
+        textAddressDeveloper.text = Html.fromHtml("Адрес : <u><font color=\"#328fa8\">${map["address"]}</font></u>")
+        textAddressDeveloper.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(map["url_address_developer"])))
         }
     }
 

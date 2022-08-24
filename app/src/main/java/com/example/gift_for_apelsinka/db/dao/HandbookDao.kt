@@ -13,7 +13,7 @@ interface HandbookDao {
     suspend fun insertHandbook(handbook: Handbook)
 
     @Query("SELECT * FROM handbook")
-    fun readAllHandbook() : LiveData<List<Handbook>>
+    suspend fun readAllHandbook() : List<Handbook>
 
     @Query("Delete from handbook")
     suspend fun clearAllHandbook()
