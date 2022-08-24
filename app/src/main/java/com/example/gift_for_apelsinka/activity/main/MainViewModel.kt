@@ -75,30 +75,30 @@ class MainViewModel : ViewModel() {
 
         var result = ""
         when(getNowHour()) {
-            23 -> result = "Доброй ночи, "
-            in 0..4 -> result = "Доброй ночи, "
+            23 -> result = "Доброй ночи"
+            in 0..4 -> result = "Доброй ночи"
             in 5..11 -> {
                 when((1..4).random()) {
-                    1 -> result = "Доброе утро, "
-                    2 -> result = "Доброе утречка, "
-                    3 -> result = "Доброго утра, "
-                    4 -> result = "Доброго утречка, "
+                    1 -> result = "Доброе утро"
+                    2 -> result = "Доброе утречка"
+                    3 -> result = "Доброго утра"
+                    4 -> result = "Доброго утречка"
                 }
             }
             in 12..18 -> {
                 when((1..2).random()) {
-                    1 -> result = "Добрый день, "
-                    2 -> result = "Добрейший денёчек, "
+                    1 -> result = "Добрый день"
+                    2 -> result = "Добрейший денёчек"
                 }
             }
-            in 19..22 -> result = "Добрый вечер, "
+            in 19..22 -> result = "Добрый вечер"
         }
 
         val value = (System.currentTimeMillis() % Notifaction.nameOfApelsinka.size).toInt()
         if(value == Notifaction.nameOfApelsinka.size)
-            greetingText.value = "${result.subSequence(0, result.length - 2)}!"
+            greetingText.value = "$result!"
         else
-            greetingText.value =  result + Notifaction.nameOfApelsinka[value] + "!"
+            greetingText.value =  result + ", " + Notifaction.nameOfApelsinka[value] + "!"
 
         return greetingText.value!!
     }
@@ -107,7 +107,7 @@ class MainViewModel : ViewModel() {
         val statements = NetworkStatements.getStatements()
         for (statement in statements)
             statementRealization.insertStatement(Statements(statement.id, statement.text, statement.author))
-        listOfStatements.value = statementRealization.getAll()
+        listOfStatements.value = statementRealization.getAll().shuffled()
 
         return  if(listOfStatements.value == null) emptyList()
                 else listOfStatements.value!!

@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.about.AboutActivity">
-
-    <LinearLayout
+    android:layout_height="wrap_content"
+    >
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-        <include layout="@layout/field_about_apelsinka" />
+        android:layout_height="match_parent"
+        tools:context=".activity.about.AboutActivity">
 
-        <include layout="@layout/field_about_oscar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <include layout="@layout/field_about_apelsinka" />
 
-        <include layout="@layout/field_about_lera" />
+            <include layout="@layout/field_about_oscar" />
 
-        <include layout="@layout/field_about_lexa" />
+            <include layout="@layout/field_about_lera" />
 
-        <include layout="@layout/field_of_goodnight" />
+            <include layout="@layout/field_about_lexa" />
 
-    </LinearLayout>
+            <include layout="@layout/field_of_goodnight" />
 
-</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
