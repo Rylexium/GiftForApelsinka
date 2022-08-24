@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
@@ -21,6 +22,7 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
@@ -30,6 +32,7 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
@@ -49,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initDB(applicationContext)
 
         initComponents()
         applyEvents()
@@ -143,7 +148,10 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefreshLayout.setOnRefreshListener {
             Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
-            swipeRefreshLayout.isRefreshing = false
+            viewModel.viewModelScope.launch {
+                viewModel.updateData()
+                Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
+            }
         }
 
         findViewById<ImageView>(R.id.photo_of_developer).setOnClickListener {

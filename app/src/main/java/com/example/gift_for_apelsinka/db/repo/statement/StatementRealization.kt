@@ -5,7 +5,7 @@ import com.example.gift_for_apelsinka.db.dao.StatementDao
 import com.example.gift_for_apelsinka.db.model.Statements
 
 class StatementRealization(private val statementDao: StatementDao) : StatementRepository {
-    override val allStatements: LiveData<List<Statements>>
+    override val allStatements: List<Statements>
         get() = statementDao.readAllStatements()
 
     override suspend fun insertStatement(statement: Statements) {

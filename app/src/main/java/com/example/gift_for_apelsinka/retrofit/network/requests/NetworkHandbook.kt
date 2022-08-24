@@ -14,20 +14,20 @@ import kotlin.coroutines.suspendCoroutine
 
 object NetworkHandbook : HandbookRepo {
 
-    override suspend fun getHandbook() : List<Handbook> {
+    override suspend fun getHandbook() : MutableMap<String, String> {
         return suspendCoroutine {
             val call = handbookServiceApi!!.getAllHandbook()
             call.enqueue(object : Callback<HandbookList> {
-                override fun onResponse(
-                    call: Call<HandbookList>,
-                    response: Response<HandbookList>) {
-                    it.resume(response.body()!!.getHandbook())
+                override fun onResponse(call: Call<HandbookList>, response: Response<HandbookList>) {
+                    val res = mutableMapOf<String, String>()
+                    for(item in response.body()!!.getHandbook())
+                        res[item.key] = item.value
+                    it.resume(res)
                 }
 
                 override fun onFailure(call: Call<HandbookList>, t: Throwable) {
                     it.resumeWithException(t)
                 }
-
             })
         }
     }

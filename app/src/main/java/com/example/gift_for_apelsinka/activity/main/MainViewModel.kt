@@ -1,11 +1,18 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.db.statementRealization
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
@@ -82,5 +89,13 @@ class MainViewModel : ViewModel() {
             greetingText.value =  result + Notifaction.nameOfApelsinka[value] + "!"
 
         return greetingText.value!!
+    }
+
+    suspend fun updateData() {
+        val statements = NetworkStatements.getStatements()
+        val handbook = NetworkHandbook.getHandbook()
+        Log.e("statements", statements.toString())
+        Log.e("handbook", handbook.toString())
+        Log.e("mail", handbook["mail"].toString())
     }
 }

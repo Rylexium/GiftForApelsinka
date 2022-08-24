@@ -9,24 +9,25 @@ class DynamicViewPager @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ViewPager(context, attrs) {
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var heightMeasureSpec = heightMeasureSpec
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         var height = 0
-        (0 until childCount).forEach {
-            val child = getChildAt(it)
-            child.measure(
-                widthMeasureSpec,
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-            )
-            height = max(height, child.measuredHeight)
+        val childWidthSpec = MeasureSpec.makeMeasureSpec(
+            max(
+                0,
+                MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight),
+                   MeasureSpec.getMode(widthMeasureSpec)
+                )
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            child.measure(childWidthSpec, MeasureSpec.UNSPECIFIED)
+            val h = child.measuredHeight
+            if (h > height) height = h
         }
-        if (height > 0) {
-            super.onMeasure(
-                widthMeasureSpec,
-                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
-            )
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        if (height != 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
         }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
@@ -37,16 +37,9 @@
                 android:id="@+id/body_statement"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Высказывание: Не вздумай думать!!!"
+                android:text="Не вздумай думать!!!\n\nАвтор : Rylexium"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"
-                />
-            <TextView
-                android:id="@+id/author_statement"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Придумал: Rylexium"
-                android:paddingBottom="10dp"
                 />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

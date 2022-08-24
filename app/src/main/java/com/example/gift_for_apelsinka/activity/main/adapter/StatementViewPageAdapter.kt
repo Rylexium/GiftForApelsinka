@@ -1,8 +1,10 @@
 package com.example.gift_for_apelsinka.activity.main.adapter
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,12 +31,12 @@ class StatementViewPageAdapter(context: Context, list : List<Statements>) : Page
         return view == `object`
     }
 
+    @SuppressLint("SetTextI18n")
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         layoutInflater = LayoutInflater.from(ctx)
         val view = layoutInflater.inflate(R.layout.field_of_statement, container, false)
 
-        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].text
-        view.findViewById<TextView>(R.id.author_statement).text = statementList[position].author
+        view.findViewById<TextView>(R.id.body_statement).text = statementList[position].text + "\n\n" + statementList[position].author
 
         view.findViewById<CardView>(R.id.field_of_statement).setOnLongClickListener {
             val clipboard: ClipboardManager? = getSystemService(ctx, ClipboardManager::class.java)

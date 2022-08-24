@@ -13,7 +13,7 @@ interface StatementDao {
     suspend fun insertStatement(statement: Statements)
 
     @Query("SELECT * FROM statements")
-    fun readAllStatements() : LiveData<List<Statements>>
+    fun readAllStatements() : List<Statements>
 
     @Query("DELETE from statements")
     suspend fun deleteAll()
