@@ -42,7 +42,7 @@ class RandomQuestionService : Service() {
                 Thread.sleep(5_000)
             }
         }.start()
-        return START_REDELIVER_INTENT
+        return START_STICKY
     }
 
     private fun equationNotification() {

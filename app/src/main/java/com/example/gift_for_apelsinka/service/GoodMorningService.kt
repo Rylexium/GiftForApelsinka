@@ -44,7 +44,7 @@ class GoodMorningService : Service() {
             }
         }.start()
         super.onStartCommand(intent, flags, startId)
-        return START_REDELIVER_INTENT
+        return START_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder? {
