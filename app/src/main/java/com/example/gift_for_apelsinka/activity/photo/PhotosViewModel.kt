@@ -19,6 +19,7 @@ import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import java.util.*
 
 class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var liveDataPhotosList: MutableLiveData<List<FieldPhoto>> = MutableLiveData()
@@ -41,6 +42,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
             liveDataPhotosList.value = list!!
             (recv.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(getScrollState())
+            recv.adapter?.notifyDataSetChanged()
         }
         if (hasDB)
             sharedPreferences.edit()
@@ -53,11 +55,11 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     fun getPhotosList(): LiveData<List<FieldPhoto>> = runBlocking {
         if(liveDataPhotosList.value != null) return@runBlocking liveDataPhotosList
         val list = defaultPhotosApelsinka(sharedPreferences)
-        val task = async { pictureRealization.apelsinkaPicture() }
+        val task = async { return@async pictureRealization.apelsinkaPicture() }
         if(task.await().isNotEmpty())
             list.addAll(task.getCompleted())
 
-        liveDataPhotosList.value = list.distinct()
+        liveDataPhotosList.value = list.distinct().shuffled(Random())
         return@runBlocking liveDataPhotosList
     }
 
@@ -70,7 +72,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
         val db = pictureRealization.apelsinkaPicture()
         res.addAll(db)
 
-        liveDataPhotosList.value = res.distinct()
+        liveDataPhotosList.value = res.distinct().shuffled(Random())
         return liveDataPhotosList.value
     }
 }

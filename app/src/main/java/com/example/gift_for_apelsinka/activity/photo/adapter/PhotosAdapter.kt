@@ -3,6 +3,7 @@ package com.example.gift_for_apelsinka.activity.photo.adapter
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,10 +64,8 @@ class PhotosAdapter(
         }
 
         val hasDB = isNumeric(newList.picture)
-
         holder.photo.setOnLongClickListener {
             editTextView(holder.title, context) {
-                viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
                 CoroutineScope(Dispatchers.IO).launch {
                     viewModel.changePhotoAtIndex(position, newList.id, holder.title.text.toString(), hasDB, this@PhotosAdapter.recv)
                 }

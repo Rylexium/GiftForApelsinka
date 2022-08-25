@@ -34,8 +34,7 @@ class PhotosActivity : AppCompatActivity() {
         recv = findViewById(R.id.recycler_view_photos)
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutPhotos)
         viewModel.getPhotosList().observe(this) {
-            photosAdapter = PhotosAdapter(this, it, viewModel, recv)
-            recv.adapter = photosAdapter
+            recv.adapter = PhotosAdapter(this, it, viewModel, recv)
             recv.layoutManager = LinearLayoutManager(this)
         }
     }
