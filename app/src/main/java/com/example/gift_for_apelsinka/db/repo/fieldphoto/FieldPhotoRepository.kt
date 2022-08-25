@@ -13,5 +13,12 @@ interface FieldPhotoRepository {
 
     suspend fun insertFieldPhoto(fieldPhoto: FieldPhoto)
     suspend fun updateTitleById(id : Int, newTitle : String)
+
+    suspend fun deleteApelsinkaPicture()
+    suspend fun deleteOscarPicture()
+    suspend fun deleteLeraPicture()
+    suspend fun deleteRylexiumPicture()
+    suspend fun deleteMainPicture()
+    suspend fun deleteLogoPicture()
     suspend fun deleteAll()
 }

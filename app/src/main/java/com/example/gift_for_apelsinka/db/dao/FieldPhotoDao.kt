@@ -16,6 +16,9 @@ interface FieldPhotoDao {
     @Query("SELECT * FROM field_photo where belongs=:belongs")
     suspend fun readAllFieldPhotoByBelongs(belongs : Int) : List<FieldPhoto>
 
+    @Query("DELETE FROM field_photo WHERE belongs=:belongs")
+    suspend fun deleteAllFieldPhotoByBelongs(belongs: Int)
+
     @Query("Delete FROM field_photo")
     suspend fun deleteAll()
 }

@@ -6,12 +6,10 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.defaultHandbook
 import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
-import com.example.gift_for_apelsinka.db.handbookRealization
+import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.db.model.Statements
-import com.example.gift_for_apelsinka.db.pictureRealization
-import com.example.gift_for_apelsinka.db.statementRealization
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
@@ -105,8 +103,7 @@ class MainViewModel : ViewModel() {
 
     suspend fun updateStatements(): List<Statements> {
         val statements = NetworkStatements.getStatements()
-        for (statement in statements)
-            statementRealization.insertStatement(Statements(statement.id, statement.text, statement.author))
+        saveStatementsToDB(statements)
         listOfStatements.value = statementRealization.getAll().shuffled()
 
         return  if(listOfStatements.value == null) emptyList()
@@ -117,13 +114,10 @@ class MainViewModel : ViewModel() {
         val pictures = NetworkPictures.getAllMainPicture()
 
         val result = defaultListOfMainPictures()
-        val downloadPictures = mutableListOf<FieldPhoto>()
-        for(picture in pictures) {
-            val fieldPhoto = FieldPhoto(picture.id, picture.picture, if(picture.title == null) "" else picture.title, picture.belongs)
-            downloadPictures.add(fieldPhoto)
-            pictureRealization.insertFieldPhoto(fieldPhoto)
-        }
-        result.addAll(downloadPictures.shuffled())
+
+        savePicturesToDB(pictures)
+        result.addAll(pictureRealization.mainPicture().shuffled())
+
         listOfPictures.value = result
 
         return  if(listOfPictures.value == null) emptyList()
@@ -131,8 +125,7 @@ class MainViewModel : ViewModel() {
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
         val dict = NetworkHandbook.getHandbook()
-        for(handbook in dict)
-            handbookRealization.insertHandbook(Handbook(handbook.key, handbook.value))
+        saveHandbookToDB(dict)
         return dict
     }
 

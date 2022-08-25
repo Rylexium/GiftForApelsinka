@@ -4,28 +4,35 @@ import com.example.gift_for_apelsinka.db.dao.FieldPhotoDao
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 
 class FieldPhotoRealization(private val fieldPhotoDao: FieldPhotoDao) : FieldPhotoRepository {
+    val APELSINKA = 1
+    val OSCAR = 2
+    val LERA = 3
+    val RYLELXIUM = 4
+    val MAIN = 5
+    val LOGO = 6
+
     override suspend fun apelsinkaPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(1)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(APELSINKA)
     }
 
     override suspend fun oscarPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(2)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(OSCAR)
     }
 
     override suspend fun leraPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(3)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(LERA)
     }
 
     override suspend fun rylexiumPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(4)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(RYLELXIUM)
     }
 
     override suspend fun mainPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(5)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(MAIN)
     }
 
     override suspend fun logoPicture(): List<FieldPhoto> {
-        return fieldPhotoDao.readAllFieldPhotoByBelongs(6)
+        return fieldPhotoDao.readAllFieldPhotoByBelongs(LOGO)
     }
 
     override suspend fun insertFieldPhoto(fieldPhoto: FieldPhoto) {
@@ -34,6 +41,30 @@ class FieldPhotoRealization(private val fieldPhotoDao: FieldPhotoDao) : FieldPho
 
     override suspend fun updateTitleById(id: Int, newTitle : String) {
         fieldPhotoDao.updateTitleById(id, newTitle)
+    }
+
+    override suspend fun deleteApelsinkaPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(APELSINKA)
+    }
+
+    override suspend fun deleteOscarPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(OSCAR)
+    }
+
+    override suspend fun deleteLeraPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(LERA)
+    }
+
+    override suspend fun deleteRylexiumPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(RYLELXIUM)
+    }
+
+    override suspend fun deleteMainPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(MAIN)
+    }
+
+    override suspend fun deleteLogoPicture() {
+        fieldPhotoDao.deleteAllFieldPhotoByBelongs(LOGO)
     }
 
     override suspend fun deleteAll() {

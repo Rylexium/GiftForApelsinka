@@ -1,12 +1,24 @@
 package com.example.gift_for_apelsinka.activity.photo
 
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.photo.model.FieldPhoto
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
+import com.example.gift_for_apelsinka.db.deleteAll
+import com.example.gift_for_apelsinka.db.deletePicturesApelsinkaFromDB
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.pictureRealization
+import com.example.gift_for_apelsinka.db.savePicturesToDB
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var liveDataPhotosList: MutableLiveData<List<FieldPhoto>> = MutableLiveData()
@@ -22,36 +34,43 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
         state = stateValue
     }
 
-    fun changePhotoAtIndex(index : Int, title : String) {
+    suspend fun changePhotoAtIndex(index : Int, id : Int, title : String, hasDB : Boolean, recv : RecyclerView) {
         val list = liveDataPhotosList.value
-        list?.get(index)?.title = title
-        sharedPreferences.edit()
-            .putString(list?.get(index)?.id.toString(), title).apply()
-        liveDataPhotosList.value = list!!
+        Handler(Looper.getMainLooper()).post {
+            list?.get(index)?.title = title
+            liveDataPhotosList.value = list!!
+            (recv.layoutManager as LinearLayoutManager)
+                .onRestoreInstanceState(getScrollState())
+        }
+        if (hasDB)
+            sharedPreferences.edit()
+                .putString(list?.get(index)?.id.toString(), title).apply()
+        else
+            pictureRealization.updateTitleById(id, title)
+            NetworkPictures.setTitlePicture(id, title)
     }
 
-    fun getPhotosList(): LiveData<List<FieldPhoto>> {
-        if(liveDataPhotosList.value != null) return liveDataPhotosList
-        val list = listOf(
-            FieldPhoto(1,  R.drawable.main_ksixa1,  sharedPreferences.all["1"].toString(), 0),
-            FieldPhoto(2,  R.drawable.main_ksixa2,  sharedPreferences.all["2"].toString(), 0),
-            FieldPhoto(3,  R.drawable.main_ksixa3,  sharedPreferences.all["3"].toString(), 0),
-            FieldPhoto(4,  R.drawable.main_ksixa4,  sharedPreferences.all["4"].toString(), 0),
-            FieldPhoto(5,  R.drawable.main_ksixa5,  sharedPreferences.all["5"].toString(), 0),
-            FieldPhoto(6,  R.drawable.main_ksixa6,  sharedPreferences.all["6"].toString(), 0),
-            FieldPhoto(7,  R.drawable.main_ksixa7,  sharedPreferences.all["7"].toString(), 0),
-            FieldPhoto(8,  R.drawable.main_ksixa8,  sharedPreferences.all["8"].toString(), 0),
-            FieldPhoto(9,  R.drawable.main_ksixa9,  sharedPreferences.all["9"].toString(), 0),
-            FieldPhoto(10, R.drawable.main_ksixa10, sharedPreferences.all["10"].toString(), 0),
-            FieldPhoto(11, R.drawable.main_ksixa11, sharedPreferences.all["11"].toString(), 0),
-            FieldPhoto(12, R.drawable.main_ksixa12, sharedPreferences.all["12"].toString(), 0),
-            FieldPhoto(13, R.drawable.main_ksixa13, sharedPreferences.all["13"].toString(), 0),
-            FieldPhoto(14, R.drawable.main_ksixa14, sharedPreferences.all["14"].toString(), 0),
-            FieldPhoto(15, R.drawable.main_ksixa15, sharedPreferences.all["15"].toString(), 0),
-            FieldPhoto(16, R.drawable.main_ksixa16, sharedPreferences.all["16"].toString(), 0)
-        )
-            .shuffled()
-        liveDataPhotosList.value = list
-        return liveDataPhotosList
+    fun getPhotosList(): LiveData<List<FieldPhoto>> = runBlocking {
+        if(liveDataPhotosList.value != null) return@runBlocking liveDataPhotosList
+        val list = defaultPhotosApelsinka(sharedPreferences)
+        val task = async { pictureRealization.apelsinkaPicture() }
+        if(task.await().isNotEmpty())
+            list.addAll(task.getCompleted())
+
+        liveDataPhotosList.value = list.distinct()
+        return@runBlocking liveDataPhotosList
+    }
+
+    suspend fun updatePhotosList(): List<FieldPhoto>? {
+        val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture()
+        deletePicturesApelsinkaFromDB()
+        savePicturesToDB(picturesApelsinka)
+
+        val res = liveDataPhotosList.value as MutableList
+        val db = pictureRealization.apelsinkaPicture()
+        res.addAll(db)
+
+        liveDataPhotosList.value = res.distinct()
+        return liveDataPhotosList.value
     }
 }

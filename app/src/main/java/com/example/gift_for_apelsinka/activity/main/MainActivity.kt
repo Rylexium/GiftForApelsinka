@@ -1,15 +1,10 @@
 package com.example.gift_for_apelsinka.activity.main
 
 import android.Manifest
-import android.R.color
 import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.ColorSpace
-import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -20,8 +15,6 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.text.HtmlCompat
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -106,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
         viewPageOfImage = findViewById(R.id.view_pager_of_image)
         viewPageOfStatement = findViewById(R.id.view_pager_of_statement)
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutMain)
 
         layoutGreeting = findViewById(R.id.layout_greetings_for_apelsinka)
         greetingTextView = findViewById(R.id.greetings_for_apelsinka)
