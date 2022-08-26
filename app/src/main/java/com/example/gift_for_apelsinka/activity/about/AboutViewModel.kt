@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.cache.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.db.pictureRealization
 import com.example.gift_for_apelsinka.db.saveHandbookToDB
 import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class AboutViewModel : ViewModel() {
     private var textAboutApelsinka : MutableLiveData<String> = MutableLiveData()
@@ -78,6 +78,7 @@ class AboutViewModel : ViewModel() {
     private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String) {
         liveData.value = text
         handbook?.set(KEY, text)
+        CoroutineScope(Dispatchers.IO).launch { NetworkHandbook.postHandbook(KEY, text) }
     }
 
     private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, default : String): MutableLiveData<String> {
