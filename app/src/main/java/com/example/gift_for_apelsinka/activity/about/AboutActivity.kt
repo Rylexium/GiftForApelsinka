@@ -1,20 +1,26 @@
 package com.example.gift_for_apelsinka.activity.about
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.adapter.ImageViewOfPersonPageAdapter
+import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.DoubleClickListener
+import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {
+    private lateinit var switchRefreshLayout : SwipeRefreshLayout
     private lateinit var viewModel: AboutViewModel
     private lateinit var viewPageOfImageOscar : ViewPager
     private lateinit var viewPageOfImageLera : ViewPager
@@ -32,13 +38,15 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
+
         initComponents()
+        initDataComponents()
         applyEvents()
     }
 
     private fun initComponents() {
-        viewModel = ViewModelProvider(this,
-            AboutViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[AboutViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AboutViewModel::class.java]
+        switchRefreshLayout = findViewById(R.id.swipeRefreshLayoutAbout)
         viewPageOfImageOscar = findViewById(R.id.view_pager_of_image_oscar)
         viewPageOfImageLera = findViewById(R.id.view_pager_of_image_lera)
         viewPageOfImageLexa = findViewById(R.id.view_pager_of_image_lexa)
@@ -51,24 +59,66 @@ class AboutActivity : AppCompatActivity() {
 
         textViewAboutApelsinka = findViewById(R.id.textview_about_apelsinka)
         textViewTextOfGoodnight = findViewById(R.id.textview_text_of_goodnight)
+    }
 
-        textViewAboutApelsinka.text = viewModel.getTextAboutApelsinka()
-        textViewTextOfGoodnight.text = viewModel.getTextGoodnight()
-
-        aboutApelsinkaTitle.text = viewModel.getApelsinkaTitle()
-        aboutOscarTitle.text = viewModel.getOscarTitle()
-        aboutLeraTitle.text = viewModel.getLeraTitle()
-        aboutLexaTitle.text = viewModel.getLexaTitle()
-
+    private fun initDataComponents() {
         initViewPager(viewPageOfImageLogo, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImagesOfLogo()))
         initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfOscar()))
         initViewPager(viewPageOfImageLera, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLera()))
         initViewPager(viewPageOfImageLexa, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLexa()))
 
         setImageWithCircle(R.drawable.mouse_of_apelsinka, findViewById(R.id.mouse_of_apelsinka), this)
+
+        viewModel.handbook = staticHandbook
+        viewModel.getApelsinkaTitle().observe(this) {
+            aboutApelsinkaTitle.text = it
+        }
+        viewModel.getTextAboutApelsinka().observe(this) {
+            textViewAboutApelsinka.text = it
+        }
+        viewModel.getOscarTitle().observe(this) {
+            aboutOscarTitle.text = it
+        }
+        viewModel.getLeraTitle().observe(this) {
+            aboutLeraTitle.text = it
+        }
+        viewModel.getLexaTitle().observe(this) {
+            aboutLexaTitle.text = it
+        }
+        viewModel.getTextGoodnight().observe(this) {
+            textViewTextOfGoodnight.text = it
+        }
     }
 
     private fun applyEvents() {
+        viewPageOfImageLogo.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
+            override fun onPageScrollStateChanged(state: Int) {
+                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
+            }
+        })
+        viewPageOfImageOscar.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
+            override fun onPageScrollStateChanged(state: Int) {
+                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
+            }
+        })
+        viewPageOfImageLera.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
+            override fun onPageScrollStateChanged(state: Int) {
+                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
+            }
+        })
+        viewPageOfImageLexa.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
+            override fun onPageScrollStateChanged(state: Int) {
+                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
+            }
+        })
         textViewAboutApelsinka.setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(textViewAboutApelsinka, this@AboutActivity) {
@@ -111,6 +161,12 @@ class AboutActivity : AppCompatActivity() {
                 }
             }
         })
+        switchRefreshLayout.setOnRefreshListener {
+            viewModel.viewModelScope.launch {
+                viewModel.updateHandbook()
+                Handler(Looper.getMainLooper()).post { switchRefreshLayout.isRefreshing = false }
+            }
+        }
     }
 }
 

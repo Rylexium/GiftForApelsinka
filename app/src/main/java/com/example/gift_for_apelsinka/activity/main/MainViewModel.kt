@@ -6,6 +6,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.defaultHandbook
 import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
+import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
@@ -53,6 +54,7 @@ class MainViewModel : ViewModel() {
         val res =
             if(task.await().isEmpty()) defaultHandbook
             else task.getCompleted()
+        staticHandbook = res
         mapOfHandbook.value = res
         return@runBlocking mapOfHandbook.value!!
     }
@@ -125,6 +127,7 @@ class MainViewModel : ViewModel() {
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
         val dict = NetworkHandbook.getHandbook()
+        staticHandbook = dict
         saveHandbookToDB(dict)
         return dict
     }

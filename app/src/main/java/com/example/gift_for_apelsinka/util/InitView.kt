@@ -1,9 +1,11 @@
 package com.example.gift_for_apelsinka.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
@@ -16,6 +18,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.roundToInt
 
 object InitView {
     fun setImageWithCircle(id : Int, imageView: ImageView, context: Context) {
@@ -69,5 +72,12 @@ object InitView {
         viewPager.adapter = adapter
         viewPager.clipToPadding = false
         viewPager.setPadding(65 - padding,0,65 - padding,0)
+    }
+    fun dpToPx(resources : Resources, dp: Int): Int {
+        val density: Float = resources.displayMetrics.density
+        return (dp.toFloat() * density).roundToInt()
+    }
+    fun enableDisableSwipeRefresh(swipeRefreshLayout : SwipeRefreshLayout, enable: Boolean) {
+        swipeRefreshLayout.isEnabled = enable
     }
 }

@@ -4,7 +4,7 @@ import com.example.gift_for_apelsinka.db.dao.HandbookDao
 import com.example.gift_for_apelsinka.db.model.Handbook
 
 class HandbookRealization(private val handbookDao: HandbookDao) : HandbookRepository {
-    override suspend fun allHandbook(): Map<String, String> {
+    override suspend fun allHandbook(): MutableMap<String, String> {
         val list = handbookDao.readAllHandbook()
         val mutableMap = mutableMapOf<String, String>()
         for((key, value) in list)

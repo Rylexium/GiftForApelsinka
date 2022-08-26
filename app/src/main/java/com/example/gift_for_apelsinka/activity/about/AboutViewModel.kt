@@ -1,11 +1,15 @@
 package com.example.gift_for_apelsinka.activity.about
 
-import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.cache.aboutApelsinka
+import com.example.gift_for_apelsinka.cache.defaultHandbook
+import com.example.gift_for_apelsinka.cache.staticHandbook
+import com.example.gift_for_apelsinka.db.saveHandbookToDB
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 
-class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
+class AboutViewModel : ViewModel() {
     private var textAboutApelsinka : MutableLiveData<String> = MutableLiveData()
     private var textGoodnight : MutableLiveData<String> = MutableLiveData()
 
@@ -19,12 +23,18 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
     private var imagesOfLera : MutableLiveData<List<Int>> = MutableLiveData()
     private var imagesOfLexa : MutableLiveData<List<Int>> = MutableLiveData()
 
-    private val KEY_INFO = "info"
-    private val KEY_GOODNIGHT = "goodnight"
-    private val KEY_TITLE_APELSINKA = "title apelsinka"
-    private val KEY_TITLE_OSCAR = "title oscar"
-    private val KEY_TITLE_LERA = "title lera"
-    private val KEY_TITLE_LEXA = "title lexa"
+    var handbook: MutableMap<String, String>? = null
+        get() {
+            if(field == null) return defaultHandbook
+            return field
+        }
+
+    private val KEY_ABOUT_APELSINKA = "about_apelsinka"
+    private val KEY_WISH_GOODNIGHT = "wish_goodnight"
+    private val KEY_TITLE_APELSINKA = "title_apelsinka"
+    private val KEY_TITLE_OSCAR = "title_oscar"
+    private val KEY_TITLE_LERA = "title_lera"
+    private val KEY_TITLE_LEXA = "title_lexa"
 
     fun getImagesOfLogo() : List<Int> {
         if(imageOfLogo.value != null) return imagesOfOscar.value!!
@@ -61,46 +71,23 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
         return imagesOfLexa.value!!
     }
 
-    fun getTextAboutApelsinka(): String? {
-        return getWrapper(textAboutApelsinka, KEY_INFO,
-            "Я, Быкова Ксения Александровна, " +
-                "но меня ещё называют Цитрусовым Богом. Обучаюсь в Самарском университете. Также у меня есть собственный логотип.")
-    }
-
-    fun setTextAboutApelsinka(text : String) {
-        setWrapper(textAboutApelsinka, text, KEY_INFO)
-    }
-
-    fun getTextGoodnight(): String? {
-        return getWrapper(textGoodnight, KEY_GOODNIGHT,
-            "Желаю Вам спокойной ночи, 🌚" +
-                "\nЧтобы не приснился Игорь в костюме горничной, \uD83D\uDC69\u200D" +
-                "\nК которому пристаёт Левон \uD83D\uDD1E" +
-                "\nИ Лев не спросил у них отличие между базой и базисом, \uD83C\uDD98" +
-                "\nВ то время, когда их чекает Илюха со своей понамеры \uD83D\uDC41")
-    }
-
-    fun setTextGoodnight(text : String) {
-        setWrapper(textGoodnight, text, KEY_GOODNIGHT)
-    }
-
     private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String) {
         liveData.value = text
-        sharedPreferences.edit().putString(KEY, text).apply()
+        handbook?.set(KEY, text)
     }
 
-    private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, default : String): String? {
-        if(liveData.value != null) return liveData.value
-        val text = sharedPreferences.getString(KEY, null)
+    private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, default : String): MutableLiveData<String> {
+        if(liveData.value != null) return liveData
+        val text = handbook?.get(KEY)
         if(text != null) {
             liveData.value = text
-            return liveData.value
+            return liveData
         }
         liveData.value = default
-        return liveData.value
+        return liveData
     }
 
-    fun getApelsinkaTitle(): String? {
+    fun getApelsinkaTitle():  MutableLiveData<String> {
         return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, "Про меня 🍊")
     }
 
@@ -108,27 +95,51 @@ class AboutViewModel(private val sharedPreferences: SharedPreferences) : ViewMod
         setWrapper(titleApelsinka, text, KEY_TITLE_APELSINKA)
     }
 
-    fun getOscarTitle(): String? {
-        return getWrapper(titleOscar, KEY_TITLE_OSCAR, "Немного меня и Оскара 🐕")
+    fun getTextAboutApelsinka(): MutableLiveData<String> {
+        return getWrapper(textAboutApelsinka, KEY_ABOUT_APELSINKA, defaultHandbook[KEY_ABOUT_APELSINKA].toString())
+    }
+    fun setTextAboutApelsinka(text : String) {
+        setWrapper(textAboutApelsinka, text, KEY_ABOUT_APELSINKA)
     }
 
+    fun getOscarTitle(): MutableLiveData<String> {
+        return getWrapper(titleOscar, KEY_TITLE_OSCAR, defaultHandbook[KEY_TITLE_OSCAR].toString())
+    }
     fun setOscarTitle(text : String) {
-        setWrapper(titleOscar, text, KEY_TITLE_OSCAR,)
+        setWrapper(titleOscar, text, KEY_TITLE_OSCAR)
     }
 
-    fun getLeraTitle(): String? {
-        return getWrapper(titleLera, KEY_TITLE_LERA, "Немного меня и Леры 🍋")
+    fun getLeraTitle(): MutableLiveData<String> {
+        return getWrapper(titleLera, KEY_TITLE_LERA, defaultHandbook[KEY_TITLE_LERA].toString())
     }
-
     fun setLeraTitle(text : String) {
         setWrapper(titleLera, text, KEY_TITLE_LERA)
     }
 
-    fun getLexaTitle(): String? {
-        return getWrapper(titleLexa, KEY_TITLE_LEXA, "Немного меня и Лёши 🥨")
+    fun getLexaTitle(): MutableLiveData<String> {
+        return getWrapper(titleLexa, KEY_TITLE_LEXA, defaultHandbook[KEY_TITLE_LEXA].toString())
     }
-
     fun setLexaTitle(text : String) {
         setWrapper(titleLexa, text, KEY_TITLE_LEXA)
+    }
+
+    fun getTextGoodnight(): MutableLiveData<String> {
+        return getWrapper(textGoodnight, KEY_WISH_GOODNIGHT, defaultHandbook[KEY_WISH_GOODNIGHT].toString())
+    }
+    fun setTextGoodnight(text : String) {
+        setWrapper(textGoodnight, text, KEY_WISH_GOODNIGHT)
+    }
+
+    suspend fun updateHandbook(): MutableMap<String, String> {
+        val dict = NetworkHandbook.getHandbook()
+        staticHandbook = dict
+        setApelsinkaTitle(staticHandbook[KEY_TITLE_APELSINKA].toString())
+        setTextAboutApelsinka(staticHandbook[KEY_ABOUT_APELSINKA].toString())
+        setOscarTitle(staticHandbook[KEY_TITLE_OSCAR].toString())
+        setLeraTitle(staticHandbook[KEY_TITLE_LERA].toString())
+        setLexaTitle(staticHandbook[KEY_TITLE_LEXA].toString())
+        setTextGoodnight(staticHandbook[KEY_WISH_GOODNIGHT].toString())
+        saveHandbookToDB(dict)
+        return dict
     }
 }

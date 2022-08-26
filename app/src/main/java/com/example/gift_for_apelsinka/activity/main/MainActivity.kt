@@ -25,17 +25,21 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.InitView.dpToPx
+import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.io.Serializable
 import java.net.SocketTimeoutException
 import kotlin.math.roundToInt
 
@@ -66,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         initDB(applicationContext)
 
         initComponents()
+        initDataComponents()
         applyEvents()
         startServices()
     }
@@ -113,7 +118,9 @@ class MainActivity : AppCompatActivity() {
         textPhoneDeveloper = findViewById(R.id.text_phone_developer)
         textDiscordDeveloper = findViewById(R.id.text_discord_developer)
         textAddressDeveloper = findViewById(R.id.text_address_developer)
+    }
 
+    private fun initDataComponents() {
         initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(applicationContext, viewModel.getPictures()))
         initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
         setGreeting()
@@ -122,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         updateDeveloper(viewModel.getHandbook())
 
         if(getNowHour() in 0..5) {
-            val chance = (0..10).random()
+            val chance = System.currentTimeMillis() % 10
             if(chance in 1..3) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
         }
     }
@@ -137,29 +144,26 @@ class MainActivity : AppCompatActivity() {
         else {
             greetingTextView.text = greetingValue
             if(greetingValue.length <= 24)
-                greetingTextView.height = dpToPx(65)
+                greetingTextView.height = dpToPx(resources, 65)
             Handler(Looper.getMainLooper()).postDelayed({
                 AnimView.animTransitionUp(layoutGreeting)
             }, 3_000)
         }
     }
-    fun dpToPx(dp: Int): Int {
-        val density: Float = resources.displayMetrics.density
-        return (dp.toFloat() * density).roundToInt()
-    }
+
     private fun applyEvents() {
         viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
             override fun onPageSelected(position: Int) {}
             override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE)
+                enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
         })
         viewPageOfStatement.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
             override fun onPageSelected(position: Int) {}
             override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE)
+                enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
         })
 
@@ -236,8 +240,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             uiManager.nightMode = UiModeManager.MODE_NIGHT_NO
         }
-    }
-    private fun enableDisableSwipeRefresh(enable: Boolean) {
-        swipeRefreshLayout.isEnabled = enable
     }
 }
