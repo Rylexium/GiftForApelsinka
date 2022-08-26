@@ -40,12 +40,12 @@ class RandomQuestionService : Service() {
     private fun task() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 53)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 28)
         Thread {
             while (true) {
                 val nowHour = WorkWithTime.getNowHour()
                 val nowMinute = WorkWithTime.getNowMinute()
-                if(nowHour == randomHour && randomMinute <= nowMinute) {
+                if(nowHour == randomHour && nowMinute >= randomMinute) {
                     equationNotification()
                     randomHour = (16..23).random()
                     randomMinute = (System.currentTimeMillis() % 59).toInt()
@@ -54,7 +54,7 @@ class RandomQuestionService : Service() {
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(600_000)
+                Thread.sleep(60_000)
             }
         }.start()
     }
