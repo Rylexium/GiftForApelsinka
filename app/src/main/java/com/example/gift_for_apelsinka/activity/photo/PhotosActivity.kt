@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 class PhotosActivity : AppCompatActivity() {
     private lateinit var recv : RecyclerView
     private lateinit var viewModel: PhotosViewModel
-    private lateinit var photosAdapter: PhotosAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +36,7 @@ class PhotosActivity : AppCompatActivity() {
             recv.layoutManager = LinearLayoutManager(this)
         }
     }
+
     private fun applyEvents() {
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.viewModelScope.launch {
