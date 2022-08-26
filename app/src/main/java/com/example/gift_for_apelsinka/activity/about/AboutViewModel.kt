@@ -3,6 +3,7 @@ package com.example.gift_for_apelsinka.activity.about
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.cache.*
+import com.example.gift_for_apelsinka.db.handbookRealization
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.db.pictureRealization
@@ -26,11 +27,7 @@ class AboutViewModel : ViewModel() {
     private var imagesOfLera : MutableLiveData<List<Any>> = MutableLiveData()
     private var imagesOfLexa : MutableLiveData<List<Any>> = MutableLiveData()
 
-    var handbook: MutableMap<String, String>? = null
-        get() {
-            if(field == null) return defaultHandbook
-            return field
-        }
+    var handbook: MutableMap<String, String> = mutableMapOf()
 
     private val KEY_ABOUT_APELSINKA = "about_apelsinka"
     private val KEY_WISH_GOODNIGHT = "wish_goodnight"

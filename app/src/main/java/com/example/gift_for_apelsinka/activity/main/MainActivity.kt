@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -27,10 +28,12 @@ import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAda
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.initDB
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
@@ -38,6 +41,8 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.net.SocketTimeoutException
@@ -73,12 +78,15 @@ class MainActivity : AppCompatActivity() {
         initDataComponents()
         applyEvents()
         startServices()
+//        viewModel.viewModelScope.launch {
+//            NetworkMessage.sendMessage(IP.getIpv4() + " приложение запустили")
+//        }
     }
 
     private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
-        //requestPermission()
+//        requestPermission()
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
 //            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
 //        {
