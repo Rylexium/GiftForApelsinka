@@ -4,12 +4,12 @@ import com.example.gift_for_apelsinka.db.dao.FieldPhotoDao
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 
 class FieldPhotoRealization(private val fieldPhotoDao: FieldPhotoDao) : FieldPhotoRepository {
-    val APELSINKA = 1
-    val OSCAR = 2
-    val LERA = 3
-    val RYLELXIUM = 4
-    val MAIN = 5
-    val LOGO = 6
+    private val APELSINKA = 1
+    private val OSCAR = 2
+    private val LERA = 3
+    private val RYLELXIUM = 4
+    private val MAIN = 5
+    private val LOGO = 6
 
     override suspend fun apelsinkaPicture(): List<FieldPhoto> {
         return fieldPhotoDao.readAllFieldPhotoByBelongs(APELSINKA)

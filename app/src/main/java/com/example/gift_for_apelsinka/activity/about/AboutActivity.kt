@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -62,31 +63,30 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun initDataComponents() {
-        initViewPager(viewPageOfImageLogo, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImagesOfLogo()))
-        initViewPager(viewPageOfImageOscar, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfOscar()))
-        initViewPager(viewPageOfImageLera, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLera()))
-        initViewPager(viewPageOfImageLexa, 65, ImageViewOfPersonPageAdapter(this, viewModel.getImageOfLexa()))
-
         setImageWithCircle(R.drawable.mouse_of_apelsinka, findViewById(R.id.mouse_of_apelsinka), this)
 
         viewModel.handbook = staticHandbook
-        viewModel.getApelsinkaTitle().observe(this) {
-            aboutApelsinkaTitle.text = it
+        liveDataObserveTextWrapper(viewModel.getApelsinkaTitle(), aboutApelsinkaTitle)
+        liveDataObserveTextWrapper(viewModel.getTextAboutApelsinka(), textViewAboutApelsinka)
+        liveDataObserveTextWrapper(viewModel.getOscarTitle(), aboutOscarTitle)
+        liveDataObserveTextWrapper(viewModel.getLeraTitle(), aboutLeraTitle)
+        liveDataObserveTextWrapper(viewModel.getLexaTitle(), aboutLexaTitle)
+        liveDataObserveTextWrapper(viewModel.getTextGoodnight(), textViewTextOfGoodnight)
+
+        liveDataObserveViewPagerWrapper(viewModel.getImagesOfLogo(), viewPageOfImageLogo)
+        liveDataObserveViewPagerWrapper(viewModel.getImageOfOscar(), viewPageOfImageOscar)
+        liveDataObserveViewPagerWrapper(viewModel.getImageOfLera(), viewPageOfImageLera)
+        liveDataObserveViewPagerWrapper(viewModel.getImageOfLexa(), viewPageOfImageLexa)
+    }
+
+    private fun liveDataObserveTextWrapper(liveData: MutableLiveData<String>, textView: TextView) {
+        liveData.observe(this) {
+            textView.text = it
         }
-        viewModel.getTextAboutApelsinka().observe(this) {
-            textViewAboutApelsinka.text = it
-        }
-        viewModel.getOscarTitle().observe(this) {
-            aboutOscarTitle.text = it
-        }
-        viewModel.getLeraTitle().observe(this) {
-            aboutLeraTitle.text = it
-        }
-        viewModel.getLexaTitle().observe(this) {
-            aboutLexaTitle.text = it
-        }
-        viewModel.getTextGoodnight().observe(this) {
-            textViewTextOfGoodnight.text = it
+    }
+    private fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager) {
+        liveData.observe(this) {
+            initViewPager(viewPager, 65, ImageViewOfPersonPageAdapter(this, it))
         }
     }
 
@@ -164,6 +164,7 @@ class AboutActivity : AppCompatActivity() {
         switchRefreshLayout.setOnRefreshListener {
             viewModel.viewModelScope.launch {
                 viewModel.updateHandbook()
+                viewModel.updatePhotos()
                 Handler(Looper.getMainLooper()).post { switchRefreshLayout.isRefreshing = false }
             }
         }

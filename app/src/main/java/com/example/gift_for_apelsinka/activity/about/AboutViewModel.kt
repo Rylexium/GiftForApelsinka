@@ -2,12 +2,15 @@ package com.example.gift_for_apelsinka.activity.about
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.cache.aboutApelsinka
-import com.example.gift_for_apelsinka.cache.defaultHandbook
-import com.example.gift_for_apelsinka.cache.staticHandbook
+import com.example.gift_for_apelsinka.cache.*
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
+import com.example.gift_for_apelsinka.db.pictureRealization
 import com.example.gift_for_apelsinka.db.saveHandbookToDB
+import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class AboutViewModel : ViewModel() {
     private var textAboutApelsinka : MutableLiveData<String> = MutableLiveData()
@@ -18,10 +21,10 @@ class AboutViewModel : ViewModel() {
     private var titleLera : MutableLiveData<String> = MutableLiveData()
     private var titleLexa : MutableLiveData<String> = MutableLiveData()
 
-    private var imageOfLogo : MutableLiveData<List<Int>> = MutableLiveData()
-    private var imagesOfOscar : MutableLiveData<List<Int>> = MutableLiveData()
-    private var imagesOfLera : MutableLiveData<List<Int>> = MutableLiveData()
-    private var imagesOfLexa : MutableLiveData<List<Int>> = MutableLiveData()
+    private var imageOfLogo : MutableLiveData<List<Any>> = MutableLiveData()
+    private var imagesOfOscar : MutableLiveData<List<Any>> = MutableLiveData()
+    private var imagesOfLera : MutableLiveData<List<Any>> = MutableLiveData()
+    private var imagesOfLexa : MutableLiveData<List<Any>> = MutableLiveData()
 
     var handbook: MutableMap<String, String>? = null
         get() {
@@ -36,39 +39,40 @@ class AboutViewModel : ViewModel() {
     private val KEY_TITLE_LERA = "title_lera"
     private val KEY_TITLE_LEXA = "title_lexa"
 
-    fun getImagesOfLogo() : List<Int> {
-        if(imageOfLogo.value != null) return imagesOfOscar.value!!
+    fun getImagesOfLogo() : MutableLiveData<List<Any>> = runBlocking {
+        if(imageOfLogo.value != null) return@runBlocking imagesOfOscar
 
-        imageOfLogo.value = listOf(R.drawable.logo, R.drawable.logo2).shuffled()
+        val listFromDB = async { pictureRealization.logoPicture() }
+        imageOfLogo.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLogo(), listFromDB.getCompleted()) else defaultPicturesLogo()
 
-        return imageOfLogo.value!!
+        return@runBlocking imageOfLogo
     }
 
-    fun getImageOfOscar(): List<Int> {
-        if(imagesOfOscar.value != null) return imagesOfOscar.value!!
+    fun getImageOfOscar(): MutableLiveData<List<Any>> = runBlocking {
+        if(imagesOfOscar.value != null) return@runBlocking imagesOfOscar
 
-        imagesOfOscar.value = listOf(
-            R.drawable.oscar, R.drawable.oscar1, R.drawable.oscar2,
-            R.drawable.oscar3, R.drawable.oscar4, R.drawable.oscar5).shuffled()
+        val listFromDB = async { pictureRealization.oscarPicture() }
+        imagesOfOscar.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesOscar(), listFromDB.getCompleted()) else defaultPicturesOscar()
 
-        return imagesOfOscar.value!!
+        return@runBlocking imagesOfOscar
     }
 
-    fun getImageOfLera(): List<Int> {
-        if(imagesOfLera.value != null) return imagesOfLera.value!!
+    fun getImageOfLera(): MutableLiveData<List<Any>> = runBlocking {
+        if(imagesOfLera.value != null) return@runBlocking imagesOfLera
 
-        imagesOfLera.value = listOf(R.drawable.lera_ksixa1, R.drawable.lera1, R.drawable.lera2).shuffled()
+        val listFromDB = async { pictureRealization.leraPicture() }
+        imagesOfLera.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLera(), listFromDB.getCompleted()) else defaultPicturesLera()
 
-        return imagesOfLera.value!!
+        return@runBlocking imagesOfLera
     }
 
-    fun getImageOfLexa(): List<Int> {
-        if(imagesOfLexa.value != null) return imagesOfLexa.value!!
+    fun getImageOfLexa(): MutableLiveData<List<Any>> = runBlocking {
+        if(imagesOfLexa.value != null) return@runBlocking imagesOfLexa
 
-        imagesOfLexa.value = listOf(R.drawable.lexa1, R.drawable.lexa2,
-            R.drawable.lexa_ksixa, R.drawable.lexa_ksixa2).shuffled()
+        val listFromDB = async { pictureRealization.rylexiumPicture() }
+        imagesOfLexa.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLexa(), listFromDB.getCompleted()) else defaultPicturesLexa()
 
-        return imagesOfLexa.value!!
+        return@runBlocking imagesOfLexa
     }
 
     private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String) {
@@ -141,5 +145,26 @@ class AboutViewModel : ViewModel() {
         setTextGoodnight(staticHandbook[KEY_WISH_GOODNIGHT].toString())
         saveHandbookToDB(dict)
         return dict
+    }
+    suspend fun updatePhotos() {
+        val logoPicture = NetworkPictures.getAllLogoPicture()
+        savePicturesToDB(logoPicture)
+        imageOfLogo.value = union(defaultPicturesLogo(), pictureRealization.logoPicture()).shuffled()
+
+        val oscarPicture = NetworkPictures.getAllOscarPicture()
+        savePicturesToDB(oscarPicture)
+        imagesOfOscar.value = union(defaultPicturesOscar(), pictureRealization.oscarPicture()).shuffled()
+
+        val leraPicture = NetworkPictures.getAllLeraPicture()
+        savePicturesToDB(leraPicture)
+        imagesOfLera.value = union(defaultPicturesLera(), pictureRealization.leraPicture()).shuffled()
+
+        val lexaPicture = NetworkPictures.getAllRylexiumPicture()
+        savePicturesToDB(lexaPicture)
+        imagesOfLexa.value = union(defaultPicturesLexa(), pictureRealization.rylexiumPicture()).shuffled()
+    }
+    private fun union(list1: MutableList<Any>, list2: List<FieldPhoto>) : MutableList<Any> {
+        list1.addAll(list2)
+        return list1
     }
 }

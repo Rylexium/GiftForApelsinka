@@ -44,7 +44,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
                 .onRestoreInstanceState(getScrollState())
             recv.adapter?.notifyDataSetChanged()
         }
-        if (hasDB)
+        if (!hasDB)
             sharedPreferences.edit()
                 .putString(list?.get(index)?.id.toString(), title).apply()
         else

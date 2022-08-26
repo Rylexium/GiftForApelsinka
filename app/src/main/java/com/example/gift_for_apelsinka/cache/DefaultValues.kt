@@ -68,3 +68,22 @@ fun defaultPhotosApelsinka(sharedPreferences : SharedPreferences): MutableList<F
         FieldPhoto(16, R.drawable.main_ksixa16.toString(), sharedPreferences.all["16"].toString(), 0)
     )
 }
+
+fun defaultPicturesLogo() : MutableList<Any> {
+    return mutableListOf(R.drawable.logo, R.drawable.logo2)
+}
+
+fun defaultPicturesOscar() : MutableList<Any> {
+    return mutableListOf(
+            R.drawable.oscar, R.drawable.oscar1, R.drawable.oscar2,
+            R.drawable.oscar3, R.drawable.oscar4, R.drawable.oscar5)
+}
+
+fun defaultPicturesLexa(): MutableList<Any> {
+    return mutableListOf(R.drawable.lexa1, R.drawable.lexa2,
+            R.drawable.lexa_ksixa, R.drawable.lexa_ksixa2)
+}
+
+fun defaultPicturesLera() : MutableList<Any> {
+    return mutableListOf(R.drawable.lera_ksixa1, R.drawable.lera1, R.drawable.lera2)
+}

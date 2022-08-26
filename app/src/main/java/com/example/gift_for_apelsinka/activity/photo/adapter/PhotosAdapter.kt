@@ -63,7 +63,7 @@ class PhotosAdapter(
             }
         }
 
-        val hasDB = isNumeric(newList.picture)
+        val hasDB = !isNumeric(newList.picture)
         holder.photo.setOnLongClickListener {
             editTextView(holder.title, context) {
                 CoroutineScope(Dispatchers.IO).launch {
