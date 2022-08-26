@@ -4,12 +4,10 @@ import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services.statementsServiceApi
 import com.example.gift_for_apelsinka.retrofit.network.repo.StatementsRepo
-import com.example.gift_for_apelsinka.retrofit.requestmodel.StatementsList
+import com.example.gift_for_apelsinka.retrofit.requestmodel.response.StatementsList
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 object NetworkStatements : StatementsRepo {

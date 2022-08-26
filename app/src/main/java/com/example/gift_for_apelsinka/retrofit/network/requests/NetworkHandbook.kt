@@ -4,13 +4,11 @@ import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services.handbookServiceApi
 import com.example.gift_for_apelsinka.retrofit.network.repo.HandbookRepo
-import com.example.gift_for_apelsinka.retrofit.requestmodel.HandbookList
+import com.example.gift_for_apelsinka.retrofit.requestmodel.response.HandbookList
 import com.google.gson.internal.LinkedTreeMap
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 object NetworkHandbook : HandbookRepo {

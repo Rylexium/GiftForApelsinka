@@ -4,11 +4,10 @@ import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.repo.PicturesRepo
-import com.example.gift_for_apelsinka.retrofit.requestmodel.FieldPhotoList
+import com.example.gift_for_apelsinka.retrofit.requestmodel.response.FieldPhotoList
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NewTitleById
 import com.google.gson.internal.LinkedTreeMap
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

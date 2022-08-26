@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.retrofit.requestmodel
+package com.example.gift_for_apelsinka.retrofit.requestmodel.response
 
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.google.gson.annotations.Expose

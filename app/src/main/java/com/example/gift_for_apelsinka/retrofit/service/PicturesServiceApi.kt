@@ -1,6 +1,6 @@
 package com.example.gift_for_apelsinka.retrofit.service
 
-import com.example.gift_for_apelsinka.retrofit.requestmodel.FieldPhotoList
+import com.example.gift_for_apelsinka.retrofit.requestmodel.response.FieldPhotoList
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NewTitleById
 import retrofit2.Call
 import retrofit2.http.Body

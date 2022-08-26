@@ -15,8 +15,6 @@ object IP {
                 val enumIpAddr: Enumeration<InetAddress> = intf.inetAddresses
                 while (enumIpAddr.hasMoreElements()) {
                     val inetAddress: InetAddress = enumIpAddr.nextElement()
-                    println("ip1--:$inetAddress")
-                    println("ip2--:" + inetAddress.hostAddress)
                     if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
                         return inetAddress.getHostAddress()?.toString()
                     }

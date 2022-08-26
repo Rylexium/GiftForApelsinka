@@ -44,11 +44,11 @@ object InitView {
             .into(imageView)
     }
 
-    suspend fun getCircleImage(id : Int, context: Context) : Bitmap {
+    suspend fun getCircleImage(image : Any?, context: Context) : Bitmap {
         return suspendCoroutine {
             Glide.with(context)
                 .asBitmap()
-                .load(id)
+                .load(image)
                 .apply(RequestOptions().transform(CircleCrop(), RoundedCorners(40)))
                 .into(object : CustomTarget<Bitmap?>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
