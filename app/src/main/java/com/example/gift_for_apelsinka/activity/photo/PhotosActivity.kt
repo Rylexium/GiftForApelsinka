@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.adapter.PhotosAdapter
 import com.example.gift_for_apelsinka.util.ShowToast
@@ -19,11 +20,12 @@ import kotlinx.coroutines.launch
 
 
 class PhotosActivity : AppCompatActivity() {
+    private lateinit var switchRefreshLayout: SwipeRefreshLayout
     private lateinit var recv : RecyclerView
     private lateinit var viewModel: PhotosViewModel
     private lateinit var progressBar: ProgressBar
     companion object {
-        private var updateFlag: Boolean = true
+        private var updateFlag : Boolean? = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +39,7 @@ class PhotosActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this,
             PhotosViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[PhotosViewModel::class.java]
         recv = findViewById(R.id.recycler_view_photos)
+        switchRefreshLayout = findViewById(R.id.swipeRefreshLayoutPhotos)
         progressBar = findViewById(R.id.progress_download_photos)
         viewModel.getPhotosList().observe(this) {
             viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
@@ -52,17 +55,29 @@ class PhotosActivity : AppCompatActivity() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                    if(updateFlag) {
-                        progressBar.visibility = View.VISIBLE
-                        updateFlag = false
-                        viewModel.viewModelScope.launch {
-                            viewModel.updatePhotosList()
-                            progressBar.visibility = View.GONE
+                    when(updateFlag) {
+                        true -> {
+                            progressBar.visibility = View.VISIBLE
+                            updateFlag = false
+                            viewModel.viewModelScope.launch {
+                                viewModel.updatePhotosList()
+                                progressBar.visibility = View.GONE
+                            }
                         }
+                        false -> ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
+                        else -> {}
                     }
-                    else ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
                 }
             }
         })
+        switchRefreshLayout.setOnRefreshListener {
+            val previousFlag = updateFlag
+            updateFlag = null
+            viewModel.viewModelScope.launch {
+                viewModel.updatePhotosList()
+                updateFlag = previousFlag
+                Handler(Looper.getMainLooper()).post { switchRefreshLayout.isRefreshing = false }
+            }
+        }
     }
 }

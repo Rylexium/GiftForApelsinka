@@ -23,7 +23,7 @@ import java.util.*
 
 class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var liveDataPhotosList: MutableLiveData<List<FieldPhoto>> = MutableLiveData()
-
+    private var isUpdating = false
     companion object {
         private var state: Parcelable? = null
     }
@@ -65,6 +65,8 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun updatePhotosList(): List<FieldPhoto>? {
+        if(isUpdating) return null
+        isUpdating = true
         val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture()
         deletePicturesApelsinkaFromDB()
         savePicturesToDB(picturesApelsinka)
@@ -74,6 +76,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
         res.addAll(db)
 
         liveDataPhotosList.value = res.distinct()
+        isUpdating = false
         return liveDataPhotosList.value
     }
 }

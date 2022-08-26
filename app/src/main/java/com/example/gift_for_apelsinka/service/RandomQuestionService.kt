@@ -40,7 +40,7 @@ class RandomQuestionService : Service() {
     private fun task() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 53)
         Thread {
             while (true) {
                 val nowHour = WorkWithTime.getNowHour()

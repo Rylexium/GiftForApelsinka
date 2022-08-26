@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:id="@+id/swipeRefreshLayoutPhotos"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_photos"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        />
+    android:layout_width="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progress_download_photos"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
-        android:indeterminate="true"
-        android:indeterminateTintMode="src_atop"
-        android:visibility="gone" />
-</RelativeLayout>
+        android:orientation="vertical"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_photos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            />
+
+        <ProgressBar
+            android:id="@+id/progress_download_photos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:indeterminate="true"
+            android:indeterminateTint="?attr/colorPrimaryVariant"
+            android:indeterminateTintMode="src_atop"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
