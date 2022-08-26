@@ -46,7 +46,6 @@ val defaultHandbook = mutableMapOf<String, String>().also {
             "И Лев не спросил у них отличие между базой и базисом, \uD83C\uDD98\n" +
             "В то время, когда их чекает Илюха со своей понамеры \uD83D\uDC41️"
 }
-var staticHandbook : MutableMap<String, String> = mutableMapOf()
 
 fun defaultPhotosApelsinka(sharedPreferences : SharedPreferences): MutableList<FieldPhoto> {
     return mutableListOf(
