@@ -38,6 +38,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     suspend fun changePhotoAtIndex(index : Int, id : Int, title : String, hasDB : Boolean, recv : RecyclerView) {
         val list = liveDataPhotosList.value
         Handler(Looper.getMainLooper()).post {
+            setScrollState(recv.layoutManager?.onSaveInstanceState())
             list?.get(index)?.title = title
             liveDataPhotosList.value = list!!
             (recv.layoutManager as LinearLayoutManager)
