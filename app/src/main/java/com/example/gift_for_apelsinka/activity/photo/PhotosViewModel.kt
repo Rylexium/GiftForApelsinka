@@ -73,7 +73,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
         val db = pictureRealization.apelsinkaPicture()
         res.addAll(db)
 
-        liveDataPhotosList.value = res.distinct().shuffled(Random())
+        liveDataPhotosList.value = res.distinct()
         return liveDataPhotosList.value
     }
 }

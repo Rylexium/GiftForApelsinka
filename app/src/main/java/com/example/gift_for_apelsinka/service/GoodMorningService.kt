@@ -23,6 +23,19 @@ class GoodMorningService : Service() {
     private val KEY_MINUTE = "GoodMorningRandomMinute"
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        task()
+        return START_STICKY
+    }
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onDestroy() {
+        task()
+    }
+
+    private fun task() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 8)
         var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)
@@ -40,15 +53,9 @@ class GoodMorningService : Service() {
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(5_000)
+                Thread.sleep(600_000)
             }
         }.start()
-        super.onStartCommand(intent, flags, startId)
-        return START_STICKY
-    }
-
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
     }
 
     private fun goodMorningNotification() {

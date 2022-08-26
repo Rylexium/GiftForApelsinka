@@ -13,9 +13,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
 import com.example.gift_for_apelsinka.util.WorkWithTime
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class RandomQuestionService : Service() {
 
@@ -23,6 +21,23 @@ class RandomQuestionService : Service() {
     private val KEY_MINUTE = "EquationRandomMinute"
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        task()
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        task()
+    }
+    private fun equationNotification() {
+        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notifChannel = NotificationChannel("CHANNEL_QUESTION", "CHANNEL_QUESTION", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(notifChannel)
+        }
+        notificationManager.notify(2, getNotification())
+    }
+
+    private fun task() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
         var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
@@ -39,37 +54,27 @@ class RandomQuestionService : Service() {
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(5_000)
+                Thread.sleep(600_000)
             }
         }.start()
-        return START_STICKY
     }
 
-    private fun equationNotification() {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        CoroutineScope(Dispatchers.IO).launch {
-            val id = when((1..3).random()) {
-                1 -> R.drawable.developer
-                2 -> R.drawable.icon_of_developer
-                else -> { R.drawable.lexa1 }
-            }
-            val circleImage = InitView.getCircleImage(id, applicationContext)
-            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_QUESTION")
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
-                .setLargeIcon(circleImage)
-                .setWhen(System.currentTimeMillis())
-                .setContentTitle("Вопросик")
-                .setContentText(generateTextOfEquation())
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .build()
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notifChannel = NotificationChannel("CHANNEL_QUESTION", "CHANNEL_QUESTION", NotificationManager.IMPORTANCE_DEFAULT)
-                notificationManager.createNotificationChannel(notifChannel)
-            }
-            notificationManager.notify(2, notificationGoodMorning)
+    private fun getNotification() = runBlocking {
+        val id = when((1..3).random()) {
+            1 -> R.drawable.developer
+            2 -> R.drawable.icon_of_developer
+            else -> { R.drawable.lexa1 }
         }
+        val circleImage = async { InitView.getCircleImage(id, applicationContext) }
+        return@runBlocking NotificationCompat.Builder(applicationContext, "CHANNEL_QUESTION")
+            .setAutoCancel(true)
+            .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
+            .setLargeIcon(circleImage.await())
+            .setWhen(System.currentTimeMillis())
+            .setContentTitle("Вопросик")
+            .setContentText(generateTextOfEquation())
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
     }
 
     override fun onBind(p0: Intent?): IBinder? {

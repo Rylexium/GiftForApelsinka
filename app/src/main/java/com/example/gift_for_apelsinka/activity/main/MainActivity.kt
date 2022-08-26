@@ -26,27 +26,22 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
-import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.initDB
-import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
-import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import java.net.SocketTimeoutException
-import kotlin.math.roundToInt
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -126,6 +121,18 @@ class MainActivity : AppCompatActivity() {
         textPhoneDeveloper = findViewById(R.id.text_phone_developer)
         textDiscordDeveloper = findViewById(R.id.text_discord_developer)
         textAddressDeveloper = findViewById(R.id.text_address_developer)
+        viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                println(position) // здесь делать запрос на фотки, если позиция = list.size - 2, и отображать
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+        })
     }
 
     private fun initDataComponents() {
@@ -138,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
         if(getNowHour() in 0..5) {
             val chance = System.currentTimeMillis() % 10
-            if(chance in 1..3) Toast.makeText(this, "Хули не спим?!?!?!? ❤️", Toast.LENGTH_SHORT).show()
+            if(chance in 1..3) ShowToast.show(this, "Хули не спим?!?!?!? ❤️")
         }
     }
 
@@ -176,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         swipeRefreshLayout.setOnRefreshListener {
-            Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
+            ShowToast.show(this, "Refresh")
             val context = this
             viewModel.viewModelScope.launch {
                 // SocketTimeoutException
@@ -186,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                     initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
                 }
                 catch (e : SocketTimeoutException) {
-                    Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Not Refresh", Toast.LENGTH_SHORT).show() }
+                    Handler(Looper.getMainLooper()).post { ShowToast.show(context, "Not Refresh") }
                     Log.e("timeout", e.message.toString())
                 }
                 finally {
@@ -196,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.photo_of_developer).setOnClickListener {
-            Toast.makeText(this, "Да, это Ryletikum...", Toast.LENGTH_SHORT).show()
+            ShowToast.show(this, "Да, это Ryletikum...")
         }
 
         photoWithApelsinka.setOnClickListener {
@@ -220,7 +227,7 @@ class MainActivity : AppCompatActivity() {
                     " авторских правах и международными соглашениями. Копирование не запрещено", Snackbar.LENGTH_LONG)
                 .setTextMaxLines(6)
                 .setAction("Похуй + Похуй") {
-                    Toast.makeText(this, "Теперь Вам похуй", Toast.LENGTH_SHORT).show()
+                    ShowToast.show(this, "Теперь Вам похуй")
                 }
                 .show()
         }
