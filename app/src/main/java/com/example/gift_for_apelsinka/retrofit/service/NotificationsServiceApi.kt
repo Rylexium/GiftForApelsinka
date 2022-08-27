@@ -6,11 +6,9 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface NotificationsServiceApi {
     @GET("notifications")
-    fun getNotifications() : Call<NotificationList>
-
-    @POST("notifications")
-    fun changeStatus(@Body notificationID: NotificationID) : Call<Any>
+    fun getNotifications(@Query("androidId") androidId : String) : Call<NotificationList>
 }
