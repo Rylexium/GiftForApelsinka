@@ -17,7 +17,7 @@ import com.example.gift_for_apelsinka.util.InitView
 import kotlinx.coroutines.*
 
 class NotificationFromServerService : Service() {
-    private var ID = 3
+    private var channelId = 10
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         task()
         return START_STICKY
@@ -31,14 +31,14 @@ class NotificationFromServerService : Service() {
         task()
     }
     private fun task() {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         Thread {
             while (true) {
                  CoroutineScope(Dispatchers.IO).launch {
                      val notifications = NetworkNotifications.getNotifications()!!
+                     if(notifications.isEmpty()) return@launch
                      val listNotification : MutableList<Notification> = mutableListOf()
                      val listData : MutableList<String> = mutableListOf()
-
                      for(notif in notifications) {
 
                          val image = if(notif.image != null) ConvertClass.convertStringToBitmap(notif.image) else {
@@ -49,9 +49,9 @@ class NotificationFromServerService : Service() {
                                  else -> { R.drawable.oscar5 }
                              }
                          }
-                         val circleImage = InitView.getCircleImage(image, applicationContext)
+                         val circleImage = InitView.getCircleImage(image, this@NotificationFromServerService)
 
-                         val notification = NotificationCompat.Builder(applicationContext, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
+                         val notification = NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
                              .setAutoCancel(true)
                              .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                              .setLargeIcon(circleImage)
@@ -72,8 +72,8 @@ class NotificationFromServerService : Service() {
                          NetworkNotifications.changeStatusNotification(notif.id)
                      }
 
-                     val summaryNotification = NotificationCompat.Builder(applicationContext, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
-                         .setContentTitle("Вопросы")
+                     val summaryNotification = NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
+                         .setContentTitle("Уведомления")
                          .setContentText("${listNotification.size} новых сообщений")
                          .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                          .setStyle(NotificationCompat.InboxStyle()
@@ -86,13 +86,12 @@ class NotificationFromServerService : Service() {
                          .setGroupSummary(true)
                          .build()
 
-                     NotificationManagerCompat.from(applicationContext).apply {
-                         var id = 5
+                     NotificationManagerCompat.from(this@NotificationFromServerService).apply {
                          for(item in listNotification) {
-                             notify(id, item)
-                             id++
+                             notify(channelId, item)
+                             channelId += 10
                          }
-                         notify(4, summaryNotification)
+                         notify(0, summaryNotification)
                      }
                  }
                 Thread.sleep(5_000)

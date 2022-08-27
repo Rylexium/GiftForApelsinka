@@ -29,7 +29,7 @@ class RandomQuestionService : Service() {
         task()
     }
     private fun equationNotification() {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = this@RandomQuestionService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val notifChannel = NotificationChannel("CHANNEL_QUESTION", "CHANNEL_QUESTION", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)
@@ -65,8 +65,8 @@ class RandomQuestionService : Service() {
             2 -> R.drawable.icon_of_developer
             else -> { R.drawable.lexa1 }
         }
-        val circleImage = async { InitView.getCircleImage(id, applicationContext) }
-        return@runBlocking NotificationCompat.Builder(applicationContext, "CHANNEL_QUESTION")
+        val circleImage = async { InitView.getCircleImage(id, this@RandomQuestionService) }
+        return@runBlocking NotificationCompat.Builder(this@RandomQuestionService, "CHANNEL_QUESTION")
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setLargeIcon(circleImage.await())

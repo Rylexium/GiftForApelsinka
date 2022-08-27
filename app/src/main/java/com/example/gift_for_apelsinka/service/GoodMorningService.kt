@@ -59,10 +59,10 @@ class GoodMorningService : Service() {
     }
 
     private fun goodMorningNotification() {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
-            val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, applicationContext)
-            val notificationGoodMorning = NotificationCompat.Builder(applicationContext, "CHANNEL_GOOD_MORNING")
+            val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, this@GoodMorningService)
+            val notificationGoodMorning = NotificationCompat.Builder(this@GoodMorningService, "CHANNEL_GOOD_MORNING")
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setLargeIcon(circleImageApelsinka)
