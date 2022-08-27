@@ -2,27 +2,19 @@ package com.example.gift_for_apelsinka.activity.main
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.text.Html
 import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.getSystemService
-import androidx.legacy.content.WakefulBroadcastReceiver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -39,7 +31,6 @@ import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
-import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
@@ -90,9 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
-        startService(Intent(this, NotificationFromServerService::class.java).also {
-            WakefulBroadcastReceiver.startWakefulService(applicationContext, it)
-        })
+        startService(Intent(this, NotificationFromServerService::class.java))
 //        requestPermission()
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
 //            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
