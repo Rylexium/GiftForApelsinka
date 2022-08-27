@@ -12,7 +12,10 @@ import android.os.Looper
 import android.text.Html
 import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -41,7 +44,6 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
-
 
 
 class MainActivity : AppCompatActivity() {

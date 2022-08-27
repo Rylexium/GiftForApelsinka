@@ -1,11 +1,12 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.*
-import android.content.BroadcastReceiver
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.IBinder
@@ -19,6 +20,7 @@ import com.example.gift_for_apelsinka.util.InitView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class NotificationFromServerService : Service() {
@@ -30,7 +32,6 @@ class NotificationFromServerService : Service() {
         return START_STICKY
     }
     private fun initTask() {
-        backgroundThread?.stop()
         backgroundThread = task()
         backgroundThread?.start()
     }
@@ -40,9 +41,7 @@ class NotificationFromServerService : Service() {
     }
 
     override fun onDestroy() {
-        backgroundThread?.stop()
-        backgroundThread = task()
-        backgroundThread?.start()
+        initTask()
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
@@ -66,7 +65,7 @@ class NotificationFromServerService : Service() {
                 .setContentTitle(notif.title)
                 .setContentText(notif.text)
                 .setGroup("group")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .build()
     }
     private fun createSummingNotification(listNotification : List<Notification>, listData : List<String>): Notification {
@@ -82,6 +81,7 @@ class NotificationFromServerService : Service() {
                                 it.addLine(item)
                         })
                 .setGroup("group")
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setGroupSummary(true)
                 .build()
     }
