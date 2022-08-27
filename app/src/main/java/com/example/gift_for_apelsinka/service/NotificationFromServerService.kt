@@ -1,10 +1,7 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -20,13 +17,17 @@ import com.example.gift_for_apelsinka.util.InitView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-
 
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
 
     private var channelId = 10
+    override fun onCreate() {
+        val builder: Notification.Builder = Notification.Builder(this)
+            .setSmallIcon(R.drawable.icon_of_developer)
+        val notification: Notification = if (Build.VERSION.SDK_INT < 16) builder.notification else builder.build()
+        startForeground(0, notification)
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
         return START_STICKY
@@ -42,6 +43,16 @@ class NotificationFromServerService : Service() {
 
     override fun onDestroy() {
         initTask()
+    }
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
+
+        val am = getSystemService(ALARM_SERVICE) as AlarmManager
+        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT);
+        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi);
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {

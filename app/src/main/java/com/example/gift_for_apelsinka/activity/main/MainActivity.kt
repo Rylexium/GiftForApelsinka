@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 //            NetworkMessage.sendMessage(IP.getIpv4() + " приложение запустили")
 //        }
     }
-
     private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
