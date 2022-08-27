@@ -167,7 +167,9 @@ class MainActivity : AppCompatActivity() {
     private fun applyEvents() {
         viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
+            override fun onPageSelected(position: Int) {
+
+            }
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
