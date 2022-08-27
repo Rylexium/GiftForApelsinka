@@ -70,13 +70,13 @@ class NotificationFromServerService : Service() {
                 .build()
     }
     private fun createSummingNotification(listNotification : List<Notification>, listData : List<String>): Notification {
+        val text = "${listNotification.size} " + if(listNotification.size == 1) "новое сообщение" else "новых сообщений"
         return NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
-                .setContentTitle("Уведомления")
-                .setContentText("${listNotification.size} новых сообщений")
+                .setContentText(text)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setStyle(
                     NotificationCompat.InboxStyle()
-                        .setBigContentTitle("${listNotification.size} новых сообщений")
+                        .setBigContentTitle(text)
                         .setSummaryText("Вопросы").also {
                             for(item in listData)
                                 it.addLine(item)
