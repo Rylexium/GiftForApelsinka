@@ -43,7 +43,7 @@ class PhotosActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progress_download_photos)
         viewModel.getPhotosList().observe(this) {
             viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
-            recv.adapter = PhotosAdapter(this, it, viewModel, recv)
+            recv.adapter = PhotosAdapter(applicationContext, it, viewModel, recv)
             recv.layoutManager = LinearLayoutManager(this)
             (recv.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(viewModel.getScrollState())
@@ -55,6 +55,10 @@ class PhotosActivity : AppCompatActivity() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
+                    if(progressBar.visibility == View.VISIBLE) {
+                        ShowToast.show(this@PhotosActivity, "Загружаю фотографии")
+                        return
+                    }
                     when(updateFlag) {
                         true -> {
                             progressBar.visibility = View.VISIBLE
@@ -64,7 +68,13 @@ class PhotosActivity : AppCompatActivity() {
                                 progressBar.visibility = View.GONE
                             }
                         }
-                        false -> ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
+                        false -> {
+                            ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
+                            updateFlag = null
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                updateFlag = false
+                            }, 1_000)
+                        }
                         else -> {}
                     }
                 }

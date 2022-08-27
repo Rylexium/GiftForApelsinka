@@ -38,6 +38,7 @@
         <service android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
+            android:process=":newproc"
             />
         <activity
             android:name=".activity.about.AboutActivity"
