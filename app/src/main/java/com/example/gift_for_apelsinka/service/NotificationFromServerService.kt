@@ -20,13 +20,15 @@ import kotlinx.coroutines.launch
 
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
-
-    private var channelId = 10
+    private var channelId = 2
+    @SuppressLint("NewApi")
     override fun onCreate() {
-        val builder: Notification.Builder = Notification.Builder(this)
+        val notification: Notification = Notification.Builder(this, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
             .setSmallIcon(R.drawable.icon_of_developer)
-        val notification: Notification = if (Build.VERSION.SDK_INT < 16) builder.notification else builder.build()
-        startForeground(0, notification)
+            .build()
+//        notification.flags = notification.flags or Notification.FLAG_NO_CLEAR
+        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+        startForeground(1, notification)
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
@@ -69,32 +71,32 @@ class NotificationFromServerService : Service() {
 
     private suspend fun createNotification(notif: com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Notification {
         return NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
-                .setLargeIcon(getCircleImage(notif))
-                .setWhen(notif.time ?: System.currentTimeMillis())
-                .setContentTitle(notif.title)
-                .setContentText(notif.text)
-                .setGroup("group")
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .build()
+            .setAutoCancel(true)
+            .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
+            .setLargeIcon(getCircleImage(notif))
+            .setWhen(notif.time ?: System.currentTimeMillis())
+            .setContentTitle(notif.title)
+            .setContentText(notif.text)
+            .setGroup("group")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .build()
     }
     private fun createSummingNotification(listNotification : List<Notification>, listData : List<String>): Notification {
         val text = "${listNotification.size} " + if(listNotification.size == 1) "новое сообщение" else "новых сообщений"
         return NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
-                .setContentText(text)
-                .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
-                .setStyle(
-                    NotificationCompat.InboxStyle()
-                        .setBigContentTitle(text)
-                        .setSummaryText("Вопросы").also {
-                            for(item in listData)
-                                it.addLine(item)
-                        })
-                .setGroup("group")
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setGroupSummary(true)
-                .build()
+            .setContentText(text)
+            .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
+            .setStyle(
+                NotificationCompat.InboxStyle()
+                    .setBigContentTitle(text)
+                    .setSummaryText("Вопросы").also {
+                        for(item in listData)
+                            it.addLine(item)
+                    })
+            .setGroup("group")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setGroupSummary(true)
+            .build()
     }
     private fun notifForSdkO() {
         val notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -133,7 +135,7 @@ class NotificationFromServerService : Service() {
                             notify(channelId, item)
                             channelId += 10
                         }
-                        notify(0, summaryNotification)
+                        if(notifications.size != 1) notify(0, summaryNotification)
                     }
                 }
                 Thread.sleep(5_000)

@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--    PowerManager-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -40,9 +43,23 @@
             />
         <service android:name=".service.NotificationFromServerService"
             android:enabled="true"
-            android:exported="false"
-            android:process=":newprocc"
+            android:exported="true"
             />
+
+        <receiver
+            android:name=".service.receiver.MyReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.REBOOT"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </receiver>
 
         <activity
             android:name=".activity.about.AboutActivity"
