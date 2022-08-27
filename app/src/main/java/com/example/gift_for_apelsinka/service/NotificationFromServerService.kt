@@ -27,7 +27,7 @@ class NotificationFromServerService : Service() {
     private var channelId = 10
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
-        return START_REDELIVER_INTENT
+        return START_STICKY
     }
     private fun initTask() {
         backgroundThread?.stop()
