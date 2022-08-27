@@ -89,8 +89,6 @@ class NotificationFromServerService : Service() {
                      NotificationManagerCompat.from(this@NotificationFromServerService).apply {
                          for(item in listNotification) {
                              notify(channelId, item)
-                             item.defaults = item.defaults or Notification.DEFAULT_VIBRATE
-                             item.defaults = item.defaults or Notification.DEFAULT_SOUND
                              channelId += 10
                          }
                          notify(0, summaryNotification)
