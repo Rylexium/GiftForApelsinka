@@ -26,7 +26,6 @@ class NotificationFromServerService : Service() {
         val notification: Notification = Notification.Builder(this, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
             .setSmallIcon(R.drawable.icon_of_developer)
             .build()
-//        notification.flags = notification.flags or Notification.FLAG_NO_CLEAR
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
         startForeground(1, notification)
     }
