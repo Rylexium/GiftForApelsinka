@@ -4,18 +4,15 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gift_for_apelsinka.activity.main.MainViewModel
 import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
-import com.example.gift_for_apelsinka.db.deleteAll
-import com.example.gift_for_apelsinka.db.deletePicturesApelsinkaFromDB
+import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
-import com.example.gift_for_apelsinka.db.pictureRealization
-import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -26,6 +23,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     private var isUpdating = false
     companion object {
         private var state: Parcelable? = null
+        val KEY_PHOTOS = "PAGE_PHOTOS_APELSINKA"
     }
     fun getScrollState(): Parcelable? {
         return state
@@ -65,18 +63,46 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun updatePhotosList(): List<FieldPhoto>? {
-//        if(isUpdating) return null
-//        isUpdating = true
-//        val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture(0)
-//        deletePicturesApelsinkaFromDB()
-//        savePicturesToDB(picturesApelsinka)
-//
-//        val res = liveDataPhotosList.value as MutableList
-//        val db = pictureRealization.apelsinkaPicture()
-//        res.addAll(db)
-//
-//        liveDataPhotosList.value = res.distinct()
-//        isUpdating = false
+        if(isUpdating) return null
+        isUpdating = true
+        val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture(0)
+        deletePicturesApelsinkaFromDB()
+        savePicturesToDB(picturesApelsinka)
+
+        val res = liveDataPhotosList.value as MutableList
+        val db = pictureRealization.apelsinkaPicture()
+        res.addAll(db)
+
+        liveDataPhotosList.value = res.distinct()
+        isUpdating = false
         return liveDataPhotosList.value
+    }
+
+    suspend fun nextPhotos() : Boolean {
+        var page = sharedPreferences.getInt(KEY_PHOTOS, 0)
+        var pictureFromNetwork: List<FieldPhoto>
+
+        while(true) {
+            pictureFromNetwork = NetworkPictures.getAllApelsinkaPicture(page)
+            val previosSize = pictureRealization.apelsinkaPicture().size
+            savePicturesToDB(pictureFromNetwork)
+            val nowSize = pictureRealization.apelsinkaPicture().size
+
+            if(pictureFromNetwork.size == 10)
+                page += 1
+
+            if(previosSize == nowSize) break //таких нет, надо отобразить
+            if(pictureFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+        }
+        if(pictureFromNetwork.isEmpty()) return false
+        sharedPreferences.edit().putInt(KEY_PHOTOS, page).apply()
+
+        val result = liveDataPhotosList.value as MutableList
+
+        result.addAll(pictureRealization.apelsinkaPicture())
+
+        liveDataPhotosList.value = result.distinct()
+        if(pictureFromNetwork.size < 10) return false
+        return true
     }
 }

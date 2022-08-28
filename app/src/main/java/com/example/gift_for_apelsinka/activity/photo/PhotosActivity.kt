@@ -52,30 +52,34 @@ class PhotosActivity : AppCompatActivity() {
 
     private fun applyEvents() {
         recv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            var isUpdate = false
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                    if(progressBar.visibility == View.VISIBLE) {
+                    if(progressBar.visibility == View.VISIBLE) { // если загрузка
                         ShowToast.show(this@PhotosActivity, "Загружаю фотографии")
                         return
                     }
-                    when(updateFlag) {
-                        true -> {
-                            progressBar.visibility = View.VISIBLE
-                            updateFlag = false
-                            viewModel.viewModelScope.launch {
-                                viewModel.updatePhotosList()
-                                progressBar.visibility = View.GONE
-                            }
-                        }
-                        false -> {
+
+                    if(isUpdate) return //обновлять нечёго
+
+                    progressBar.visibility == View.VISIBLE // перед загрузкой visible
+
+                    viewModel.viewModelScope.launch {
+                        isUpdate = true
+                        val flag = viewModel.nextPhotos() //загрузка
+                        isUpdate = false
+
+                        if(!flag) //показываем что всё загружено
                             ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
-                            updateFlag = null
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                updateFlag = false
-                            }, 1_000)
+                        updateFlag = null
+                        Handler(Looper.getMainLooper()).post {
+                            progressBar.visibility == View.GONE //прячем прогресс бар
                         }
-                        else -> {}
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            updateFlag = false //много раз появляется toast поэтому delay
+                        }, 1_000)
                     }
                 }
             }
