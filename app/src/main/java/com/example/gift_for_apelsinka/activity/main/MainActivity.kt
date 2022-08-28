@@ -80,6 +80,15 @@ class MainActivity : AppCompatActivity() {
 //            NetworkMessage.sendMessage(IP.getIpv4() + " приложение запустили")
 //        }
     }
+
+    override fun onDestroy() {
+        getSharedPreferences("preference_key", MODE_PRIVATE).edit()
+            .putInt(MainViewModel.KEY_PAGE_OF_PICTURE, 0)
+            .putInt(MainViewModel.KEY_PAGE_OF_STATEMENTS, 0)
+            .apply()
+        super.onDestroy()
+    }
+
     private fun startServices() {
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))

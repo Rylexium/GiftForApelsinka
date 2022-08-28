@@ -22,7 +22,9 @@ suspend fun saveStatementsToDB(list : List<Statements>) {
     for(item in list)
         statementRealization.insertStatement(item)
 }
-
+suspend fun deleteStatementsFromDB() {
+    statementRealization.clearStatement()
+}
 suspend fun savePicturesToDB(list : List<FieldPhoto>) {
     for (item in list)
         pictureRealization.insertFieldPhoto(FieldPhoto(item.id, item.picture, if(item.title == null) "" else item.title, item.belongs))

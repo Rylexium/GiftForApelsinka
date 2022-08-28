@@ -9,6 +9,7 @@ import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
@@ -22,8 +23,10 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
-    private var KEY_PAGE_OF_PICTURE = "pageOfPicture"
-    private var KEY_PAGE_OF_STATEMENTS = "pageOfStatements"
+    companion object {
+        var KEY_PAGE_OF_PICTURE = "pageOfPicture"
+        var KEY_PAGE_OF_STATEMENTS = "pageOfStatements"
+    }
 
     fun getStatements(): MutableLiveData<List<Statements>> = runBlocking {
         if(listOfStatements.value != null) return@runBlocking listOfStatements
@@ -105,31 +108,52 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
     }
 
     suspend fun updateStatements() : Boolean {
-        val statements = NetworkStatements.getStatements(0, 1000)
-        saveStatementsToDB(statements)
+        val statementsFromNetwork = NetworkStatements.getStatements(0, 1000)
+
         val listFromDb = statementRealization.getAll()
 
-        var isEquals = false
-        for(item in listFromDb)
-            if(item.id == listOfStatements.value?.get(0)?.id) isEquals = true
-
-        if(!isEquals)
+        var isEquals = true
+        for(item in listFromDb) {
+            var count = 0
+            for(item1 in statementsFromNetwork) {
+                if (item.id == item1.id)
+                    break
+                count += 1
+            }
+            if(count == statementsFromNetwork.size) {
+                isEquals = false
+                break
+            }
+        }
+        if(!isEquals) {
+            deleteStatementsFromDB()
+            saveStatementsToDB(statementsFromNetwork)
             listOfStatements.value = statementRealization.getAll().shuffled()
-
-        return !isEquals //true была новая запись
+        }
+        return isEquals //true была новая запись
     }
 
     suspend fun nextStatements() : Boolean {
         var page = sharedPreferences.getInt(KEY_PAGE_OF_STATEMENTS, 0)
-        val statementsFromNetwork = NetworkStatements.getStatements(page)
-        if(statementsFromNetwork.isEmpty()) return false
-        if(statementsFromNetwork.size == 10) {
-            page += 1
-            sharedPreferences.edit().putInt(KEY_PAGE_OF_STATEMENTS, page).apply()
+        var statementsFromNetwork: List<Statements>
+
+        while(true) {
+            statementsFromNetwork = NetworkStatements.getStatements(page)
+            val previosSize = statementRealization.getAll().size
+            saveStatementsToDB(statementsFromNetwork)
+            val nowSize = statementRealization.getAll().size
+
+            if(statementsFromNetwork.size == 10)
+                page += 1
+
+            if(previosSize != nowSize) break //таких нет, надо отобразить
+            if(statementsFromNetwork.size < 10) break //пришло меньше 10 -> это конец
         }
+        if(statementsFromNetwork.isEmpty()) return false
+        sharedPreferences.edit().putInt(KEY_PAGE_OF_STATEMENTS, page).apply()
+
         val result = listOfStatements.value as MutableList
 
-        saveStatementsToDB(statementsFromNetwork)
         result.addAll(statementRealization.getAll())
 
         listOfStatements.value = result.distinct()
