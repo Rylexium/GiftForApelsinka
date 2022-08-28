@@ -1,11 +1,14 @@
 package com.example.gift_for_apelsinka.activity.main.adapter
 
 import android.content.Context
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
+import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCorners
@@ -18,6 +21,7 @@ class ImageViewPageAdapter(
 ) : PagerAdapter() {
     private var ctx : Context = context
     private var imageArray = list
+    private lateinit var layoutInflater : LayoutInflater
 
     override fun getCount(): Int {
         return imageArray.size
@@ -28,19 +32,23 @@ class ImageViewPageAdapter(
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any = runBlocking {
-        val imageView = ImageView(ctx)
-        imageView.setPadding(18, 9, 18, 9)
+        layoutInflater = LayoutInflater.from(ctx)
+        val view = layoutInflater.inflate(R.layout.field_of_picture, container, false)
+
+        val imageView = view.findViewById<ImageView>(R.id.field_of_picture)
+
+        view.setPadding(18, 9, 18, 9)
         if(imageArray[position] is Int)
             setImageWithCorners(imageArray[position] as Int, imageView, ctx)
         else {
             val task = async { ConvertClass.convertStringToBitmap((imageArray[position] as FieldPhoto).picture) }
             setImageWithCorners(task.await()!!, imageView, ctx)
         }
-        container.addView(imageView, 0)
-        return@runBlocking imageView
+        container.addView(view, 0)
+        return@runBlocking view
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        container.removeView(`object` as ImageView)
+    override fun destroyItem(container: View, position: Int, `object`: Any) {
+        (container as ViewPager).removeView(`object` as View?)
     }
 }

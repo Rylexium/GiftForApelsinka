@@ -32,7 +32,7 @@
             android:layout_height="1dp"
             android:background="@color/black"
             />
-        <androidx.viewpager.widget.ViewPager
+        <com.example.gift_for_apelsinka.util.views.ImageViewPager
             android:id="@+id/view_pager_of_image_oscar"
             android:layout_marginTop="6dp"
             android:layout_width="match_parent"

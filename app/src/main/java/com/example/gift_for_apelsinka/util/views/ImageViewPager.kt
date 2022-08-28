@@ -10,9 +10,12 @@ class ImageViewPager(context: Context, attrs: AttributeSet? = null) :
     ViewPager(context, attrs) {
     var mStartDragX = 0f
     var mListener: OnSwipeOutListener? = null
+
+
     fun setOnSwipeOutListener(listener: OnSwipeOutListener?) {
         mListener = listener
     }
+
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         val x = ev.x

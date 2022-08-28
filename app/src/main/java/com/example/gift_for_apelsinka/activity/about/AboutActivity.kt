@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -18,12 +19,13 @@ import com.example.gift_for_apelsinka.util.DoubleClickListener
 import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var switchRefreshLayout : SwipeRefreshLayout
     private lateinit var viewModel: AboutViewModel
-    private lateinit var viewPageOfImageOscar : ViewPager
+    private lateinit var viewPageOfImageOscar : ImageViewPager
     private lateinit var viewPageOfImageLera : ViewPager
     private lateinit var viewPageOfImageLexa : ViewPager
     private lateinit var viewPageOfImageLogo : ViewPager
@@ -97,6 +99,16 @@ class AboutActivity : AppCompatActivity() {
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
+        })
+        viewPageOfImageOscar.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
+            override fun onSwipeOutAtStart() {
+                Log.e("oscar", "start")
+            }
+
+            override fun onSwipeOutAtEnd() {
+                Log.e("oscar", "start")
+            }
+
         })
         viewPageOfImageOscar.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}

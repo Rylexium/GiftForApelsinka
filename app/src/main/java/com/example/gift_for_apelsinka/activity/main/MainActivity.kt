@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: MainViewModel
-    private lateinit var viewPageOfImage : ViewPager
+    private lateinit var viewPageOfImage : ImageViewPager
     private lateinit var viewPageOfStatement : DynamicViewPager
     private lateinit var greetingTextView : TextView
     private lateinit var photoWithApelsinka : Button
@@ -166,21 +166,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyEvents() {
-        viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
+        viewPageOfImage.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
+            override fun onSwipeOutAtStart() {}
+
             var isUpdate = false
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {
+            override fun onSwipeOutAtEnd() {
                 if(isUpdate) return
                 viewModel.viewModelScope.launch {
-                    if(position == viewModel.getPictures().value?.size?.minus(1)) { //долистали до ласт элемента
-                        isUpdate = true
-                        val flag = viewModel.nextMainPictures()
-                        isUpdate = false
-                        if(!flag)
-                            Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
-                    }
+                    isUpdate = true
+                    val flag = viewModel.nextMainPictures()
+                    isUpdate = false
+                    if(!flag)
+                        Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
                 }
             }
+
+        })
+        viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }

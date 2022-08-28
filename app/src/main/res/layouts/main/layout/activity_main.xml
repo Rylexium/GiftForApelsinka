@@ -58,7 +58,7 @@
                             android:layout_height="match_parent"
                             />
                     </LinearLayout>
-                    <androidx.viewpager.widget.ViewPager
+                    <com.example.gift_for_apelsinka.util.views.ImageViewPager
                         android:id="@+id/view_pager_of_image"
                         android:layout_width="match_parent"
                         android:layout_height="400dp"
