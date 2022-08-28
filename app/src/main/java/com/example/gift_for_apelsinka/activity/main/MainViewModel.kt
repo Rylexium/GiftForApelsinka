@@ -1,5 +1,7 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
@@ -18,25 +20,26 @@ import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import kotlinx.coroutines.*
 
-class MainViewModel : ViewModel() {
+class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
     private var mapOfHandbook : MutableLiveData<Map<String, String>> = MutableLiveData()
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
+    private var KEY_PAGE_OF_PICTURE = "pageOfPicture"
 
-    fun getStatements(): List<Statements> = runBlocking {
-        if(listOfStatements.value != null) return@runBlocking listOfStatements.value!!
+    fun getStatements(): MutableLiveData<List<Statements>> = runBlocking {
+        if(listOfStatements.value != null) return@runBlocking listOfStatements
         val list = async { statementRealization.getAll() }
         val res = if(list.await().isEmpty())
             defaultListOfStatements
         else
             list.getCompleted()
         listOfStatements.value = res.shuffled()
-        return@runBlocking listOfStatements.value!!
+        return@runBlocking listOfStatements
     }
 
-    fun getPictures(): List<Any> = runBlocking {
-        if(listOfPictures.value != null) return@runBlocking listOfPictures.value!!
+    fun getPictures(): MutableLiveData<List<Any>> = runBlocking {
+        if(listOfPictures.value != null) return@runBlocking listOfPictures
         val list = defaultListOfMainPictures()
         val task = async { pictureRealization.mainPicture() }
         if(task.await().isNotEmpty()) {
@@ -45,18 +48,18 @@ class MainViewModel : ViewModel() {
                 list.add(item)
         }
         listOfPictures.value = list
-        return@runBlocking listOfPictures.value!!
+        return@runBlocking listOfPictures
     }
 
-    fun getHandbook(): Map<String, String> = runBlocking {
-        if(mapOfHandbook.value != null) return@runBlocking mapOfHandbook.value!!
+    fun getHandbook(): MutableLiveData<Map<String, String>> = runBlocking {
+        if(mapOfHandbook.value != null) return@runBlocking mapOfHandbook
         val task = async { handbookRealization.allHandbook() }
         val res =
             if(task.await().isEmpty()) defaultHandbook
             else task.getCompleted()
         staticHandbook = res
         mapOfHandbook.value = res
-        return@runBlocking mapOfHandbook.value!!
+        return@runBlocking mapOfHandbook
     }
 
     fun getImageOfTime(): Int {
@@ -103,27 +106,37 @@ class MainViewModel : ViewModel() {
         return greetingText.value!!
     }
 
-    suspend fun updateStatements(): List<Statements> {
+    suspend fun updateStatements() : Boolean {
         val statements = NetworkStatements.getStatements()
         saveStatementsToDB(statements)
-        listOfStatements.value = statementRealization.getAll().shuffled()
+        val listFromDb = statementRealization.getAll()
 
-        return  if(listOfStatements.value == null) emptyList()
-                else listOfStatements.value!!
+        var isEquals = false
+        for(item in listFromDb)
+            if(item.id == listOfStatements.value?.get(0)?.id) isEquals = true
+
+        if(!isEquals)
+            listOfStatements.value = statementRealization.getAll().shuffled()
+
+        return !isEquals //true была новая запись
     }
 
-    suspend fun updateMainPictures(): List<Any> {
-        val pictures = NetworkPictures.getAllMainPicture()
-
-        val result = defaultListOfMainPictures()
+    suspend fun nextMainPictures() : Boolean {
+        var page = sharedPreferences.getInt(KEY_PAGE_OF_PICTURE, 0)
+        val pictures = NetworkPictures.getAllMainPicture(page)
+        if(pictures.isEmpty()) return false
+        if(pictures.size == 10) {
+            page += 1
+            sharedPreferences.edit().putInt(KEY_PAGE_OF_PICTURE, page).apply()
+        }
+        val result = listOfPictures.value as MutableList
 
         savePicturesToDB(pictures)
-        result.addAll(pictureRealization.mainPicture().shuffled())
+        result.addAll(pictureRealization.mainPicture())
 
-        listOfPictures.value = result
-
-        return  if(listOfPictures.value == null) emptyList()
-                else listOfPictures.value!!
+        listOfPictures.value = result.distinct()
+        if(pictures.size < 10) return false
+        return true
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
         val dict = NetworkHandbook.getHandbook()

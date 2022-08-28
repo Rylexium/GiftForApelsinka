@@ -33,7 +33,6 @@ class ImageViewPageAdapter(
         if(imageArray[position] is Int)
             setImageWithCorners(imageArray[position] as Int, imageView, ctx)
         else {
-            println(imageArray[position])
             val task = async { ConvertClass.convertStringToBitmap((imageArray[position] as FieldPhoto).picture) }
             setImageWithCorners(task.await()!!, imageView, ctx)
         }

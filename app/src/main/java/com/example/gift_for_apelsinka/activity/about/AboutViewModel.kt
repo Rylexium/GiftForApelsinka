@@ -145,21 +145,21 @@ class AboutViewModel : ViewModel() {
         return dict
     }
     suspend fun updatePhotos() {
-        val logoPicture = NetworkPictures.getAllLogoPicture()
-        savePicturesToDB(logoPicture)
-        imageOfLogo.value = union(defaultPicturesLogo(), pictureRealization.logoPicture()).shuffled()
-
-        val oscarPicture = NetworkPictures.getAllOscarPicture()
-        savePicturesToDB(oscarPicture)
-        imagesOfOscar.value = union(defaultPicturesOscar(), pictureRealization.oscarPicture()).shuffled()
-
-        val leraPicture = NetworkPictures.getAllLeraPicture()
-        savePicturesToDB(leraPicture)
-        imagesOfLera.value = union(defaultPicturesLera(), pictureRealization.leraPicture()).shuffled()
-
-        val lexaPicture = NetworkPictures.getAllRylexiumPicture()
-        savePicturesToDB(lexaPicture)
-        imagesOfLexa.value = union(defaultPicturesLexa(), pictureRealization.rylexiumPicture()).shuffled()
+//        val logoPicture = NetworkPictures.getAllLogoPicture(0)
+//        savePicturesToDB(logoPicture)
+//        imageOfLogo.value = union(defaultPicturesLogo(), pictureRealization.logoPicture()).shuffled()
+//
+//        val oscarPicture = NetworkPictures.getAllOscarPicture(0)
+//        savePicturesToDB(oscarPicture)
+//        imagesOfOscar.value = union(defaultPicturesOscar(), pictureRealization.oscarPicture()).shuffled()
+//
+//        val leraPicture = NetworkPictures.getAllLeraPicture(0)
+//        savePicturesToDB(leraPicture)
+//        imagesOfLera.value = union(defaultPicturesLera(), pictureRealization.leraPicture()).shuffled()
+//
+//        val lexaPicture = NetworkPictures.getAllRylexiumPicture(0)
+//        savePicturesToDB(lexaPicture)
+//        imagesOfLexa.value = union(defaultPicturesLexa(), pictureRealization.rylexiumPicture()).shuffled()
     }
     private fun union(list1: MutableList<Any>, list2: List<FieldPhoto>) : MutableList<Any> {
         list1.addAll(list2)

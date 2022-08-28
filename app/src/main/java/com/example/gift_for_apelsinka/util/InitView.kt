@@ -69,9 +69,11 @@ object InitView {
     }
 
     fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
+        val state = viewPager.onSaveInstanceState()
         viewPager.adapter = adapter
         viewPager.clipToPadding = false
         viewPager.setPadding(65 - padding,0,65 - padding,0)
+        viewPager.onRestoreInstanceState(state)
     }
     fun dpToPx(resources : Resources, dp: Int): Int {
         val density: Float = resources.displayMetrics.density

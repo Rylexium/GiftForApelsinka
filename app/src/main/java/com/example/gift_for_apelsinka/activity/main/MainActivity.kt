@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -102,7 +103,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initComponents() {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this,
+            MainViewModelFactory(applicationContext.getSharedPreferences("preference_key", MODE_PRIVATE)))[MainViewModel::class.java]
 
         viewPageOfImage = findViewById(R.id.view_pager_of_image)
         viewPageOfStatement = findViewById(R.id.view_pager_of_statement)
@@ -120,27 +122,21 @@ class MainActivity : AppCompatActivity() {
         textPhoneDeveloper = findViewById(R.id.text_phone_developer)
         textDiscordDeveloper = findViewById(R.id.text_discord_developer)
         textAddressDeveloper = findViewById(R.id.text_address_developer)
-        viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                println(position) // здесь делать запрос на фотки, если позиция = list.size - 2, и отображать
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-        })
     }
 
     private fun initDataComponents() {
-        initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(applicationContext, viewModel.getPictures()))
-        initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, viewModel.getStatements()))
+        viewModel.getPictures().observe(this) {
+            initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, it))
+        }
+        viewModel.getStatements().observe(this) {
+            initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, it))
+        }
         setGreeting()
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
         setImageWithCircle(R.drawable.icon_of_developer, findViewById(R.id.icon_of_developer),this)
-        updateDeveloper(viewModel.getHandbook())
+        viewModel.getHandbook().observe(this) {
+            updateDeveloper(it)
+        }
 
         if(getNowHour() in 0..5) {
             val chance = System.currentTimeMillis() % 10
@@ -167,9 +163,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyEvents() {
         viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
+            var isUpdate = false
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
             override fun onPageSelected(position: Int) {
-
+                if(isUpdate) return
+                viewModel.viewModelScope.launch {
+                    if(position == viewModel.getPictures().value?.size?.minus(1)) { //долистали до ласт элемента
+                        isUpdate = true
+                        val flag = viewModel.nextMainPictures()
+                        isUpdate = false
+                        if(!flag)
+                            Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
+                    }
+                }
             }
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
@@ -184,21 +190,23 @@ class MainActivity : AppCompatActivity() {
         })
 
         swipeRefreshLayout.setOnRefreshListener {
-            ShowToast.show(this, "Refresh")
             val context = this
+            var isNewStatements = false
             viewModel.viewModelScope.launch {
                 // SocketTimeoutException
                 try {
                     updateDeveloper(viewModel.updateDataOfDeveloper())
-                    initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(context, viewModel.updateStatements()))
-                    initViewPager(viewPageOfImage, 0, ImageViewPageAdapter(context, viewModel.updateMainPictures()))
+                    isNewStatements = viewModel.updateStatements()
                 }
                 catch (e : SocketTimeoutException) {
                     Handler(Looper.getMainLooper()).post { ShowToast.show(context, "Not Refresh") }
                     Log.e("timeout", e.message.toString())
                 }
                 finally {
-                    Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
+                    Handler(Looper.getMainLooper()).post {
+                        if(isNewStatements) ShowToast.show(context, "Добавились цитаты великих")
+                        swipeRefreshLayout.isRefreshing = false
+                    }
                 }
             }
         }
