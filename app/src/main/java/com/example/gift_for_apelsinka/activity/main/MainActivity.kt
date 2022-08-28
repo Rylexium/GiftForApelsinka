@@ -182,8 +182,20 @@ class MainActivity : AppCompatActivity() {
             }
         })
         viewPageOfStatement.addOnPageChangeListener(object : OnPageChangeListener {
+            var isUpdate = false
             override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
+            override fun onPageSelected(position: Int) {
+                if(isUpdate) return
+                viewModel.viewModelScope.launch {
+                    if(position == viewModel.getStatements().value?.size?.minus(1)) { //долистали до ласт элемента
+                        isUpdate = true
+                        val flag = viewModel.nextStatements()
+                        isUpdate = false
+                        if(!flag)
+                            Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }
+                    }
+                }
+            }
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }

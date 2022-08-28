@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
 import android.widget.ImageView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerAdapter

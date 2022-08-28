@@ -1,7 +1,6 @@
 package com.example.gift_for_apelsinka.activity.main
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
@@ -10,8 +9,6 @@ import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
-import com.example.gift_for_apelsinka.db.model.FieldPhoto
-import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
@@ -26,6 +23,7 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
     private var KEY_PAGE_OF_PICTURE = "pageOfPicture"
+    private var KEY_PAGE_OF_STATEMENTS = "pageOfStatements"
 
     fun getStatements(): MutableLiveData<List<Statements>> = runBlocking {
         if(listOfStatements.value != null) return@runBlocking listOfStatements
@@ -107,7 +105,7 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
     }
 
     suspend fun updateStatements() : Boolean {
-        val statements = NetworkStatements.getStatements()
+        val statements = NetworkStatements.getStatements(0, 1000)
         saveStatementsToDB(statements)
         val listFromDb = statementRealization.getAll()
 
@@ -121,21 +119,39 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
         return !isEquals //true была новая запись
     }
 
+    suspend fun nextStatements() : Boolean {
+        var page = sharedPreferences.getInt(KEY_PAGE_OF_STATEMENTS, 0)
+        val statementsFromNetwork = NetworkStatements.getStatements(page)
+        if(statementsFromNetwork.isEmpty()) return false
+        if(statementsFromNetwork.size == 10) {
+            page += 1
+            sharedPreferences.edit().putInt(KEY_PAGE_OF_STATEMENTS, page).apply()
+        }
+        val result = listOfStatements.value as MutableList
+
+        saveStatementsToDB(statementsFromNetwork)
+        result.addAll(statementRealization.getAll())
+
+        listOfStatements.value = result.distinct()
+        if(statementsFromNetwork.size < 10) return false
+        return true
+    }
+
     suspend fun nextMainPictures() : Boolean {
         var page = sharedPreferences.getInt(KEY_PAGE_OF_PICTURE, 0)
-        val pictures = NetworkPictures.getAllMainPicture(page)
-        if(pictures.isEmpty()) return false
-        if(pictures.size == 10) {
+        val picturesFromNetwork = NetworkPictures.getAllMainPicture(page)
+        if(picturesFromNetwork.isEmpty()) return false
+        if(picturesFromNetwork.size == 10) {
             page += 1
             sharedPreferences.edit().putInt(KEY_PAGE_OF_PICTURE, page).apply()
         }
         val result = listOfPictures.value as MutableList
 
-        savePicturesToDB(pictures)
+        savePicturesToDB(picturesFromNetwork)
         result.addAll(pictureRealization.mainPicture())
 
         listOfPictures.value = result.distinct()
-        if(pictures.size < 10) return false
+        if(picturesFromNetwork.size < 10) return false
         return true
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
