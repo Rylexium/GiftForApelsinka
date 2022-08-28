@@ -86,7 +86,7 @@ class AboutActivity : AppCompatActivity() {
     }
     private fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager) {
         liveData.observe(this) {
-            initViewPager(viewPager, 65, ImageViewOfPersonPageAdapter(this, it), 0)
+            initViewPager(viewPager, 65, ImageViewOfPersonPageAdapter(this, it))
         }
     }
 

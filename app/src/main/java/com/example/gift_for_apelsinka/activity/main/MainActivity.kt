@@ -1,24 +1,22 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -31,7 +29,6 @@ import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAda
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
 import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.service.GoodMorningService
-import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
@@ -42,6 +39,8 @@ import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
 import com.example.gift_for_apelsinka.util.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
+import com.example.gift_for_apelsinka.util.views.DynamicViewPager
+import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: MainViewModel
     private lateinit var viewPageOfImage : ViewPager
-    private lateinit var viewPageOfStatement : ViewPager
+    private lateinit var viewPageOfStatement : DynamicViewPager
     private lateinit var greetingTextView : TextView
     private lateinit var photoWithApelsinka : Button
     private lateinit var factsAboutApelsinka : Button
@@ -76,9 +75,6 @@ class MainActivity : AppCompatActivity() {
         initDataComponents()
         applyEvents()
         startServices()
-//        viewModel.viewModelScope.launch {
-//            NetworkMessage.sendMessage(IP.getIpv4() + " приложение запустили")
-//        }
     }
 
     override fun onDestroy() {
@@ -99,16 +95,15 @@ class MainActivity : AppCompatActivity() {
 //        {
 //            startService(Intent(this, LocationService::class.java))
 //        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 1 && grantResults.isNotEmpty())
-            startService(Intent(this, LocationService::class.java))
-    }
-
-    private fun requestPermission() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
+//        override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//            if(requestCode == 1 && grantResults.isNotEmpty())
+//                startService(Intent(this, LocationService::class.java))
+//        }
+//
+//        private fun requestPermission() {
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
+//        }
     }
 
     private fun initComponents() {
@@ -135,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataComponents() {
         viewModel.getPictures().observe(this) {
-            initViewPager(viewPageOfImage, 10, ImageViewPageAdapter(this, it))
+            initViewPager(viewPageOfImage, 25, ImageViewPageAdapter(this, it))
         }
         viewModel.getStatements().observe(this) {
             initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, it))
@@ -190,21 +185,27 @@ class MainActivity : AppCompatActivity() {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
         })
-        viewPageOfStatement.addOnPageChangeListener(object : OnPageChangeListener {
+        viewPageOfStatement.setOnSwipeOutListener(object : DynamicViewPager.OnSwipeOutListener{
             var isUpdate = false
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {
+            override fun onSwipeOutAtStart() {
+                ShowToast.show(this@MainActivity, "Зачем тебе туда?")
+            }
+
+            override fun onSwipeOutAtEnd() {
                 if(isUpdate) return
-                viewModel.viewModelScope.launch {
-                    if(position == viewModel.getStatements().value?.size?.minus(1)) { //долистали до ласт элемента
-                        isUpdate = true
-                        val flag = viewModel.nextStatements()
-                        isUpdate = false
-                        if(!flag)
-                            Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }
-                    }
+                viewModel.viewModelScope.launch { //долистали до ласт элемента
+                    isUpdate = true
+                    val flag = viewModel.nextStatements()
+                    isUpdate = false
+                    if(!flag)
+                        Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }
                 }
             }
+
+        })
+        viewPageOfStatement.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
             override fun onPageScrollStateChanged(state: Int) {
                 enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }

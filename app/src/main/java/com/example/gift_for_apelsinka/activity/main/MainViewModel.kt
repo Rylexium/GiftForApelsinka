@@ -9,7 +9,6 @@ import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
-import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
@@ -18,7 +17,7 @@ import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import kotlinx.coroutines.*
 
-class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
+class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var mapOfHandbook : MutableLiveData<Map<String, String>> = MutableLiveData()
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
@@ -130,7 +129,7 @@ class MainViewModel(val sharedPreferences: SharedPreferences) : ViewModel() {
             saveStatementsToDB(statementsFromNetwork)
             listOfStatements.value = statementRealization.getAll().shuffled()
         }
-        return isEquals //true была новая запись
+        return !isEquals //true была новая запись
     }
 
     suspend fun nextStatements() : Boolean {
