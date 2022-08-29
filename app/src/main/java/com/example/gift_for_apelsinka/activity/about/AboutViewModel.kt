@@ -102,7 +102,7 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getApelsinkaTitle():  MutableLiveData<String> {
-        return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, "Про меня 🍊")
+        return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, defaultHandbook[KEY_TITLE_APELSINKA].toString())
     }
 
     private fun setApelsinkaTitle(text : String) {
