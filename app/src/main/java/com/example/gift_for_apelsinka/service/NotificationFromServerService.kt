@@ -46,7 +46,7 @@ class NotificationFromServerService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
-            .setContentTitle("App is running in background")
+            .setContentTitle("NFR is running in background")
             .setPriority(NotificationManager.IMPORTANCE_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
