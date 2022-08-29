@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
@@ -22,9 +23,9 @@ class ShowPictureActivity : AppCompatActivity() {
         setContentView(R.layout.activity_show_picture)
         val imageView = findViewById<ZoomImageView>(R.id.iv)
         imageView.swipeToDismissEnabled = true
-
         imageView.onDismiss = {
-            finishAfterTransition()
+            if(imageView.currentZoom.toDouble() == 1.0)
+                finishAfterTransition()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
