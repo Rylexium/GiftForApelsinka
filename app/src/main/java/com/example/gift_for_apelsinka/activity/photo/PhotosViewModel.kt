@@ -67,13 +67,14 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     suspend fun updatePhotosList(): List<FieldPhoto>? {
         if(isUpdating) return null
         isUpdating = true
-        val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture(0)
+        val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture(0, 100)
         deletePicturesApelsinkaFromDB()
         savePicturesToDB(picturesApelsinka)
 
         val res = liveDataPhotosList.value as MutableList
         val db = pictureRealization.apelsinkaPicture()
         res.addAll(db)
+        pageOfApelsinka = db.size / 10
 
         liveDataPhotosList.value = res.distinct()
         isUpdating = false
