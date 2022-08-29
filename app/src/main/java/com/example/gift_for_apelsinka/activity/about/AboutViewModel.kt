@@ -2,15 +2,15 @@ package com.example.gift_for_apelsinka.activity.about
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.gift_for_apelsinka.activity.main.MainViewModel
 import com.example.gift_for_apelsinka.cache.*
-import com.example.gift_for_apelsinka.db.*
+import com.example.gift_for_apelsinka.db.handbookRealization
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
-import com.example.gift_for_apelsinka.db.model.Statements
+import com.example.gift_for_apelsinka.db.pictureRealization
+import com.example.gift_for_apelsinka.db.saveHandbookToDB
+import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
-import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import kotlinx.coroutines.*
 
 class AboutViewModel : ViewModel() {
@@ -47,7 +47,7 @@ class AboutViewModel : ViewModel() {
         if(imageOfLogo.value != null) return@runBlocking imagesOfOscar
 
         val listFromDB = async { pictureRealization.logoPicture() }
-        imageOfLogo.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLogo(), listFromDB.getCompleted()) else defaultPicturesLogo()
+        imageOfLogo.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLogo(), listFromDB.getCompleted()).shuffled() else defaultPicturesLogo().shuffled()
 
         return@runBlocking imageOfLogo
     }
@@ -56,7 +56,7 @@ class AboutViewModel : ViewModel() {
         if(imagesOfOscar.value != null) return@runBlocking imagesOfOscar
 
         val listFromDB = async { pictureRealization.oscarPicture() }
-        imagesOfOscar.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesOscar(), listFromDB.getCompleted()) else defaultPicturesOscar()
+        imagesOfOscar.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesOscar(), listFromDB.getCompleted()).shuffled() else defaultPicturesOscar().shuffled()
 
         return@runBlocking imagesOfOscar
     }
@@ -65,7 +65,7 @@ class AboutViewModel : ViewModel() {
         if(imagesOfLera.value != null) return@runBlocking imagesOfLera
 
         val listFromDB = async { pictureRealization.leraPicture() }
-        imagesOfLera.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLera(), listFromDB.getCompleted()) else defaultPicturesLera()
+        imagesOfLera.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLera(), listFromDB.getCompleted()).shuffled() else defaultPicturesLera().shuffled()
 
         return@runBlocking imagesOfLera
     }
@@ -74,7 +74,7 @@ class AboutViewModel : ViewModel() {
         if(imagesOfLexa.value != null) return@runBlocking imagesOfLexa
 
         val listFromDB = async { pictureRealization.rylexiumPicture() }
-        imagesOfLexa.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLexa(), listFromDB.getCompleted()) else defaultPicturesLexa()
+        imagesOfLexa.value = if(listFromDB.await().isNotEmpty()) union(defaultPicturesLexa(), listFromDB.getCompleted()).shuffled() else defaultPicturesLexa().shuffled()
 
         return@runBlocking imagesOfLexa
     }
@@ -162,25 +162,25 @@ class AboutViewModel : ViewModel() {
         val logoPicture = NetworkPictures.getAllLogoPicture(0)
         savePicturesToDB(logoPicture)
         var picturesFromDB = pictureRealization.logoPicture()
-        imageOfLogo.value = union(defaultPicturesLogo(), picturesFromDB).shuffled()
+        imageOfLogo.value = union(defaultPicturesLogo(), picturesFromDB.shuffled())
         pageOfLogo = picturesFromDB.size / 10
 
         val oscarPicture = NetworkPictures.getAllOscarPicture(0)
         savePicturesToDB(oscarPicture)
         picturesFromDB = pictureRealization.oscarPicture()
-        imagesOfOscar.value = union(defaultPicturesOscar(), picturesFromDB).shuffled()
+        imagesOfOscar.value = union(defaultPicturesOscar(), picturesFromDB.shuffled())
         pageOfOscar = picturesFromDB.size / 10
 
         val leraPicture = NetworkPictures.getAllLeraPicture(0)
         savePicturesToDB(leraPicture)
         picturesFromDB = pictureRealization.leraPicture()
-        imagesOfLera.value = union(defaultPicturesLera(), picturesFromDB).shuffled()
+        imagesOfLera.value = union(defaultPicturesLera(), picturesFromDB.shuffled())
         pageOfLera = picturesFromDB.size / 10
 
         val lexaPicture = NetworkPictures.getAllRylexiumPicture(0)
         savePicturesToDB(lexaPicture)
         picturesFromDB = pictureRealization.rylexiumPicture()
-        imagesOfLexa.value = union(defaultPicturesLexa(), picturesFromDB).shuffled()
+        imagesOfLexa.value = union(defaultPicturesLexa(), picturesFromDB.shuffled())
         pageOfLexa = picturesFromDB.size / 10
     }
     private fun union(list1: MutableList<Any>, list2: List<FieldPhoto>) : MutableList<Any> {
@@ -194,7 +194,7 @@ class AboutViewModel : ViewModel() {
         while(true) {
             picturesFromNetwork = NetworkPictures.getAllOscarPicture(pageOfOscar)
             val previosSize = pictureRealization.oscarPicture().size
-            savePicturesToDB(picturesFromNetwork)
+            savePicturesToDB(picturesFromNetwork.shuffled())
             picturesFromBD = pictureRealization.oscarPicture()
 
             if(picturesFromNetwork.size == 10)
@@ -222,7 +222,7 @@ class AboutViewModel : ViewModel() {
         while(true) {
             picturesFromNetwork = NetworkPictures.getAllLogoPicture(pageOfLogo)
             val previosSize = pictureRealization.logoPicture().size
-            savePicturesToDB(picturesFromNetwork)
+            savePicturesToDB(picturesFromNetwork.shuffled())
             picturesFromBD = pictureRealization.logoPicture()
 
             if(picturesFromNetwork.size == 10)
@@ -250,7 +250,7 @@ class AboutViewModel : ViewModel() {
         while(true) {
             picturesFromNetwork = NetworkPictures.getAllLeraPicture(pageOfLera)
             val previosSize = pictureRealization.leraPicture().size
-            savePicturesToDB(picturesFromNetwork)
+            savePicturesToDB(picturesFromNetwork.shuffled())
             picturesFromBD = pictureRealization.leraPicture()
 
             if(picturesFromNetwork.size == 10)
@@ -278,7 +278,7 @@ class AboutViewModel : ViewModel() {
         while(true) {
             picturesFromNetwork = NetworkPictures.getAllRylexiumPicture(pageOfLera)
             val previosSize = pictureRealization.rylexiumPicture().size
-            savePicturesToDB(picturesFromNetwork)
+            savePicturesToDB(picturesFromNetwork.shuffled())
             picturesFromBD = pictureRealization.rylexiumPicture()
 
             if(picturesFromNetwork.size == 10)
