@@ -207,9 +207,11 @@ class AboutViewModel : ViewModel() {
 
         val result = imagesOfOscar.value as MutableList
 
-        result.addAll(picturesFromBD)
-
-        imagesOfOscar.value = result.distinct()
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesOscar().size) {
+            result.addAll(picturesFromBD)
+            imagesOfOscar.value = result.distinct()
+        }
         if(picturesFromNetwork.size < 10) return false
         return true
     }
@@ -235,9 +237,11 @@ class AboutViewModel : ViewModel() {
 
         val result = imageOfLogo.value as MutableList
 
-        result.addAll(picturesFromBD)
-
-        imageOfLogo.value = result.distinct()
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLogo().size) {
+            result.addAll(picturesFromBD)
+            imageOfLogo.value = result.distinct()
+        }
         if(picturesFromNetwork.size < 10) return false
         return true
     }
@@ -263,9 +267,11 @@ class AboutViewModel : ViewModel() {
 
         val result = imagesOfLera.value as MutableList
 
-        result.addAll(picturesFromBD)
-
-        imagesOfLera.value = result.distinct()
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLera().size) {
+            result.addAll(picturesFromBD)
+            imagesOfLera.value = result.distinct()
+        }
         if(picturesFromNetwork.size < 10) return false
         return true
     }
@@ -291,9 +297,11 @@ class AboutViewModel : ViewModel() {
 
         val result = imagesOfLexa.value as MutableList
 
-        result.addAll(picturesFromBD)
-
-        imagesOfLexa.value = result.distinct()
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLexa().size) {
+            result.addAll(picturesFromBD)
+            imagesOfLexa.value = result.distinct()
+        }
         if(picturesFromNetwork.size < 10) return false
         return true
     }

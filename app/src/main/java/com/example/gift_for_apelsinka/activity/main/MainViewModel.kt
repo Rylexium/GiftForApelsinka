@@ -16,9 +16,10 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
-class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
+class MainViewModel : ViewModel() {
     private var mapOfHandbook : MutableLiveData<Map<String, String>> = MutableLiveData()
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
@@ -111,21 +112,9 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     suspend fun updateStatements() : Boolean {
         val statementsFromNetwork = NetworkStatements.getStatements(0, 1000)
 
-        val listFromDb = statementRealization.getAll()
+        val statementsFromBD = statementRealization.getAll()
 
-        var isEquals = true
-        for(item in listFromDb) {
-            var count = 0
-            for(item1 in statementsFromNetwork) {
-                if (item.id == item1.id)
-                    break
-                count += 1
-            }
-            if(count == statementsFromNetwork.size) {
-                isEquals = false
-                break
-            }
-        }
+        val isEquals = statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()).isEmpty()
         if(!isEquals) {
             deleteStatementsFromDB()
             saveStatementsToDB(statementsFromNetwork)
@@ -151,11 +140,11 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         }
         if(statementsFromNetwork.isEmpty()) return false
 
-        val result = listOfStatements.value as MutableList
-
-        result.addAll(statementsFromBD)
-
-        listOfStatements.value = result.distinct()
+        if(statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()).isNotEmpty()) { //если текущее высказывания и в базе не совпадают, то делаем
+            val result = listOfStatements.value as MutableList
+            result.addAll(statementsFromBD)
+            listOfStatements.value = result.distinct()
+        }
         if(statementsFromNetwork.size < 10) return false
         return true
     }
@@ -179,9 +168,11 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
         val result = listOfPictures.value as MutableList
 
-        result.addAll(picturesFromBD)
-
-        listOfPictures.value = result.distinct()
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+                result.subtract(picturesFromNetwork.toSet()).size == defaultListOfMainPictures().size) {
+            result.addAll(picturesFromBD)
+            listOfPictures.value = result.distinct()
+        }
         if(picturesFromNetwork.size < 10) return false
         return true
     }

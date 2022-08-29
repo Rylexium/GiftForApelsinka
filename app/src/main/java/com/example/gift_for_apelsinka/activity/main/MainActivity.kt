@@ -42,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class MainActivity : AppCompatActivity() {
@@ -99,8 +100,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initComponents() {
-        viewModel = ViewModelProvider(this,
-            MainViewModelFactory(applicationContext.getSharedPreferences("preference_key", MODE_PRIVATE)))[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewPageOfImage = findViewById(R.id.view_pager_of_image)
         viewPageOfStatement = findViewById(R.id.view_pager_of_statement)
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.viewModelScope.launch {
                     isUpdate = true
                     val flag = viewModel.nextMainPictures()
-                    isUpdate = false
+                    Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
                     Handler(Looper.getMainLooper()).post { progressBarViewPageOfImage.visibility = View.GONE }
                     if(!flag)
                         Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.viewModelScope.launch { //долистали до ласт элемента
                     isUpdate = true
                     val flag = viewModel.nextStatements()
-                    isUpdate = false
+                    Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
                     Handler(Looper.getMainLooper()).post { progressBarViewPageOfStatement.visibility = View.GONE }
                     if(!flag)
                         Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }

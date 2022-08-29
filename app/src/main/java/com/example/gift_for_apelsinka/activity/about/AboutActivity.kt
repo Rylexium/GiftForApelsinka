@@ -124,7 +124,7 @@ class AboutActivity : AppCompatActivity() {
                 viewModel.viewModelScope.launch { //долистали до ласт элемента
                     isUpdate = true
                     val flag : Boolean = nextPicture()
-                    isUpdate = false
+                    Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
                     Handler(Looper.getMainLooper()).post { progressBar.visibility = View.GONE }
                     if(!flag) Handler(Looper.getMainLooper()).post { finish() }
                 }
@@ -182,8 +182,8 @@ class AboutActivity : AppCompatActivity() {
 
         findViewById<LinearLayout>(R.id.layout_textview_about_apelsinka).setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
-                editTextView(aboutApelsinkaTitle, this@AboutActivity) {
-                    viewModel.setTextAboutApelsinka(aboutApelsinkaTitle.text.toString())
+                editTextView(textViewAboutApelsinka, this@AboutActivity) {
+                    viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString())
                 }
             }
         })
