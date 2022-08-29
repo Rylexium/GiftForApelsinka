@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.util
 
 import android.content.Context
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
+import com.example.gift_for_apelsinka.activity.util.ShowPictureActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.savePicturesToDB
@@ -103,4 +105,10 @@ fun wrapperEditTextView(textView: TextView, function: () -> Unit, context: Conte
             }
         }
     })
+}
+fun wrapperOpenShowPictureActivity(view : View, context: Context, image : String) {
+    view.setOnClickListener {
+        ShowPictureActivity.image = image
+        context.startActivity(Intent(context, ShowPictureActivity::class.java))
+    }
 }

@@ -1,5 +1,4 @@
 package com.example.gift_for_apelsinka.util.views
-
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,6 +16,11 @@ import androidx.core.animation.doOnCancel
 import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
 import kotlin.math.absoluteValue
+
+/**
+ * @author Kislay [k.two.apps@gmail.com]
+ * @since 03/09/20
+ */
 
 class ZoomImageView : androidx.appcompat.widget.AppCompatImageView {
 

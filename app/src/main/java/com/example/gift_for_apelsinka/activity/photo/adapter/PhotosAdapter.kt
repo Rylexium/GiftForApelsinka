@@ -16,6 +16,7 @@ import com.example.gift_for_apelsinka.activity.photo.PhotosViewModel
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
+import com.example.gift_for_apelsinka.util.wrapperOpenShowPictureActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,6 +62,8 @@ class PhotosAdapter(
                     .into(holder.photo)
             }
         }
+
+        wrapperOpenShowPictureActivity(holder.photo, context, newList.picture)
 
         val hasDB = !isNumeric(newList.picture)
         holder.photo.setOnLongClickListener {

@@ -11,6 +11,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCorners
+import com.example.gift_for_apelsinka.util.wrapperOpenShowPictureActivity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
@@ -37,9 +38,12 @@ class ImageViewPageAdapter(
         val imageView = view.findViewById<ImageView>(R.id.field_of_picture)
 
         view.setPadding(18, 9, 18, 9)
-        if(imageArray[position] is Int)
+        if(imageArray[position] is Int) {
+            wrapperOpenShowPictureActivity(imageView, ctx, imageArray[position].toString())
             setImageWithCorners(imageArray[position] as Int, imageView, ctx)
+        }
         else {
+            wrapperOpenShowPictureActivity(imageView, ctx, (imageArray[position] as FieldPhoto).picture)
             val task = async { ConvertClass.convertStringToBitmap((imageArray[position] as FieldPhoto).picture) }
             setImageWithCorners(task.await()!!, imageView, ctx)
         }

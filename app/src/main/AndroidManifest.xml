@@ -5,14 +5,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!--    PowerManager-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- PowerManager -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -25,41 +22,44 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GiftForApelsinka"
         tools:targetApi="31">
-        <service android:name=".service.GoodMorningService"
+        <activity
+            android:name=".activity.util.ShowPictureActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".service.GoodMorningService"
             android:enabled="true"
             android:exported="true"
-            android:process=":newproc"
-            />
-        <service android:name=".service.RandomQuestionService"
+            android:process=":newproc" />
+        <service
+            android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="true"
-            android:process=":newproc"
-            />
-        <service android:name=".service.LocationService"
+            android:process=":newproc" />
+        <service
+            android:name=".service.LocationService"
             android:enabled="true"
             android:exported="true"
-            android:process=":newproc"
             android:foregroundServiceType="location"
-            />
-        <service android:name=".service.NotificationFromServerService"
+            android:process=":newproc" />
+        <service
+            android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="true"
-            android:process=":newproc"
-            />
+            android:process=":newproc" />
 
         <receiver
             android:name=".service.receiver.MyReceiver"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
             android:enabled="true"
-            android:exported="true">
-
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="android.intent.action.REBOOT"/>
+                <action android:name="android.intent.action.REBOOT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </receiver>
 
         <activity
