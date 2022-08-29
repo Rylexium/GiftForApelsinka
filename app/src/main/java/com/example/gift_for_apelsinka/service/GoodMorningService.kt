@@ -29,13 +29,9 @@ class GoodMorningService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
-//        val notification: Notification = Notification.Builder(this, "CHANNEL_GOOD_MORNING")
-//            .setSmallIcon(R.drawable.icon_of_developer)
-//            .build()
-//        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-//        startForeground(1, notification)
         startMyOwnForeground()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
         val NOTIFICATION_CHANNEL_ID = "CHANNEL_GOOD_MORNING"

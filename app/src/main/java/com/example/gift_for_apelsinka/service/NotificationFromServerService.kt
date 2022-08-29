@@ -24,10 +24,12 @@ import kotlinx.coroutines.launch
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
     private var channelId = 10
+
     @SuppressLint("NewApi")
     override fun onCreate() {
         startMyOwnForeground()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
         val NOTIFICATION_CHANNEL_ID = "CHANNEL_NOTIFICATIONS_FROM_SERVER"
@@ -51,10 +53,12 @@ class NotificationFromServerService : Service() {
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
         startForeground(1, notification)
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
         return START_STICKY
     }
+
     private fun initTask() {
         backgroundThread = task()
         backgroundThread?.start()
@@ -126,6 +130,7 @@ class NotificationFromServerService : Service() {
             notificationManager.createNotificationChannel(notifChannel)
         }
     }
+
     @SuppressLint("HardwareIds")
     private fun task() : Thread {
         return Thread {

@@ -3,12 +3,9 @@ package com.example.gift_for_apelsinka.activity.about
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.cache.*
-import com.example.gift_for_apelsinka.db.handbookRealization
+import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
-import com.example.gift_for_apelsinka.db.pictureRealization
-import com.example.gift_for_apelsinka.db.saveHandbookToDB
-import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import kotlinx.coroutines.*
@@ -159,25 +156,29 @@ class AboutViewModel : ViewModel() {
         return dict
     }
     suspend fun updatePhotos() {
-        val logoPicture = NetworkPictures.getAllLogoPicture(0)
+        val logoPicture = NetworkPictures.getAllLogoPicture(0, 100)
+        deletePicturesLogoFromDB()
         savePicturesToDB(logoPicture)
         var picturesFromDB = pictureRealization.logoPicture()
         imageOfLogo.value = union(defaultPicturesLogo(), picturesFromDB.shuffled())
         pageOfLogo = picturesFromDB.size / 10
 
-        val oscarPicture = NetworkPictures.getAllOscarPicture(0)
+        val oscarPicture = NetworkPictures.getAllOscarPicture(0, 100)
+        deletePicturesOscarFromDB()
         savePicturesToDB(oscarPicture)
         picturesFromDB = pictureRealization.oscarPicture()
         imagesOfOscar.value = union(defaultPicturesOscar(), picturesFromDB.shuffled())
         pageOfOscar = picturesFromDB.size / 10
 
-        val leraPicture = NetworkPictures.getAllLeraPicture(0)
+        val leraPicture = NetworkPictures.getAllLeraPicture(0, 100)
+        deletePicturesLeraFromDB()
         savePicturesToDB(leraPicture)
         picturesFromDB = pictureRealization.leraPicture()
         imagesOfLera.value = union(defaultPicturesLera(), picturesFromDB.shuffled())
         pageOfLera = picturesFromDB.size / 10
 
-        val lexaPicture = NetworkPictures.getAllRylexiumPicture(0)
+        val lexaPicture = NetworkPictures.getAllRylexiumPicture(0, 100)
+        deletePicturesRylexiumFromDB()
         savePicturesToDB(lexaPicture)
         picturesFromDB = pictureRealization.rylexiumPicture()
         imagesOfLexa.value = union(defaultPicturesLexa(), picturesFromDB.shuffled())
