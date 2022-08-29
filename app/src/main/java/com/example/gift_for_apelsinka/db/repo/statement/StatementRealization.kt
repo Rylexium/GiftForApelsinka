@@ -13,6 +13,10 @@ class StatementRealization(private val statementDao: StatementDao) : StatementRe
         statementDao.insertStatement(statement)
     }
 
+    override suspend fun deleteById(id: Int) {
+        statementDao.deleteById(id)
+    }
+
     override suspend fun clearStatement() {
         statementDao.deleteAll()
     }

@@ -17,4 +17,7 @@ interface StatementDao {
 
     @Query("DELETE from statements")
     suspend fun deleteAll()
+
+    @Query("Delete from statements where id=:id")
+    suspend fun deleteById(id : Int)
 }

@@ -6,5 +6,6 @@ import com.example.gift_for_apelsinka.db.model.Statements
 interface StatementRepository {
     suspend fun getAll(): List<Statements>
     suspend fun insertStatement(statement: Statements)
+    suspend fun deleteById(id : Int)
     suspend fun clearStatement()
 }

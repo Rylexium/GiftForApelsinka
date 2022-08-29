@@ -114,13 +114,15 @@ class MainViewModel : ViewModel() {
 
         val statementsFromBD = statementRealization.getAll()
 
-        val isEquals = statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()).isEmpty()
-        if(!isEquals) {
+
+        val list1 = statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()) //пришло с сети
+        val list2 = statementsFromBD.map { it.id }.subtract(statementsFromNetwork.map { it.id }.toSet()) // в сети его нет
+        if(list1.size < list2.size || list1.size > list2.size) {
             deleteStatementsFromDB()
             saveStatementsToDB(statementsFromNetwork)
-            listOfStatements.value = statementRealization.getAll().shuffled()
+            listOfStatements.value = statementsFromNetwork
         }
-        return !isEquals //true была новая запись
+        return (list1.size < list2.size || list1.size > list2.size)//!isEquals //true была новая запись
     }
 
     suspend fun nextStatements() : Boolean {
@@ -169,7 +171,7 @@ class MainViewModel : ViewModel() {
         val result = listOfPictures.value as MutableList
 
         if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-                result.subtract(picturesFromNetwork.toSet()).size == defaultListOfMainPictures().size) {
+            result.subtract(picturesFromNetwork.toSet()).size == defaultListOfMainPictures().size) {
             result.addAll(picturesFromBD)
             listOfPictures.value = result.distinct()
         }
