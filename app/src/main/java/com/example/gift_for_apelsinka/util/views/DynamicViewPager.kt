@@ -18,13 +18,14 @@ constructor(context: Context, attrs: AttributeSet? = null)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if(mListener == null) return super.onInterceptTouchEvent(ev)
         val x = ev.x
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> mStartDragX = x
             MotionEvent.ACTION_MOVE -> if (mStartDragX < x && currentItem == 0) {
-                mListener!!.onSwipeOutAtStart()
+                mListener?.onSwipeOutAtStart()
             } else if (mStartDragX > x && currentItem == adapter!!.count - 1) {
-                mListener!!.onSwipeOutAtEnd()
+                mListener?.onSwipeOutAtEnd()
             }
         }
         return super.onInterceptTouchEvent(ev)

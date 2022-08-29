@@ -4,7 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import android.widget.LinearLayout
+import android.widget.TableLayout
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -12,23 +13,25 @@ import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.gift_for_apelsinka.R
-import com.example.gift_for_apelsinka.activity.about.adapter.ImageViewOfPersonPageAdapter
+import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.DoubleClickListener
 import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.ShowToast
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var switchRefreshLayout : SwipeRefreshLayout
     private lateinit var viewModel: AboutViewModel
     private lateinit var viewPageOfImageOscar : ImageViewPager
-    private lateinit var viewPageOfImageLera : ViewPager
-    private lateinit var viewPageOfImageLexa : ViewPager
-    private lateinit var viewPageOfImageLogo : ViewPager
+    private lateinit var viewPageOfImageLera : ImageViewPager
+    private lateinit var viewPageOfImageLexa : ImageViewPager
+    private lateinit var viewPageOfImageLogo : ImageViewPager
 
     private lateinit var aboutApelsinkaTitle : TextView
     private lateinit var aboutOscarTitle : TextView
@@ -44,7 +47,7 @@ class AboutActivity : AppCompatActivity() {
 
         initComponents()
         initDataComponents()
-        applyEvents()
+        viewModel.viewModelScope.launch { applyEvents() }
     }
 
     private fun initComponents() {
@@ -79,6 +82,11 @@ class AboutActivity : AppCompatActivity() {
         liveDataObserveViewPagerWrapper(viewModel.getImageOfOscar(), viewPageOfImageOscar)
         liveDataObserveViewPagerWrapper(viewModel.getImageOfLera(), viewPageOfImageLera)
         liveDataObserveViewPagerWrapper(viewModel.getImageOfLexa(), viewPageOfImageLexa)
+
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_logo).setupWithViewPager(viewPageOfImageLogo)
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_oscar).setupWithViewPager(viewPageOfImageOscar)
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lera).setupWithViewPager(viewPageOfImageLera)
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lexa).setupWithViewPager(viewPageOfImageLexa)
     }
 
     private fun liveDataObserveTextWrapper(liveData: MutableLiveData<String>, textView: TextView) {
@@ -88,91 +96,75 @@ class AboutActivity : AppCompatActivity() {
     }
     private fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager) {
         liveData.observe(this) {
-            initViewPager(viewPager, 65, ImageViewOfPersonPageAdapter(this, it))
+            initViewPager(viewPager, 65, ImageViewPageAdapter(this, it))
         }
     }
 
-    private fun applyEvents() {
-        viewPageOfImageLogo.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
-            }
-        })
-        viewPageOfImageOscar.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
-            override fun onSwipeOutAtStart() {
-                Log.e("oscar", "start")
-            }
+    private fun wrapperForSwipeOutViewPager(viewPager: ImageViewPager, nextPicture: suspend () -> Boolean, finish: () -> Unit) {
+        viewPager.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
+            override fun onSwipeOutAtStart() {}
 
+            var isUpdate = false
             override fun onSwipeOutAtEnd() {
-                Log.e("oscar", "start")
+                if(isUpdate) return
+                viewModel.viewModelScope.launch { //долистали до ласт элемента
+                    isUpdate = true
+                    val flag : Boolean = nextPicture()
+                    isUpdate = false
+                    if(!flag) Handler(Looper.getMainLooper()).post {  finish() }
+                }
             }
+        })
+    }
+    private fun wrapperDisableSwitchLayout(viewPager: ImageViewPager, swipeRefreshLayout: SwipeRefreshLayout) {
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
+            override fun onPageSelected(position: Int) {}
+            override fun onPageScrollStateChanged(state: Int) {
+                enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
+            }
+        })
+    }
+    private fun wrapperEditTextView(textView: TextView, function: () -> Unit) {
+        textView.setOnClickListener(object : DoubleClickListener(){
+            override fun onDoubleClick() {
+                editTextView(textView, this@AboutActivity) {
+                    function()
+                }
+            }
+        })
+    }
 
-        })
-        viewPageOfImageOscar.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
-            }
-        })
-        viewPageOfImageLera.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
-            }
-        })
-        viewPageOfImageLexa.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(switchRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
-            }
-        })
-        textViewAboutApelsinka.setOnClickListener(object : DoubleClickListener(){
-            override fun onDoubleClick() {
-                editTextView(textViewAboutApelsinka, this@AboutActivity) {
-                    viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString())
-                }
-            }
-        })
-        textViewTextOfGoodnight.setOnClickListener(object : DoubleClickListener(){
-            override fun onDoubleClick() {
-                editTextView(textViewTextOfGoodnight, this@AboutActivity) {
-                    viewModel.setTextGoodnight(textViewTextOfGoodnight.text.toString())
-                }
-            }
-        })
-        aboutApelsinkaTitle.setOnClickListener(object : DoubleClickListener(){
+    private suspend fun applyEvents() {
+        wrapperDisableSwitchLayout(viewPageOfImageLogo, switchRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageOscar, switchRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageLera, switchRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageLexa, switchRefreshLayout)
+
+        wrapperForSwipeOutViewPager(viewPageOfImageLogo,
+            { viewModel.nextPicturesLogo() }, { ShowToast.show(this@AboutActivity, "Все фотки логотипов загружены") })
+        wrapperForSwipeOutViewPager(viewPageOfImageOscar,
+            { viewModel.nextPicturesOscar() }, { ShowToast.show(this@AboutActivity, "Все фотки Оскара загружены") })
+        wrapperForSwipeOutViewPager(viewPageOfImageLera,
+            { viewModel.nextPicturesLera() }, { ShowToast.show(this@AboutActivity, "Все фотки Леры загружены") })
+        wrapperForSwipeOutViewPager(viewPageOfImageLexa,
+            { viewModel.nextPicturesLexa() }, { ShowToast.show(this@AboutActivity, "Все фотки Лёши загружены") })
+
+        wrapperEditTextView(textViewAboutApelsinka) { viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString()) }
+        wrapperEditTextView(textViewTextOfGoodnight) { viewModel.setTextGoodnight(textViewTextOfGoodnight.text.toString()) }
+        wrapperEditTextView(aboutApelsinkaTitle) { viewModel.setTextAboutApelsinka(aboutApelsinkaTitle.text.toString()) }
+        wrapperEditTextView(aboutOscarTitle) { viewModel.setOscarTitle(aboutOscarTitle.text.toString()) }
+        wrapperEditTextView(aboutLeraTitle) { viewModel.setLeraTitle(aboutLeraTitle.text.toString()) }
+        wrapperEditTextView(aboutLexaTitle) { viewModel.setLexaTitle(aboutLexaTitle.text.toString()) }
+
+        findViewById<LinearLayout>(R.id.layout_textview_about_apelsinka).setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
                 editTextView(aboutApelsinkaTitle, this@AboutActivity) {
-                    viewModel.setApelsinkaTitle(textViewTextOfGoodnight.text.toString())
+                    viewModel.setTextAboutApelsinka(aboutApelsinkaTitle.text.toString())
                 }
             }
         })
-        aboutOscarTitle.setOnClickListener(object : DoubleClickListener(){
-            override fun onDoubleClick() {
-                editTextView(aboutOscarTitle, this@AboutActivity) {
-                    viewModel.setOscarTitle(aboutOscarTitle.text.toString())
-                }
-            }
-        })
-        aboutLeraTitle.setOnClickListener(object : DoubleClickListener(){
-            override fun onDoubleClick() {
-                editTextView(aboutLeraTitle, this@AboutActivity) {
-                    viewModel.setLeraTitle(aboutLeraTitle.text.toString())
-                }
-            }
-        })
-        aboutLexaTitle.setOnClickListener(object : DoubleClickListener(){
-            override fun onDoubleClick() {
-                editTextView(aboutLexaTitle, this@AboutActivity) {
-                    viewModel.setLexaTitle(aboutLexaTitle.text.toString())
-                }
-            }
-        })
+
         switchRefreshLayout.setOnRefreshListener {
             viewModel.viewModelScope.launch {
                 viewModel.updateHandbook()
@@ -181,6 +173,7 @@ class AboutActivity : AppCompatActivity() {
             }
         }
     }
+
 }
 
 

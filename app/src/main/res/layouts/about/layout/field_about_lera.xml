@@ -24,17 +24,28 @@
             android:gravity="center"
             android:textSize="17sp"
             android:elegantTextHeight="true"
+            android:foreground="?attr/selectableItemBackground"
             />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/black"
             />
-        <androidx.viewpager.widget.ViewPager
+        <com.example.gift_for_apelsinka.util.views.ImageViewPager
             android:id="@+id/view_pager_of_image_lera"
             android:layout_marginTop="6dp"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="400dp"
+            android:foreground="?attr/selectableItemBackground"
             />
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabDots_for_view_pager_of_image_lera"
+            android:layout_width="wrap_content"
+            android:layout_height="12dp"
+            app:tabBackground="@drawable/tab_selector"
+            app:tabGravity="center"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            app:tabIndicatorHeight="0dp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

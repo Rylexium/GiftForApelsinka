@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefreshLayoutMain"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
     <ScrollView
         android:id="@+id/scrollview_main"
         android:layout_width="match_parent"
@@ -64,12 +63,29 @@
                         android:layout_height="400dp"
                         android:layout_marginTop="10dp" />
 
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tabDots_for_view_pager_of_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp"
+                        app:tabBackground="@drawable/tab_selector"
+                        app:tabGravity="center"
+                        android:background="@android:color/transparent"
+                        app:tabIndicatorHeight="0dp"/>
+
                     <com.example.gift_for_apelsinka.util.views.DynamicViewPager
                         android:id="@+id/view_pager_of_statement"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         />
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tabDots_for_view_pager_of_statement"
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp"
+                        app:tabBackground="@drawable/tab_selector"
+                        app:tabGravity="center"
+                        android:background="@android:color/transparent"
+                        app:tabIndicatorHeight="0dp"/>
                 </LinearLayout>
 
 

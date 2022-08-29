@@ -9,7 +9,8 @@ import androidx.appcompat.app.AlertDialog
 object DialogEditText {
     fun editTextView(textView: TextView, context : Context, r : Runnable) {
         val editText = EditText(context)
-        editText.setText(textView.text)
+        if(textView.text == "<Пусто>") editText.setText("")
+        else editText.setText(textView.text)
         val dialog = AlertDialog.Builder(context).create()
         dialog.setTitle("Редактирование \uD83D\uDD8A️")
         dialog.setView(editText)

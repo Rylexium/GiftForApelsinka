@@ -42,6 +42,7 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.views.DynamicViewPager
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
@@ -75,14 +76,6 @@ class MainActivity : AppCompatActivity() {
         initDataComponents()
         applyEvents()
         startServices()
-    }
-
-    override fun onDestroy() {
-        getSharedPreferences("preference_key", MODE_PRIVATE).edit()
-            .putInt(MainViewModel.KEY_PAGE_OF_PICTURE, 0)
-            .putInt(MainViewModel.KEY_PAGE_OF_STATEMENTS, 0)
-            .apply()
-        super.onDestroy()
     }
 
     private fun startServices() {
@@ -141,6 +134,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.getHandbook().observe(this) {
             updateDeveloper(it)
         }
+
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image).setupWithViewPager(viewPageOfImage)
+        findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_statement).setupWithViewPager(viewPageOfStatement)
 
         if(getNowHour() in 0..5) {
             val chance = System.currentTimeMillis() % 10

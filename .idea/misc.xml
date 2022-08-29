@@ -8,6 +8,9 @@
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/ic_baseline_tapas_24.xml" value="0.2375" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/ic_baseline_wb_sunny_24.xml" value="0.2375" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.196" />
+        <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/tab_indicator_default.xml" value="0.2595" />
+        <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/tab_indicator_selected.xml" value="0.2595" />
+        <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/drawable/tab_selector.xml" value="0.2595" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layout/activity_photos.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layout/field_of_developer.xml" value="0.33" />
@@ -16,7 +19,7 @@
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/activity_about.xml" value="0.25" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_about_apelsinka.xml" value="0.365625" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_about_lera.xml" value="0.18697916666666667" />
-        <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_about_lexa.xml" value="0.22" />
+        <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_about_lexa.xml" value="0.33" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_about_oscar.xml" value="0.365625" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_of_goodnight.xml" value="0.25" />
         <entry key="..\:/Users/aleks/AndroidStudioProjects/GiftForApelsinka/app/src/main/res/layouts/about/layout/field_of_lexa.xml" value="0.18697916666666667" />

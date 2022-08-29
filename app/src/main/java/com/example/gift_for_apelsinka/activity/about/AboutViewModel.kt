@@ -2,15 +2,15 @@ package com.example.gift_for_apelsinka.activity.about
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.gift_for_apelsinka.activity.main.MainViewModel
 import com.example.gift_for_apelsinka.cache.*
-import com.example.gift_for_apelsinka.db.handbookRealization
+import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
-import com.example.gift_for_apelsinka.db.pictureRealization
-import com.example.gift_for_apelsinka.db.saveHandbookToDB
-import com.example.gift_for_apelsinka.db.savePicturesToDB
+import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import kotlinx.coroutines.*
 
 class AboutViewModel : ViewModel() {
@@ -35,6 +35,13 @@ class AboutViewModel : ViewModel() {
     private val KEY_TITLE_OSCAR = "title_oscar"
     private val KEY_TITLE_LERA = "title_lera"
     private val KEY_TITLE_LEXA = "title_lexa"
+
+    companion object {
+        var pageOfLogo = 0
+        var pageOfOscar = 0
+        var pageOfLera = 0
+        var pageOfLexa = 0
+    }
 
     fun getImagesOfLogo() : MutableLiveData<List<Any>> = runBlocking {
         if(imageOfLogo.value != null) return@runBlocking imagesOfOscar
@@ -73,15 +80,22 @@ class AboutViewModel : ViewModel() {
     }
 
     private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String) {
-        liveData.value = text
-        handbook?.set(KEY, text)
-        CoroutineScope(Dispatchers.IO).launch { NetworkHandbook.postHandbook(KEY, text) }
+        var textTmp = text
+        if(textTmp == "")
+            textTmp = "<Пусто>"
+        liveData.value = textTmp
+        handbook[KEY] = textTmp
+        CoroutineScope(Dispatchers.IO).launch {
+            handbookRealization.insertHandbook(Handbook(KEY, text)) // в бд
+            NetworkHandbook.postHandbook(KEY, text) //в сеть
+        }
     }
 
     private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, default : String): MutableLiveData<String> {
         if(liveData.value != null) return liveData
-        val text = handbook?.get(KEY)
+        var text = handbook[KEY]
         if(text != null) {
+            if(text == "") text = "<Пусто>"
             liveData.value = text
             return liveData
         }
@@ -93,7 +107,7 @@ class AboutViewModel : ViewModel() {
         return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, "Про меня 🍊")
     }
 
-    fun setApelsinkaTitle(text : String) {
+    private fun setApelsinkaTitle(text : String) {
         setWrapper(titleApelsinka, text, KEY_TITLE_APELSINKA)
     }
 
@@ -145,24 +159,142 @@ class AboutViewModel : ViewModel() {
         return dict
     }
     suspend fun updatePhotos() {
-//        val logoPicture = NetworkPictures.getAllLogoPicture(0)
-//        savePicturesToDB(logoPicture)
-//        imageOfLogo.value = union(defaultPicturesLogo(), pictureRealization.logoPicture()).shuffled()
-//
-//        val oscarPicture = NetworkPictures.getAllOscarPicture(0)
-//        savePicturesToDB(oscarPicture)
-//        imagesOfOscar.value = union(defaultPicturesOscar(), pictureRealization.oscarPicture()).shuffled()
-//
-//        val leraPicture = NetworkPictures.getAllLeraPicture(0)
-//        savePicturesToDB(leraPicture)
-//        imagesOfLera.value = union(defaultPicturesLera(), pictureRealization.leraPicture()).shuffled()
-//
-//        val lexaPicture = NetworkPictures.getAllRylexiumPicture(0)
-//        savePicturesToDB(lexaPicture)
-//        imagesOfLexa.value = union(defaultPicturesLexa(), pictureRealization.rylexiumPicture()).shuffled()
+        val logoPicture = NetworkPictures.getAllLogoPicture(0)
+        savePicturesToDB(logoPicture)
+        var picturesFromDB = pictureRealization.logoPicture()
+        imageOfLogo.value = union(defaultPicturesLogo(), picturesFromDB).shuffled()
+        pageOfLogo = picturesFromDB.size / 10
+
+        val oscarPicture = NetworkPictures.getAllOscarPicture(0)
+        savePicturesToDB(oscarPicture)
+        picturesFromDB = pictureRealization.oscarPicture()
+        imagesOfOscar.value = union(defaultPicturesOscar(), picturesFromDB).shuffled()
+        pageOfOscar = picturesFromDB.size / 10
+
+        val leraPicture = NetworkPictures.getAllLeraPicture(0)
+        savePicturesToDB(leraPicture)
+        picturesFromDB = pictureRealization.leraPicture()
+        imagesOfLera.value = union(defaultPicturesLera(), picturesFromDB).shuffled()
+        pageOfLera = picturesFromDB.size / 10
+
+        val lexaPicture = NetworkPictures.getAllRylexiumPicture(0)
+        savePicturesToDB(lexaPicture)
+        picturesFromDB = pictureRealization.rylexiumPicture()
+        imagesOfLexa.value = union(defaultPicturesLexa(), picturesFromDB).shuffled()
+        pageOfLexa = picturesFromDB.size / 10
     }
     private fun union(list1: MutableList<Any>, list2: List<FieldPhoto>) : MutableList<Any> {
         list1.addAll(list2)
         return list1
+    }
+
+    suspend fun nextPicturesOscar(): Boolean {
+        var picturesFromNetwork : List<FieldPhoto>
+        var picturesFromBD : List<FieldPhoto>
+        while(true) {
+            picturesFromNetwork = NetworkPictures.getAllOscarPicture(pageOfOscar)
+            val previosSize = pictureRealization.oscarPicture().size
+            savePicturesToDB(picturesFromNetwork)
+            picturesFromBD = pictureRealization.oscarPicture()
+
+            if(picturesFromNetwork.size == 10)
+                pageOfOscar += 1
+
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+        }
+        if(picturesFromNetwork.isEmpty()) return false
+
+        val result = imagesOfOscar.value as MutableList
+
+        result.addAll(picturesFromBD)
+
+        imagesOfOscar.value = result.distinct()
+        if(picturesFromNetwork.size < 10) return false
+        return true
+    }
+
+    suspend fun nextPicturesLogo(): Boolean {
+        var picturesFromNetwork : List<FieldPhoto>
+
+        var picturesFromBD : List<FieldPhoto>
+
+        while(true) {
+            picturesFromNetwork = NetworkPictures.getAllLogoPicture(pageOfLogo)
+            val previosSize = pictureRealization.logoPicture().size
+            savePicturesToDB(picturesFromNetwork)
+            picturesFromBD = pictureRealization.logoPicture()
+
+            if(picturesFromNetwork.size == 10)
+                pageOfLogo += 1
+
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+        }
+        if(picturesFromNetwork.isEmpty()) return false
+
+        val result = imageOfLogo.value as MutableList
+
+        result.addAll(picturesFromBD)
+
+        imageOfLogo.value = result.distinct()
+        if(picturesFromNetwork.size < 10) return false
+        return true
+    }
+
+    suspend fun nextPicturesLera(): Boolean {
+        var picturesFromNetwork : List<FieldPhoto>
+
+        var picturesFromBD : List<FieldPhoto>
+
+        while(true) {
+            picturesFromNetwork = NetworkPictures.getAllLeraPicture(pageOfLera)
+            val previosSize = pictureRealization.leraPicture().size
+            savePicturesToDB(picturesFromNetwork)
+            picturesFromBD = pictureRealization.leraPicture()
+
+            if(picturesFromNetwork.size == 10)
+                pageOfLogo += 1
+
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+        }
+        if(picturesFromNetwork.isEmpty()) return false
+
+        val result = imagesOfLera.value as MutableList
+
+        result.addAll(picturesFromBD)
+
+        imagesOfLera.value = result.distinct()
+        if(picturesFromNetwork.size < 10) return false
+        return true
+    }
+
+    suspend fun nextPicturesLexa(): Boolean {
+        var picturesFromNetwork : List<FieldPhoto>
+
+        var picturesFromBD : List<FieldPhoto>
+
+        while(true) {
+            picturesFromNetwork = NetworkPictures.getAllRylexiumPicture(pageOfLera)
+            val previosSize = pictureRealization.rylexiumPicture().size
+            savePicturesToDB(picturesFromNetwork)
+            picturesFromBD = pictureRealization.rylexiumPicture()
+
+            if(picturesFromNetwork.size == 10)
+                pageOfLogo += 1
+
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+        }
+        if(picturesFromNetwork.isEmpty()) return false
+
+        val result = imagesOfLexa.value as MutableList
+
+        result.addAll(picturesFromBD)
+
+        imagesOfLexa.value = result.distinct()
+        if(picturesFromNetwork.size < 10) return false
+        return true
     }
 }

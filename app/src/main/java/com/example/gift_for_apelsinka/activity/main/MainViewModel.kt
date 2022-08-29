@@ -9,6 +9,7 @@ import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
+import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
@@ -22,9 +23,10 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
+
     companion object {
-        var KEY_PAGE_OF_PICTURE = "pageOfPicture"
-        var KEY_PAGE_OF_STATEMENTS = "pageOfStatements"
+        var pageOfStatements = 0
+        var pageOfMainPicture = 0
     }
 
     fun getStatements(): MutableLiveData<List<Statements>> = runBlocking {
@@ -133,27 +135,25 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     }
 
     suspend fun nextStatements() : Boolean {
-        var page = sharedPreferences.getInt(KEY_PAGE_OF_STATEMENTS, 0)
         var statementsFromNetwork: List<Statements>
-
+        var statementsFromBD : List<Statements>
         while(true) {
-            statementsFromNetwork = NetworkStatements.getStatements(page)
+            statementsFromNetwork = NetworkStatements.getStatements(pageOfStatements)
             val previosSize = statementRealization.getAll().size
             saveStatementsToDB(statementsFromNetwork)
-            val nowSize = statementRealization.getAll().size
+            statementsFromBD = statementRealization.getAll()
 
             if(statementsFromNetwork.size == 10)
-                page += 1
+                pageOfStatements += 1
 
-            if(previosSize != nowSize) break //таких нет, надо отобразить
+            if(previosSize != statementsFromBD.size) break //таких нет, надо отобразить
             if(statementsFromNetwork.size < 10) break //пришло меньше 10 -> это конец
         }
         if(statementsFromNetwork.isEmpty()) return false
-        sharedPreferences.edit().putInt(KEY_PAGE_OF_STATEMENTS, page).apply()
 
         val result = listOfStatements.value as MutableList
 
-        result.addAll(statementRealization.getAll())
+        result.addAll(statementsFromBD)
 
         listOfStatements.value = result.distinct()
         if(statementsFromNetwork.size < 10) return false
@@ -161,17 +161,25 @@ class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     }
 
     suspend fun nextMainPictures() : Boolean {
-        var page = sharedPreferences.getInt(KEY_PAGE_OF_PICTURE, 0)
-        val picturesFromNetwork = NetworkPictures.getAllMainPicture(page)
-        if(picturesFromNetwork.isEmpty()) return false
-        if(picturesFromNetwork.size == 10) {
-            page += 1
-            sharedPreferences.edit().putInt(KEY_PAGE_OF_PICTURE, page).apply()
+        var picturesFromNetwork : List<FieldPhoto>
+        var picturesFromBD : List<FieldPhoto>
+        while(true) {
+            picturesFromNetwork = NetworkPictures.getAllMainPicture(pageOfMainPicture)
+            val previosSize = pictureRealization.mainPicture().size
+            savePicturesToDB(picturesFromNetwork)
+            picturesFromBD = pictureRealization.mainPicture()
+
+            if(picturesFromNetwork.size == 10)
+                pageOfMainPicture += 1
+
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
         }
+        if(picturesFromNetwork.isEmpty()) return false
+
         val result = listOfPictures.value as MutableList
 
-        savePicturesToDB(picturesFromNetwork)
-        result.addAll(pictureRealization.mainPicture())
+        result.addAll(picturesFromBD)
 
         listOfPictures.value = result.distinct()
         if(picturesFromNetwork.size < 10) return false
