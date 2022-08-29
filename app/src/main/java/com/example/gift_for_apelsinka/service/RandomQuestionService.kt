@@ -24,7 +24,9 @@ class RandomQuestionService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
+        Log.e("RandomQuestionService", "onCreate")
         startMyOwnForeground()
+        (this@RandomQuestionService.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -44,11 +46,11 @@ class RandomQuestionService : Service() {
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
             .setContentTitle("RQ is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MIN)
+            .setPriority(NotificationManager.IMPORTANCE_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(3, notification)
+        startForeground(2, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -70,8 +72,8 @@ class RandomQuestionService : Service() {
         val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
 
         val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT);
-        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi);
+        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT)
+        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi)
     }
 
     private fun equationNotification() {

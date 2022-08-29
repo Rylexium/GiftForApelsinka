@@ -2,12 +2,12 @@ package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
 import android.app.*
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -18,7 +18,6 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class GoodMorningService : Service() {
@@ -29,6 +28,7 @@ class GoodMorningService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
+        Log.e("GoodMorningService", "onCreate")
         startMyOwnForeground()
     }
 
@@ -49,11 +49,11 @@ class GoodMorningService : Service() {
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
             .setContentTitle("GM is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MIN)
+            .setPriority(NotificationManager.IMPORTANCE_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(2, notification)
+        startForeground(1, notification)
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
@@ -61,7 +61,7 @@ class GoodMorningService : Service() {
     }
 
     private fun initTask() {
-        backgroundThread = task()
+        backgroundThread = taskGoodMorning()
         backgroundThread?.start()
     }
 
@@ -70,8 +70,8 @@ class GoodMorningService : Service() {
         val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
 
         val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT);
-        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi);
+        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT)
+        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -79,10 +79,10 @@ class GoodMorningService : Service() {
     }
 
     override fun onDestroy() {
-        task()
+        taskGoodMorning()
     }
 
-    private fun task() : Thread {
+    private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 8)
         var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)

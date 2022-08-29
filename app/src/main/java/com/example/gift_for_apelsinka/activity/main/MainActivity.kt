@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Thread { startServices() }.start()
         setContentView(R.layout.activity_main)
 
         initDB(applicationContext)
@@ -77,10 +78,13 @@ class MainActivity : AppCompatActivity() {
         initComponents()
         initDataComponents()
         applyEvents()
-        startServices()
     }
 
     private fun startServices() {
+        stopService(Intent(this, GoodMorningService::class.java))
+        stopService(Intent(this, RandomQuestionService::class.java))
+        stopService(Intent(this, NotificationFromServerService::class.java))
+
         startService(Intent(this, GoodMorningService::class.java))
         startService(Intent(this, RandomQuestionService::class.java))
         startService(Intent(this, NotificationFromServerService::class.java))

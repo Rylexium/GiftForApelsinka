@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,7 +28,9 @@ class NotificationFromServerService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
+        Log.e("NotificationFromServerService", "onCreate")
         startMyOwnForeground()
+        (this@NotificationFromServerService.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -47,11 +50,11 @@ class NotificationFromServerService : Service() {
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
             .setContentTitle("NFS is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MIN)
+            .setPriority(NotificationManager.IMPORTANCE_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(1, notification)
+        startForeground(3, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -78,8 +81,8 @@ class NotificationFromServerService : Service() {
         val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
 
         val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT);
-        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi);
+        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT)
+        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi)
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
