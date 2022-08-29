@@ -52,22 +52,27 @@ class PhotosActivity : AppCompatActivity() {
     private fun applyEvents() {
         recv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             var isUpdate = false
+            var isShowToastDownload = false
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (!recyclerView.canScrollVertically(1)) {
-                    if(progressBar.visibility == View.VISIBLE) { // если загрузка
+                if (!recyclerView.canScrollVertically(1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+                    if(progressBar.visibility == View.VISIBLE && !isShowToastDownload) { // если загрузка
+                        isShowToastDownload = true
                         ShowToast.show(this@PhotosActivity, "Загружаю фотографии")
+                        Handler(Looper.getMainLooper()).postDelayed( { isShowToastDownload = false }, 3000)
                         return
                     }
 
                     if(isUpdate) return
+
                     progressBar.visibility = View.VISIBLE
                     viewModel.viewModelScope.launch { //долистали до ласт элемента
                         isUpdate = true
                         val flag = viewModel.nextPhotos() //загрузка
-                        Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
                         Handler(Looper.getMainLooper()).post { progressBar.visibility = View.GONE }
-                        if(!flag) Handler(Looper.getMainLooper()).post { ShowToast.show(this@PhotosActivity, "Загружены все фотографии") }
+                        Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
+                        if(!flag)
+                            Handler(Looper.getMainLooper()).post { ShowToast.show(this@PhotosActivity, "Загружены все фотографии") }
                     }
                 }
             }
