@@ -42,7 +42,7 @@ class PhotosActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progress_download_photos)
         viewModel.getPhotosList().observe(this) {
             viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
-            recv.adapter = PhotosAdapter(applicationContext, it, viewModel, recv)
+            recv.adapter = PhotosAdapter(this@PhotosActivity, it, viewModel, recv)
             recv.layoutManager = LinearLayoutManager(this)
             (recv.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(viewModel.getScrollState())

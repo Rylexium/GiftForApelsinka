@@ -126,7 +126,7 @@ class AboutActivity : AppCompatActivity() {
 
         findViewById<LinearLayout>(R.id.layout_textview_about_apelsinka).setOnClickListener(object : DoubleClickListener(){
             override fun onDoubleClick() {
-                editTextView(textViewAboutApelsinka, this@AboutActivity) {
+                editTextView(textViewAboutApelsinka, applicationContext) {
                     viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString())
                 }
             }
