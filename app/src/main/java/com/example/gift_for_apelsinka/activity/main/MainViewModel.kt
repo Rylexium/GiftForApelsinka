@@ -121,6 +121,7 @@ class MainViewModel : ViewModel() {
             deleteStatementsFromDB()
             saveStatementsToDB(statementsFromNetwork)
             listOfStatements.value = statementsFromNetwork
+            pageOfStatements = statementsFromNetwork.size / 10
         }
         return (list1.size < list2.size || list1.size > list2.size)//!isEquals //true была новая запись
     }
