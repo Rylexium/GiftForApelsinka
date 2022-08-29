@@ -70,6 +70,9 @@
                         app:tabBackground="@drawable/tab_selector"
                         app:tabGravity="center"
                         android:background="@android:color/transparent"
+                        app:tabIndicatorAnimationMode="fade"
+                        app:tabPaddingStart="6dp"
+                        app:tabPaddingEnd="6dp"
                         app:tabIndicatorHeight="0dp"/>
 
                     <com.example.gift_for_apelsinka.util.views.DynamicViewPager
@@ -85,7 +88,11 @@
                         app:tabBackground="@drawable/tab_selector"
                         app:tabGravity="center"
                         android:background="@android:color/transparent"
-                        app:tabIndicatorHeight="0dp"/>
+                        app:tabIndicatorHeight="0dp"
+                        app:tabPaddingStart="6dp"
+                        app:tabPaddingEnd="6dp"
+                        android:layout_marginBottom="20dp"
+                        />
                 </LinearLayout>
 
 

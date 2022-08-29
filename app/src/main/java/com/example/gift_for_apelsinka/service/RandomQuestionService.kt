@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.InitView
@@ -22,13 +24,36 @@ class RandomQuestionService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
-        val notification: Notification = Notification.Builder(this, "CHANNEL_GOOD_MORNING")
+//        val notification: Notification = Notification.Builder(this, "CHANNEL_GOOD_MORNING")
+//            .setSmallIcon(R.drawable.icon_of_developer)
+//            .build()
+//        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+//        startForeground(1, notification)
+        startMyOwnForeground()
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun startMyOwnForeground() {
+        val NOTIFICATION_CHANNEL_ID = "CHANNEL_QUESTION"
+        val channelName = "CHANNEL_QUESTION"
+        val chan = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            channelName,
+            NotificationManager.IMPORTANCE_NONE
+        )
+        chan.lightColor = Color.BLUE
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+        manager.createNotificationChannel(chan)
+        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
+            .setContentTitle("App is running in background")
+            .setPriority(NotificationManager.IMPORTANCE_MIN)
+            .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
         startForeground(3, notification)
     }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
         return START_STICKY
