@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TableLayout
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
@@ -41,6 +43,11 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var textViewAboutApelsinka : TextView
     private lateinit var textViewTextOfGoodnight : TextView
 
+    private lateinit var progressbarViewPagerOfImageLogo : ProgressBar
+    private lateinit var progressbarViewPagerOfImageOscar : ProgressBar
+    private lateinit var progressbarViewPagerOfImageLera : ProgressBar
+    private lateinit var progressbarViewPagerOfImageLexa : ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -65,6 +72,11 @@ class AboutActivity : AppCompatActivity() {
 
         textViewAboutApelsinka = findViewById(R.id.textview_about_apelsinka)
         textViewTextOfGoodnight = findViewById(R.id.textview_text_of_goodnight)
+
+        progressbarViewPagerOfImageLogo  = findViewById(R.id.progressbar_view_pager_of_image_logo)
+        progressbarViewPagerOfImageOscar = findViewById(R.id.progressbar_view_pager_of_image_oscar)
+        progressbarViewPagerOfImageLera  = findViewById(R.id.progressbar_view_pager_of_image_lera)
+        progressbarViewPagerOfImageLexa  = findViewById(R.id.progressbar_view_pager_of_image_lexa)
     }
 
     private fun initDataComponents() {
@@ -100,18 +112,21 @@ class AboutActivity : AppCompatActivity() {
         }
     }
 
-    private fun wrapperForSwipeOutViewPager(viewPager: ImageViewPager, nextPicture: suspend () -> Boolean, finish: () -> Unit) {
+    private fun wrapperForSwipeOutViewPager(viewPager: ImageViewPager, nextPicture: suspend () -> Boolean,
+                                            progressBar : ProgressBar,finish: () -> Unit) {
         viewPager.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
             override fun onSwipeOutAtStart() {}
 
             var isUpdate = false
             override fun onSwipeOutAtEnd() {
                 if(isUpdate) return
+                progressBar.visibility = View.VISIBLE
                 viewModel.viewModelScope.launch { //долистали до ласт элемента
                     isUpdate = true
                     val flag : Boolean = nextPicture()
                     isUpdate = false
-                    if(!flag) Handler(Looper.getMainLooper()).post {  finish() }
+                    Handler(Looper.getMainLooper()).post { progressBar.visibility = View.GONE }
+                    if(!flag) Handler(Looper.getMainLooper()).post { finish() }
                 }
             }
         })
@@ -142,13 +157,21 @@ class AboutActivity : AppCompatActivity() {
         wrapperDisableSwitchLayout(viewPageOfImageLexa, switchRefreshLayout)
 
         wrapperForSwipeOutViewPager(viewPageOfImageLogo,
-            { viewModel.nextPicturesLogo() }, { ShowToast.show(this@AboutActivity, "Все фотки логотипов загружены") })
+            { viewModel.nextPicturesLogo() },
+            progressbarViewPagerOfImageLogo,
+            { ShowToast.show(this@AboutActivity, "Все фотки логотипов загружены") })
         wrapperForSwipeOutViewPager(viewPageOfImageOscar,
-            { viewModel.nextPicturesOscar() }, { ShowToast.show(this@AboutActivity, "Все фотки Оскара загружены") })
+            { viewModel.nextPicturesOscar() },
+            progressbarViewPagerOfImageOscar,
+            { ShowToast.show(this@AboutActivity, "Все фотки Оскара загружены") })
         wrapperForSwipeOutViewPager(viewPageOfImageLera,
-            { viewModel.nextPicturesLera() }, { ShowToast.show(this@AboutActivity, "Все фотки Леры загружены") })
+            { viewModel.nextPicturesLera() },
+            progressbarViewPagerOfImageLera,
+            { ShowToast.show(this@AboutActivity, "Все фотки Леры загружены") })
         wrapperForSwipeOutViewPager(viewPageOfImageLexa,
-            { viewModel.nextPicturesLexa() }, { ShowToast.show(this@AboutActivity, "Все фотки Лёши загружены") })
+            { viewModel.nextPicturesLexa() },
+            progressbarViewPagerOfImageLexa,
+            { ShowToast.show(this@AboutActivity, "Все фотки Лёши загружены") })
 
         wrapperEditTextView(textViewAboutApelsinka) { viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString()) }
         wrapperEditTextView(textViewTextOfGoodnight) { viewModel.setTextGoodnight(textViewTextOfGoodnight.text.toString()) }
@@ -166,10 +189,20 @@ class AboutActivity : AppCompatActivity() {
         })
 
         switchRefreshLayout.setOnRefreshListener {
+            progressbarViewPagerOfImageLogo.visibility = View.VISIBLE
+            progressbarViewPagerOfImageOscar.visibility = View.VISIBLE
+            progressbarViewPagerOfImageLera.visibility = View.VISIBLE
+            progressbarViewPagerOfImageLexa.visibility = View.VISIBLE
             viewModel.viewModelScope.launch {
                 viewModel.updateHandbook()
                 viewModel.updatePhotos()
-                Handler(Looper.getMainLooper()).post { switchRefreshLayout.isRefreshing = false }
+                Handler(Looper.getMainLooper()).post {
+                    progressbarViewPagerOfImageLogo.visibility =  View.GONE
+                    progressbarViewPagerOfImageOscar.visibility = View.GONE
+                    progressbarViewPagerOfImageLera.visibility =  View.GONE
+                    progressbarViewPagerOfImageLexa.visibility =  View.GONE
+                    switchRefreshLayout.isRefreshing = false
+                }
             }
         }
     }

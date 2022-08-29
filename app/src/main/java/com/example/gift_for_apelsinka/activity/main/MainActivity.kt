@@ -12,10 +12,7 @@ import android.text.Html
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -64,6 +61,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textPhoneDeveloper : TextView
     private lateinit var textDiscordDeveloper : TextView
     private lateinit var textAddressDeveloper : TextView
+    private lateinit var progressBarViewPageOfImage : ProgressBar
+    private lateinit var progressBarViewPageOfStatement : ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,6 +118,9 @@ class MainActivity : AppCompatActivity() {
         textPhoneDeveloper = findViewById(R.id.text_phone_developer)
         textDiscordDeveloper = findViewById(R.id.text_discord_developer)
         textAddressDeveloper = findViewById(R.id.text_address_developer)
+
+        progressBarViewPageOfImage = findViewById(R.id.progressbar_view_pager_of_image)
+        progressBarViewPageOfStatement = findViewById(R.id.progressbar_view_pager_of_statement)
     }
 
     private fun initDataComponents() {
@@ -168,10 +170,12 @@ class MainActivity : AppCompatActivity() {
             var isUpdate = false
             override fun onSwipeOutAtEnd() {
                 if(isUpdate) return
+                progressBarViewPageOfImage.visibility = View.VISIBLE
                 viewModel.viewModelScope.launch {
                     isUpdate = true
                     val flag = viewModel.nextMainPictures()
                     isUpdate = false
+                    Handler(Looper.getMainLooper()).post { progressBarViewPageOfImage.visibility = View.GONE }
                     if(!flag)
                         Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
                 }
@@ -193,10 +197,12 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwipeOutAtEnd() {
                 if(isUpdate) return
+                progressBarViewPageOfStatement.visibility = View.VISIBLE
                 viewModel.viewModelScope.launch { //долистали до ласт элемента
                     isUpdate = true
                     val flag = viewModel.nextStatements()
                     isUpdate = false
+                    Handler(Looper.getMainLooper()).post { progressBarViewPageOfStatement.visibility = View.GONE }
                     if(!flag)
                         Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }
                 }
