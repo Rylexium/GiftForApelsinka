@@ -10,10 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gift_for_apelsinka.activity.main.MainViewModel
+import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
 import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import com.example.gift_for_apelsinka.util.wrapperNextPictures
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -23,7 +25,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     private var isUpdating = false
     companion object {
         private var state: Parcelable? = null
-        val KEY_PHOTOS = "PAGE_PHOTOS_APELSINKA"
+        private var pageOfApelsinka = 0
     }
     fun getScrollState(): Parcelable? {
         return state
@@ -79,30 +81,32 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun nextPhotos() : Boolean {
-        var page = sharedPreferences.getInt(KEY_PHOTOS, 0)
-        var pictureFromNetwork: List<FieldPhoto>
+        var picturesFromNetwork : List<FieldPhoto>
+
+        var picturesFromBD : List<FieldPhoto>
 
         while(true) {
-            pictureFromNetwork = NetworkPictures.getAllApelsinkaPicture(page)
+            picturesFromNetwork = NetworkPictures.getAllApelsinkaPicture(pageOfApelsinka)
             val previosSize = pictureRealization.apelsinkaPicture().size
-            savePicturesToDB(pictureFromNetwork)
-            val nowSize = pictureRealization.apelsinkaPicture().size
+            savePicturesToDB(picturesFromNetwork.shuffled())
+            picturesFromBD = pictureRealization.apelsinkaPicture()
 
-            if(pictureFromNetwork.size == 10)
-                page += 1
+            if(picturesFromNetwork.size == 10)
+                pageOfApelsinka += 1
 
-            if(previosSize == nowSize) break //таких нет, надо отобразить
-            if(pictureFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
+            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
         }
-        if(pictureFromNetwork.isEmpty()) return false
-        sharedPreferences.edit().putInt(KEY_PHOTOS, page).apply()
+        if(picturesFromNetwork.isEmpty()) return false
 
         val result = liveDataPhotosList.value as MutableList
 
-        result.addAll(pictureRealization.apelsinkaPicture())
-
-        liveDataPhotosList.value = result.distinct()
-        if(pictureFromNetwork.size < 10) return false
+        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            result.subtract(picturesFromNetwork.toSet()).size == defaultPhotosApelsinka(sharedPreferences).size) {
+            result.addAll(picturesFromBD)
+            liveDataPhotosList.value = result.distinct()
+        }
+        if(picturesFromNetwork.size < 10) return false
         return true
     }
 }

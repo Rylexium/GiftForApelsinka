@@ -70,11 +70,11 @@ object InitView {
             .into(imageView)
     }
 
-    fun initViewPager(viewPager : ViewPager, padding : Int, adapter : PagerAdapter) {
+    fun initViewPager(viewPager : ViewPager, paddingLeft : Int, paddingRight: Int, adapter : PagerAdapter) {
         val state = viewPager.onSaveInstanceState()
         viewPager.adapter = adapter
         viewPager.clipToPadding = false
-        viewPager.setPadding(65 - padding,0,65 - padding,0)
+        viewPager.setPadding(paddingLeft,0, paddingRight,0)
         viewPager.onRestoreInstanceState(state)
     }
     fun dpToPx(resources : Resources, dp: Int): Int {

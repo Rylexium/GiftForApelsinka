@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -61,25 +60,14 @@ class PhotosActivity : AppCompatActivity() {
                         return
                     }
 
-                    if(isUpdate) return //обновлять нечёго
-
-                    progressBar.visibility == View.VISIBLE // перед загрузкой visible
-
-                    viewModel.viewModelScope.launch {
+                    if(isUpdate) return
+                    progressBar.visibility = View.VISIBLE
+                    viewModel.viewModelScope.launch { //долистали до ласт элемента
                         isUpdate = true
                         val flag = viewModel.nextPhotos() //загрузка
-                        isUpdate = false
-
-                        if(!flag) //показываем что всё загружено
-                            ShowToast.show(this@PhotosActivity, "Загружены все фотографии")
-                        updateFlag = null
-                        Handler(Looper.getMainLooper()).post {
-                            progressBar.visibility == View.GONE //прячем прогресс бар
-                        }
-
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            updateFlag = false //много раз появляется toast поэтому delay
-                        }, 1_000)
+                        Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
+                        Handler(Looper.getMainLooper()).post { progressBar.visibility = View.GONE }
+                        if(!flag) Handler(Looper.getMainLooper()).post { ShowToast.show(this@PhotosActivity, "Загружены все фотографии") }
                     }
                 }
             }

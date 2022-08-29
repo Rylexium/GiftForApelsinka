@@ -23,7 +23,7 @@ class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
-
+    val sizeOfStatements = 15
     companion object {
         var pageOfStatements = 0
         var pageOfMainPicture = 0
@@ -120,7 +120,7 @@ class MainViewModel : ViewModel() {
             deleteStatementsFromDB()
             saveStatementsToDB(statementsFromNetwork)
             listOfStatements.value = statementsFromNetwork
-            pageOfStatements = statementsFromNetwork.size / 10
+            pageOfStatements = statementsFromNetwork.size / sizeOfStatements
         }
         return (list1.size < list2.size || list1.size > list2.size)//!isEquals //true была новая запись
     }
@@ -129,16 +129,16 @@ class MainViewModel : ViewModel() {
         var statementsFromNetwork: List<Statements>
         var statementsFromBD : List<Statements>
         while(true) {
-            statementsFromNetwork = NetworkStatements.getStatements(pageOfStatements)
+            statementsFromNetwork = NetworkStatements.getStatements(pageOfStatements, sizeOfStatements)
             val previosSize = statementRealization.getAll().size
             saveStatementsToDB(statementsFromNetwork)
             statementsFromBD = statementRealization.getAll()
 
-            if(statementsFromNetwork.size == 10)
+            if(statementsFromNetwork.size == sizeOfStatements)
                 pageOfStatements += 1
 
             if(previosSize != statementsFromBD.size) break //таких нет, надо отобразить
-            if(statementsFromNetwork.size < 10) break //пришло меньше 10 -> это конец
+            if(statementsFromNetwork.size < sizeOfStatements) break //пришло меньше sizeOfStatements -> это конец
         }
         if(statementsFromNetwork.isEmpty()) return false
 
@@ -147,7 +147,7 @@ class MainViewModel : ViewModel() {
             result.addAll(statementsFromBD)
             listOfStatements.value = result.distinct()
         }
-        if(statementsFromNetwork.size < 10) return false
+        if(statementsFromNetwork.size < sizeOfStatements) return false
         return true
     }
 

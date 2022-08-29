@@ -60,7 +60,7 @@ fun liveDataObserveTextWrapper(liveData: MutableLiveData<String>, textView: Text
 }
 fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager, lifecycleOwner: LifecycleOwner, context: Context) {
     liveData.observe(lifecycleOwner) {
-        InitView.initViewPager(viewPager, 65, ImageViewPageAdapter(context, it))
+        InitView.initViewPager(viewPager, 0, 0, ImageViewPageAdapter(context, it))
     }
 }
 

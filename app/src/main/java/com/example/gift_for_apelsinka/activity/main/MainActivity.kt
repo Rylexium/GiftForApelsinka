@@ -131,10 +131,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataComponents() {
         viewModel.getPictures().observe(this) {
-            initViewPager(viewPageOfImage, 25, ImageViewPageAdapter(this, it))
+            initViewPager(viewPageOfImage, 35, 70, ImageViewPageAdapter(this, it))
         }
         viewModel.getStatements().observe(this) {
-            initViewPager(viewPageOfStatement, 0, StatementViewPageAdapter(this, it))
+            initViewPager(viewPageOfStatement, 45, 70, StatementViewPageAdapter(this, it))
         }
         setGreeting()
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
