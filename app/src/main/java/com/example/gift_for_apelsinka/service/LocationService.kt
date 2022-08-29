@@ -20,6 +20,7 @@ class LocationService : Service() {
     private lateinit var locationByNetwork : Location
     private var hasNetwork : Boolean = false
     private var hasGps : Boolean = false
+    private var channelId = 6
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

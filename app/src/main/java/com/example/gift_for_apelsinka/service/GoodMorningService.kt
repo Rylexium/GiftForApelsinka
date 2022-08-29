@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.service
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -22,9 +23,34 @@ class GoodMorningService : Service() {
     private val KEY_HOUR = "GoodMorningRandomHour"
     private val KEY_MINUTE = "GoodMorningRandomMinute"
 
+    private var backgroundThread : Thread? = null
+
+    @SuppressLint("NewApi")
+    override fun onCreate() {
+        val notification: Notification = Notification.Builder(this, "CHANNEL_GOOD_MORNING")
+            .setSmallIcon(R.drawable.icon_of_developer)
+            .build()
+        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+        startForeground(2, notification)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        task()
+        initTask()
         return START_STICKY
+    }
+
+    private fun initTask() {
+        backgroundThread = task()
+        backgroundThread?.start()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
+
+        val am = getSystemService(ALARM_SERVICE) as AlarmManager
+        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT);
+        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi);
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -35,12 +61,12 @@ class GoodMorningService : Service() {
         task()
     }
 
-    private fun task() {
+    private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 8)
         var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)
 
-        Thread {
+        return Thread {
             while (true) {
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
@@ -55,7 +81,7 @@ class GoodMorningService : Service() {
                 }
                 Thread.sleep(600_000)
             }
-        }.start()
+        }
     }
 
     private fun goodMorningNotification() {
@@ -76,7 +102,7 @@ class GoodMorningService : Service() {
                 val notifChannel = NotificationChannel("CHANNEL_GOOD_MORNING", "CHANNEL_GOOD_MORNING", NotificationManager.IMPORTANCE_DEFAULT)
                 notificationManager.createNotificationChannel(notifChannel)
             }
-            notificationManager.notify(1, notificationGoodMorning)
+            notificationManager.notify(5, notificationGoodMorning)
         }
     }
 }

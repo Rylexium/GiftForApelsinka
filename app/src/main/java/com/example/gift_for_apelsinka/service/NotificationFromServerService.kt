@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
-    private var channelId = 2
+    private var channelId = 10
     @SuppressLint("NewApi")
     override fun onCreate() {
         val notification: Notification = Notification.Builder(this, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
