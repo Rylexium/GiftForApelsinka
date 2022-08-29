@@ -9,33 +9,7 @@ import kotlin.math.max
 class DynamicViewPager
 @JvmOverloads
 constructor(context: Context, attrs: AttributeSet? = null)
-    : ViewPager(context, attrs) {
-
-    var mStartDragX = 0f
-    var mListener: OnSwipeOutListener? = null
-    fun setOnSwipeOutListener(listener: OnSwipeOutListener?) {
-        mListener = listener
-    }
-
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if(mListener == null) return super.onInterceptTouchEvent(ev)
-        val x = ev.x
-        when (ev.action) {
-            MotionEvent.ACTION_DOWN -> mStartDragX = x
-            MotionEvent.ACTION_MOVE -> if (mStartDragX < x && currentItem == 0) {
-                mListener?.onSwipeOutAtStart()
-            } else if (mStartDragX > x && currentItem == adapter!!.count - 1) {
-                mListener?.onSwipeOutAtEnd()
-            }
-        }
-        return super.onInterceptTouchEvent(ev)
-    }
-
-    interface OnSwipeOutListener {
-        fun onSwipeOutAtStart()
-        fun onSwipeOutAtEnd()
-    }
-
+    : ImageViewPager(context, attrs) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var heightMeasureSpec = heightMeasureSpec

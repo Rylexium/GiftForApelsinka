@@ -38,6 +38,8 @@ import com.example.gift_for_apelsinka.util.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.views.DynamicViewPager
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
+import com.example.gift_for_apelsinka.util.wrapperDisableSwitchLayout
+import com.example.gift_for_apelsinka.util.wrapperForSwipeOutViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
@@ -164,32 +166,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyEvents() {
-        viewPageOfImage.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
-            override fun onSwipeOutAtStart() {}
+        wrapperForSwipeOutViewPager(viewPageOfImage,
+            { viewModel.nextMainPictures() },
+            progressBarViewPageOfImage,
+            { ShowToast.show(this@MainActivity, "Все фото загружены") }, viewModel)
+        wrapperDisableSwitchLayout(viewPageOfStatement, swipeRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImage, swipeRefreshLayout)
 
-            var isUpdate = false
-            override fun onSwipeOutAtEnd() {
-                if(isUpdate) return
-                progressBarViewPageOfImage.visibility = View.VISIBLE
-                viewModel.viewModelScope.launch {
-                    isUpdate = true
-                    val flag = viewModel.nextMainPictures()
-                    Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
-                    Handler(Looper.getMainLooper()).post { progressBarViewPageOfImage.visibility = View.GONE }
-                    if(!flag)
-                        Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все фото загружены") }
-                }
-            }
 
-        })
-        viewPageOfImage.addOnPageChangeListener(object : OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
-            }
-        })
-        viewPageOfStatement.setOnSwipeOutListener(object : DynamicViewPager.OnSwipeOutListener{
+        viewPageOfStatement.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener{
             var isUpdate = false
             override fun onSwipeOutAtStart() {
                 ShowToast.show(this@MainActivity, "Зачем тебе туда?")
@@ -206,14 +191,6 @@ class MainActivity : AppCompatActivity() {
                     if(!flag)
                         Handler(Looper.getMainLooper()).post { ShowToast.show(this@MainActivity, "Все цитаты великих загружены") }
                 }
-            }
-
-        })
-        viewPageOfStatement.addOnPageChangeListener(object : OnPageChangeListener {
-            override fun onPageScrolled(position: Int, v: Float, i1: Int) {}
-            override fun onPageSelected(position: Int) {}
-            override fun onPageScrollStateChanged(state: Int) {
-                enableDisableSwipeRefresh(swipeRefreshLayout, state == ViewPager.SCROLL_STATE_IDLE)
             }
         })
 

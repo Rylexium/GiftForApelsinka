@@ -8,6 +8,7 @@ import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import com.example.gift_for_apelsinka.util.wrapperNextPictures
 import kotlinx.coroutines.*
 
 class AboutViewModel : ViewModel() {
@@ -190,120 +191,38 @@ class AboutViewModel : ViewModel() {
     }
 
     suspend fun nextPicturesOscar(): Boolean {
-        var picturesFromNetwork : List<FieldPhoto>
-        var picturesFromBD : List<FieldPhoto>
-        while(true) {
-            picturesFromNetwork = NetworkPictures.getAllOscarPicture(pageOfOscar)
-            val previosSize = pictureRealization.oscarPicture().size
-            savePicturesToDB(picturesFromNetwork.shuffled())
-            picturesFromBD = pictureRealization.oscarPicture()
-
-            if(picturesFromNetwork.size == 10)
-                pageOfOscar += 1
-
-            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
-            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
-        }
-        if(picturesFromNetwork.isEmpty()) return false
-
-        val result = imagesOfOscar.value as MutableList
-
-        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesOscar().size) {
-            result.addAll(picturesFromBD)
-            imagesOfOscar.value = result.distinct()
-        }
-        if(picturesFromNetwork.size < 10) return false
-        return true
+        val res = wrapperNextPictures(
+            { NetworkPictures.getAllOscarPicture(it) },
+            { pictureRealization.oscarPicture() },
+            pageOfOscar, imagesOfOscar, defaultPicturesOscar())
+        pageOfLogo = res.first
+        return res.second
     }
 
     suspend fun nextPicturesLogo(): Boolean {
-        var picturesFromNetwork : List<FieldPhoto>
-
-        var picturesFromBD : List<FieldPhoto>
-
-        while(true) {
-            picturesFromNetwork = NetworkPictures.getAllLogoPicture(pageOfLogo)
-            val previosSize = pictureRealization.logoPicture().size
-            savePicturesToDB(picturesFromNetwork.shuffled())
-            picturesFromBD = pictureRealization.logoPicture()
-
-            if(picturesFromNetwork.size == 10)
-                pageOfLogo += 1
-
-            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
-            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
-        }
-        if(picturesFromNetwork.isEmpty()) return false
-
-        val result = imageOfLogo.value as MutableList
-
-        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLogo().size) {
-            result.addAll(picturesFromBD)
-            imageOfLogo.value = result.distinct()
-        }
-        if(picturesFromNetwork.size < 10) return false
-        return true
+        val res = wrapperNextPictures(
+            { NetworkPictures.getAllLogoPicture(it) },
+            { pictureRealization.logoPicture() },
+            pageOfLogo, imageOfLogo, defaultPicturesLogo())
+        pageOfLogo = res.first
+        return res.second
     }
 
     suspend fun nextPicturesLera(): Boolean {
-        var picturesFromNetwork : List<FieldPhoto>
-
-        var picturesFromBD : List<FieldPhoto>
-
-        while(true) {
-            picturesFromNetwork = NetworkPictures.getAllLeraPicture(pageOfLera)
-            val previosSize = pictureRealization.leraPicture().size
-            savePicturesToDB(picturesFromNetwork.shuffled())
-            picturesFromBD = pictureRealization.leraPicture()
-
-            if(picturesFromNetwork.size == 10)
-                pageOfLogo += 1
-
-            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
-            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
-        }
-        if(picturesFromNetwork.isEmpty()) return false
-
-        val result = imagesOfLera.value as MutableList
-
-        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLera().size) {
-            result.addAll(picturesFromBD)
-            imagesOfLera.value = result.distinct()
-        }
-        if(picturesFromNetwork.size < 10) return false
-        return true
+        val res = wrapperNextPictures(
+            { NetworkPictures.getAllLeraPicture(it) },
+            { pictureRealization.leraPicture() },
+            pageOfLera, imagesOfLera, defaultPicturesLera())
+        pageOfLera = res.first
+        return res.second
     }
 
     suspend fun nextPicturesLexa(): Boolean {
-        var picturesFromNetwork : List<FieldPhoto>
-
-        var picturesFromBD : List<FieldPhoto>
-
-        while(true) {
-            picturesFromNetwork = NetworkPictures.getAllRylexiumPicture(pageOfLera)
-            val previosSize = pictureRealization.rylexiumPicture().size
-            savePicturesToDB(picturesFromNetwork.shuffled())
-            picturesFromBD = pictureRealization.rylexiumPicture()
-
-            if(picturesFromNetwork.size == 10)
-                pageOfLogo += 1
-
-            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
-            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
-        }
-        if(picturesFromNetwork.isEmpty()) return false
-
-        val result = imagesOfLexa.value as MutableList
-
-        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-            result.subtract(picturesFromNetwork.toSet()).size == defaultPicturesLexa().size) {
-            result.addAll(picturesFromBD)
-            imagesOfLexa.value = result.distinct()
-        }
-        if(picturesFromNetwork.size < 10) return false
-        return true
+        val res = wrapperNextPictures(
+            { NetworkPictures.getAllRylexiumPicture(it) },
+            { pictureRealization.rylexiumPicture() },
+            pageOfLexa, imagesOfLexa, defaultPicturesLexa())
+        pageOfLexa = res.first
+        return res.second
     }
 }

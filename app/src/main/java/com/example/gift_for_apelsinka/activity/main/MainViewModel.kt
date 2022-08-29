@@ -1,6 +1,5 @@
 package com.example.gift_for_apelsinka.activity.main
 
-import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
@@ -9,13 +8,13 @@ import com.example.gift_for_apelsinka.cache.defaultListOfMainPictures
 import com.example.gift_for_apelsinka.cache.defaultListOfStatements
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.db.*
-import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
+import com.example.gift_for_apelsinka.util.wrapperNextPictures
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
@@ -153,31 +152,13 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun nextMainPictures() : Boolean {
-        var picturesFromNetwork : List<FieldPhoto>
-        var picturesFromBD : List<FieldPhoto>
-        while(true) {
-            picturesFromNetwork = NetworkPictures.getAllMainPicture(pageOfMainPicture)
-            val previosSize = pictureRealization.mainPicture().size
-            savePicturesToDB(picturesFromNetwork)
-            picturesFromBD = pictureRealization.mainPicture()
-
-            if(picturesFromNetwork.size == 10)
-                pageOfMainPicture += 1
-
-            if(previosSize != picturesFromBD.size) break //таких нет, надо отобразить
-            if(picturesFromNetwork.size < 10) break //пришло меньше 10 -> это конец
-        }
-        if(picturesFromNetwork.isEmpty()) return false
-
-        val result = listOfPictures.value as MutableList
-
-        if(picturesFromNetwork.map { it.id }.subtract(picturesFromBD.map { it.id }.toSet()).isNotEmpty() ||
-            result.subtract(picturesFromNetwork.toSet()).size == defaultListOfMainPictures().size) {
-            result.addAll(picturesFromBD)
-            listOfPictures.value = result.distinct()
-        }
-        if(picturesFromNetwork.size < 10) return false
-        return true
+        val res = wrapperNextPictures(
+            { NetworkPictures.getAllMainPicture(it) },
+            { pictureRealization.mainPicture() },
+            pageOfMainPicture, listOfPictures, defaultListOfMainPictures()
+        )
+        pageOfMainPicture = res.first
+        return res.second
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
         val dict = NetworkHandbook.getHandbook()
