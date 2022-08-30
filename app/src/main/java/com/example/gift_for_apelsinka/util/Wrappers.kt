@@ -112,7 +112,6 @@ fun wrapperOpenShowPictureActivity(view : View, activity: Activity, image : Stri
     view.setOnClickListener {
         ShowPictureActivity.image = image
         activity.startActivity(Intent(activity, ShowPictureActivity::class.java))
-        ActivityOptionsCompat.makeSceneTransitionAnimation(activity)
         activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
