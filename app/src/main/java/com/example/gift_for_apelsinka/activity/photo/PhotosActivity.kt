@@ -94,4 +94,25 @@ class PhotosActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        DebugFunctions.addDebug("PhotosActivity","onPause")
+        super.onPause()
+    }
+
+    override fun onResume() {
+        DebugFunctions.addDebug("PhotosActivity","onResume")
+        super.onResume()
+    }
+
+    override fun onBackPressed() {
+        DebugFunctions.addDebug("PhotosActivity","onBackPressed")
+        DebugFunctions.sendReport()
+        super.onBackPressed()
+    }
+    override fun onDestroy() {
+        DebugFunctions.addDebug("PhotosActivity","onDestroy")
+        DebugFunctions.sendReport()
+        super.onDestroy()
+    }
 }

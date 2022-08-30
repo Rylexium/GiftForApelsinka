@@ -156,6 +156,26 @@ class AboutActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        DebugFunctions.addDebug("AboutActivity","onPause")
+        super.onPause()
+    }
+
+    override fun onResume() {
+        DebugFunctions.addDebug("AboutActivity","onResume")
+        super.onResume()
+    }
+
+    override fun onBackPressed() {
+        DebugFunctions.addDebug("AboutActivity","onBackPressed")
+        DebugFunctions.sendReport()
+        super.onBackPressed()
+    }
+    override fun onDestroy() {
+        DebugFunctions.addDebug("AboutActivity","onDestroy")
+        DebugFunctions.sendReport()
+        super.onDestroy()
+    }
 }
 
 

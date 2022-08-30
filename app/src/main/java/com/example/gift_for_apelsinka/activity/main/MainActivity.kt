@@ -295,7 +295,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+    override fun onPause() {
+        DebugFunctions.addDebug("MainActivity","onPause")
+        super.onPause()
+    }
+
+    override fun onResume() {
+        DebugFunctions.addDebug("MainActivity","onResume")
+        super.onResume()
+    }
+
+    override fun onBackPressed() {
+        DebugFunctions.addDebug("MainActivity","onBackPressed")
+        DebugFunctions.sendReport()
+        super.onBackPressed()
+    }
     override fun onDestroy() {
+        DebugFunctions.addDebug("MainActivity","onDestroy")
+        DebugFunctions.addDebug("MainActivity","All ok!!!")
         DebugFunctions.sendReport()
         super.onDestroy()
     }
