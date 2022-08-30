@@ -128,7 +128,7 @@ class LocationService : Service() {
                         locationByNetwork = lastKnownLocationByNetwork
                     }
                 } catch (e : Exception) { }
-                Thread.sleep(180_000) // 180_000
+                Thread.sleep(80_000) // 80_000
             }
         }
     }
@@ -139,8 +139,6 @@ class LocationService : Service() {
                 if(killWorkThread) break
                 Thread.sleep(60_000) // 60_000
 
-                Log.e(Thread.currentThread().id.toString(), locationByGps.toString())
-                Log.e(Thread.currentThread().id.toString(), locationByNetwork.toString())
                 if(locationByGps == null && locationByNetwork == null) continue
 
                 if(locationByGps == null)
