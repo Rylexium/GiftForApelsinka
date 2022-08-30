@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.util
+package com.example.gift_for_apelsinka.util.listener
 
 import android.os.SystemClock
 import android.view.View

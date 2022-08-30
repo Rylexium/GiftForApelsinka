@@ -22,30 +22,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GiftForApelsinka"
         tools:targetApi="31">
-        <activity
-            android:name=".activity.util.ShowPictureActivity"
-            android:exported="false" />
-
         <service
             android:name=".service.GoodMorningService"
             android:enabled="true"
             android:exported="true"
+            android:launchMode = "singleTop"
             android:process=":newproc" />
         <service
             android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="true"
+            android:launchMode = "singleTop"
             android:process=":newproc" />
         <service
             android:name=".service.LocationService"
             android:enabled="true"
             android:exported="true"
+            android:launchMode = "singleTop"
             android:foregroundServiceType="location"
             android:process=":newproc" />
         <service
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="true"
+            android:launchMode = "singleTop"
             android:process=":newproc" />
 
         <receiver
@@ -63,13 +63,20 @@
         </receiver>
 
         <activity
+            android:name=".activity.util.ShowPictureActivity"
+            android:launchMode = "singleTop"
+            android:exported="false" />
+        <activity
             android:name=".activity.about.AboutActivity"
+            android:launchMode = "singleTop"
             android:exported="false" />
         <activity
             android:name=".activity.photo.PhotosActivity"
+            android:launchMode = "singleTop"
             android:exported="false" />
         <activity
             android:name=".activity.main.MainActivity"
+            android:launchMode = "singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

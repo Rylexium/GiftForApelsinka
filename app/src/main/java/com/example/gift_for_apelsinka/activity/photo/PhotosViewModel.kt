@@ -15,6 +15,7 @@ import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
 import com.example.gift_for_apelsinka.db.*
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.wrapperNextPictures
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -36,6 +37,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun changePhotoAtIndex(index : Int, id : Int, title : String, hasDB : Boolean, recv : RecyclerView) {
+        DebugFunctions.addDebug("PhotosViewModel","changePhotoAtIndex")
         val list = liveDataPhotosList.value
         Handler(Looper.getMainLooper()).post {
             setScrollState(recv.layoutManager?.onSaveInstanceState())
@@ -54,6 +56,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     fun getPhotosList(): LiveData<List<FieldPhoto>> = runBlocking {
+        DebugFunctions.addDebug("PhotosViewModel","getPhotosList")
         if(liveDataPhotosList.value != null) return@runBlocking liveDataPhotosList
         val list = defaultPhotosApelsinka(sharedPreferences)
         val task = async { return@async pictureRealization.apelsinkaPicture() }
@@ -65,6 +68,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun updatePhotosList(): List<FieldPhoto>? {
+        DebugFunctions.addDebug("PhotosViewModel","updatePhotosList")
         if(isUpdating) return null
         isUpdating = true
         val picturesApelsinka = NetworkPictures.getAllApelsinkaPicture(0, 100)
@@ -82,6 +86,7 @@ class PhotosViewModel(private val sharedPreferences: SharedPreferences) : ViewMo
     }
 
     suspend fun nextPhotos() : Boolean {
+        DebugFunctions.addDebug("PhotosViewModel","nextPhotos")
         var picturesFromNetwork : List<FieldPhoto>
 
         var picturesFromBD : List<FieldPhoto>

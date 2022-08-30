@@ -8,33 +8,34 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.text.Html
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.cache.androidId
+import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.AnimView
+import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
-import com.example.gift_for_apelsinka.util.InitView.enableDisableSwipeRefresh
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
-import com.example.gift_for_apelsinka.util.ShowToast
+import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.views.DynamicViewPager
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
@@ -42,9 +43,10 @@ import com.example.gift_for_apelsinka.util.wrapperDisableSwitchLayout
 import com.example.gift_for_apelsinka.util.wrapperForSwipeOutViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class MainActivity : AppCompatActivity() {
@@ -80,7 +82,10 @@ class MainActivity : AppCompatActivity() {
         applyEvents()
     }
 
+    @SuppressLint("HardwareIds")
     private fun startServices() {
+        setAndroidId(this)
+        DebugFunctions.addDebug("MainActivity","startServices")
         stopService(Intent(this, GoodMorningService::class.java))
         stopService(Intent(this, RandomQuestionService::class.java))
         stopService(Intent(this, NotificationFromServerService::class.java))
@@ -106,6 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initComponents() {
+        DebugFunctions.addDebug("MainActivity","initComponents")
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewPageOfImage = findViewById(R.id.view_pager_of_image)
@@ -130,6 +136,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initDataComponents() {
+        DebugFunctions.addDebug("MainActivity","initDataComponents")
         viewModel.getPictures().observe(this) {
             initViewPager(viewPageOfImage, 40, 40, ImageViewPageAdapter(this@MainActivity, it))
         }
@@ -153,6 +160,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setGreeting() {
+        DebugFunctions.addDebug("MainActivity","setGreeting")
         val image = viewModel.getImageOfTime()
         setImage(image, findViewById(R.id.image_of_time1), this)
         setImage(image, findViewById(R.id.image_of_time2), this)
@@ -170,6 +178,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyEvents() {
+        DebugFunctions.addDebug("MainActivity","applyEvents")
         wrapperForSwipeOutViewPager(viewPageOfImage,
             { viewModel.nextMainPictures() },
             progressBarViewPageOfImage,
@@ -262,6 +271,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateDeveloper(map : Map<String, String>) {
+        DebugFunctions.addDebug("MainActivity","updateDeveloper")
         textMailDeveloper.text = "Почта : ${map["mail"]}"
 
         textVkDeveloper.text = Html.fromHtml("ВК : <u><font color=\"#328fa8\">${map["VK"]}</font></u>")
@@ -276,11 +286,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setNightMode(target: Context) {
+        DebugFunctions.addDebug("MainActivity","setNightMode")
         val uiManager = target.getSystemService(UI_MODE_SERVICE) as UiModeManager
         if (uiManager.nightMode == 1) {
             uiManager.nightMode = UiModeManager.MODE_NIGHT_YES
         } else {
             uiManager.nightMode = UiModeManager.MODE_NIGHT_NO
         }
+    }
+
+    override fun onDestroy() {
+        DebugFunctions.sendReport()
+        super.onDestroy()
     }
 }

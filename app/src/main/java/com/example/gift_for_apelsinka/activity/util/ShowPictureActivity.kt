@@ -1,17 +1,15 @@
 package com.example.gift_for_apelsinka.activity.util
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.WindowManager
-import androidx.core.app.ActivityOptionsCompat
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.ConvertClass
+import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.views.ZoomImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,10 +19,18 @@ class ShowPictureActivity : AppCompatActivity() {
     companion object {
         lateinit var image : String
     }
+    private lateinit var imageView: ZoomImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_picture)
-        val imageView = findViewById<ZoomImageView>(R.id.iv)
+        DebugFunctions.addDebug("ShowPictureActivity","onCreate")
+        initComponents()
+        initDataComponents()
+    }
+
+    private fun initComponents() {
+        DebugFunctions.addDebug("ShowPictureActivity","initComponents")
+        imageView = findViewById(R.id.iv)
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         imageView.swipeToDismissEnabled = true
         imageView.onDismiss = {
@@ -32,10 +38,13 @@ class ShowPictureActivity : AppCompatActivity() {
                 finishAfterTransition()
             }
         }
+    }
 
+    private fun initDataComponents() {
+        DebugFunctions.addDebug("ShowPictureActivity","initDataComponents")
         CoroutineScope(Dispatchers.IO).launch {
             val res = if (isNumeric(image)) image.toInt()
-                      else ConvertClass.convertStringToBitmap(image)
+            else ConvertClass.convertStringToBitmap(image)
 
             Handler(Looper.getMainLooper()).post {
                 Glide.with(this@ShowPictureActivity)
@@ -47,11 +56,13 @@ class ShowPictureActivity : AppCompatActivity() {
     }
 
     override fun finishAfterTransition() {
+        DebugFunctions.addDebug("ShowPictureActivity","finishAfterTransition")
         super.finishAfterTransition()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 
     override fun onBackPressed() {
+        DebugFunctions.addDebug("ShowPictureActivity","onBackPressed")
         super.onBackPressed()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }

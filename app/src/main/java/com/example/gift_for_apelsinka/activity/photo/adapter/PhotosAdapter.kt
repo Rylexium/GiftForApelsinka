@@ -15,7 +15,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.PhotosViewModel
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.util.ConvertClass
-import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
+import com.example.gift_for_apelsinka.util.dialogs.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.wrapperOpenShowPictureActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

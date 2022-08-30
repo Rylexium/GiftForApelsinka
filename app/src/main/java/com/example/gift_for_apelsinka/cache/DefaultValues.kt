@@ -1,9 +1,18 @@
 package com.example.gift_for_apelsinka.cache
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
+import android.provider.Settings
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Statements
+
+var androidId: String? = null
+@SuppressLint("HardwareIds")
+fun setAndroidId(context: Context) {
+    androidId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+}
 
 val defaultListOfStatements = listOf(
     Statements(1, "Не вздумай думать", "Rylexium"),

@@ -1,4 +1,4 @@
-package com.example.gift_for_apelsinka.util
+package com.example.gift_for_apelsinka.util.dialogs
 
 import android.content.Context
 import android.content.DialogInterface

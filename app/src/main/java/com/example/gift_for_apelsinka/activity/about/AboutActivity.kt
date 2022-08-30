@@ -14,8 +14,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.util.*
-import com.example.gift_for_apelsinka.util.DialogEditText.editTextView
+import com.example.gift_for_apelsinka.util.dialogs.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.dialogs.ShowToast
+import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
@@ -44,13 +46,14 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-
+        DebugFunctions.addDebug("AboutActivity","onCreate")
         initComponents()
         initDataComponents()
         viewModel.viewModelScope.launch { applyEvents() }
     }
 
     private fun initComponents() {
+        DebugFunctions.addDebug("AboutActivity","onCreate")
         viewModel = ViewModelProvider(this)[AboutViewModel::class.java]
         switchRefreshLayout = findViewById(R.id.swipeRefreshLayoutAbout)
         viewPageOfImageOscar = findViewById(R.id.view_pager_of_image_oscar)
@@ -73,6 +76,7 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun initDataComponents() {
+        DebugFunctions.addDebug("AboutActivity","initDataComponents")
         setImageWithCircle(R.drawable.mouse_of_apelsinka, findViewById(R.id.mouse_of_apelsinka), this)
 
         viewModel.handbook = staticHandbook
@@ -95,6 +99,7 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private suspend fun applyEvents() {
+        DebugFunctions.addDebug("AboutActivity","applyEvents")
         wrapperDisableSwitchLayout(viewPageOfImageLogo, switchRefreshLayout)
         wrapperDisableSwitchLayout(viewPageOfImageOscar, switchRefreshLayout)
         wrapperDisableSwitchLayout(viewPageOfImageLera, switchRefreshLayout)

@@ -12,6 +12,7 @@ import com.example.gift_for_apelsinka.db.model.Statements
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkStatements
+import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.wrapperNextPictures
@@ -23,13 +24,14 @@ class MainViewModel : ViewModel() {
     private var listOfStatements : MutableLiveData<List<Statements>> = MutableLiveData()
     private var listOfPictures : MutableLiveData<List<Any>> = MutableLiveData()
     private var greetingText : MutableLiveData<String> = MutableLiveData()
-    val sizeOfStatements = 15
+    private val sizeOfStatements = 15
     companion object {
         var pageOfStatements = 0
         var pageOfMainPicture = 0
     }
 
     fun getStatements(): MutableLiveData<List<Statements>> = runBlocking {
+        DebugFunctions.addDebug("MainViewModel","getStatements")
         if(listOfStatements.value != null) return@runBlocking listOfStatements
         val list = async { statementRealization.getAll() }
         val res = if(list.await().isEmpty())
@@ -41,6 +43,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getPictures(): MutableLiveData<List<Any>> = runBlocking {
+        DebugFunctions.addDebug("MainViewModel","getPictures")
         if(listOfPictures.value != null) return@runBlocking listOfPictures
         val list = defaultListOfMainPictures()
         val task = async { pictureRealization.mainPicture() }
@@ -54,6 +57,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getHandbook(): MutableLiveData<Map<String, String>> = runBlocking {
+        DebugFunctions.addDebug("MainViewModel","getHandbook")
         if(mapOfHandbook.value != null) return@runBlocking mapOfHandbook
         val task = async { handbookRealization.allHandbook() }
         val res =
@@ -65,6 +69,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getImageOfTime(): Int {
+        DebugFunctions.addDebug("MainViewModel","getImageOfTime")
         return when(getNowHour()) {
             23 -> R.drawable.ic_baseline_nights_stay_24
             in 0..4 -> R.drawable.ic_baseline_nights_stay_24
@@ -76,6 +81,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getGreetingsForApelsinka(flag : Boolean): String? {
+        DebugFunctions.addDebug("MainViewModel","getGreetingsForApelsinka")
         if(greetingText.value != null && !flag) return null
 
         var result = ""
@@ -109,6 +115,7 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun updateStatements() : Boolean {
+        DebugFunctions.addDebug("MainViewModel","updateStatements")
         val statementsFromNetwork = NetworkStatements.getStatements(0, 1000)
 
         val statementsFromBD = statementRealization.getAll()
@@ -126,6 +133,7 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun nextStatements() : Boolean {
+        DebugFunctions.addDebug("MainViewModel","nextStatements")
         var statementsFromNetwork: List<Statements>
         var statementsFromBD : List<Statements>
         while(true) {
@@ -154,6 +162,7 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun nextMainPictures() : Boolean {
+        DebugFunctions.addDebug("MainViewModel","nextMainPictures")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllMainPicture(it) },
             { pictureRealization.mainPicture() },
@@ -163,6 +172,7 @@ class MainViewModel : ViewModel() {
         return res.second
     }
     suspend fun updateDataOfDeveloper() : Map<String, String> {
+        DebugFunctions.addDebug("MainViewModel","updateDataOfDeveloper")
         val dict = NetworkHandbook.getHandbook()
         staticHandbook = dict
         saveHandbookToDB(dict)

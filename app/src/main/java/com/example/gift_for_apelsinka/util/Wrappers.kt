@@ -8,7 +8,6 @@ import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +18,8 @@ import com.example.gift_for_apelsinka.activity.util.ShowPictureActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.savePicturesToDB
+import com.example.gift_for_apelsinka.util.dialogs.DialogEditText
+import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import kotlinx.coroutines.launch
 

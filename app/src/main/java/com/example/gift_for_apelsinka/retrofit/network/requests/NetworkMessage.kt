@@ -15,7 +15,7 @@ import kotlin.coroutines.suspendCoroutine
 object NetworkMessage : MessageRepo {
     override suspend fun sendMessage(who : Int, toWhom : Int, text: String): LinkedTreeMap<*, *> {
         return suspendCoroutine {
-            val call = Services.messageServiceApi?.sendMessage(RequestMessage(IP.getIpv4().toString(), 1,2, text))
+            val call = Services.messageServiceApi?.sendMessage(RequestMessage(IP.getIpv4().toString(), who,toWhom, text))
             call?.enqueue(object : CallbackWithRetry<Any>(call) {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     println(response.body())

@@ -8,6 +8,7 @@ import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.model.Handbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkHandbook
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkPictures
+import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.wrapperNextPictures
 import kotlinx.coroutines.*
 
@@ -42,6 +43,7 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getImagesOfLogo() : MutableLiveData<List<Any>> = runBlocking {
+        DebugFunctions.addDebug("AboutViewModel","getImagesOfLogo")
         if(imageOfLogo.value != null) return@runBlocking imagesOfOscar
 
         val listFromDB = async { pictureRealization.logoPicture() }
@@ -51,6 +53,7 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getImageOfOscar(): MutableLiveData<List<Any>> = runBlocking {
+        DebugFunctions.addDebug("AboutViewModel","getImageOfOscar")
         if(imagesOfOscar.value != null) return@runBlocking imagesOfOscar
 
         val listFromDB = async { pictureRealization.oscarPicture() }
@@ -60,6 +63,7 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getImageOfLera(): MutableLiveData<List<Any>> = runBlocking {
+        DebugFunctions.addDebug("AboutViewModel","getImageOfLera")
         if(imagesOfLera.value != null) return@runBlocking imagesOfLera
 
         val listFromDB = async { pictureRealization.leraPicture() }
@@ -69,6 +73,7 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getImageOfLexa(): MutableLiveData<List<Any>> = runBlocking {
+        DebugFunctions.addDebug("AboutViewModel","getImageOfLexa")
         if(imagesOfLexa.value != null) return@runBlocking imagesOfLexa
 
         val listFromDB = async { pictureRealization.rylexiumPicture() }
@@ -78,6 +83,7 @@ class AboutViewModel : ViewModel() {
     }
 
     private fun setWrapper(liveData: MutableLiveData<String>, text : String, KEY: String) {
+        DebugFunctions.addDebug("AboutViewModel","setWrapper")
         var textTmp = text
         if(textTmp == "")
             textTmp = "<Пусто>"
@@ -90,6 +96,7 @@ class AboutViewModel : ViewModel() {
     }
 
     private fun getWrapper(liveData: MutableLiveData<String>, KEY : String, default : String): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getWrapper")
         if(liveData.value != null) return liveData
         var text = handbook[KEY]
         if(text != null) {
@@ -102,49 +109,62 @@ class AboutViewModel : ViewModel() {
     }
 
     fun getApelsinkaTitle():  MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getApelsinkaTitle")
         return getWrapper(titleApelsinka, KEY_TITLE_APELSINKA, defaultHandbook[KEY_TITLE_APELSINKA].toString())
     }
 
     private fun setApelsinkaTitle(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setApelsinkaTitle")
         setWrapper(titleApelsinka, text, KEY_TITLE_APELSINKA)
     }
 
     fun getTextAboutApelsinka(): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getTextAboutApelsinka")
         return getWrapper(textAboutApelsinka, KEY_ABOUT_APELSINKA, defaultHandbook[KEY_ABOUT_APELSINKA].toString())
     }
     fun setTextAboutApelsinka(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setTextAboutApelsinka")
         setWrapper(textAboutApelsinka, text, KEY_ABOUT_APELSINKA)
     }
 
     fun getOscarTitle(): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getOscarTitle")
         return getWrapper(titleOscar, KEY_TITLE_OSCAR, defaultHandbook[KEY_TITLE_OSCAR].toString())
     }
     fun setOscarTitle(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setOscarTitle")
         setWrapper(titleOscar, text, KEY_TITLE_OSCAR)
     }
 
     fun getLeraTitle(): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getLeraTitle")
         return getWrapper(titleLera, KEY_TITLE_LERA, defaultHandbook[KEY_TITLE_LERA].toString())
     }
     fun setLeraTitle(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setLeraTitle")
         setWrapper(titleLera, text, KEY_TITLE_LERA)
     }
 
     fun getLexaTitle(): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getLexaTitle")
         return getWrapper(titleLexa, KEY_TITLE_LEXA, defaultHandbook[KEY_TITLE_LEXA].toString())
     }
     fun setLexaTitle(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setLexaTitle")
         setWrapper(titleLexa, text, KEY_TITLE_LEXA)
     }
 
     fun getTextGoodnight(): MutableLiveData<String> {
+        DebugFunctions.addDebug("AboutViewModel","getTextGoodnight")
         return getWrapper(textGoodnight, KEY_WISH_GOODNIGHT, defaultHandbook[KEY_WISH_GOODNIGHT].toString())
     }
     fun setTextGoodnight(text : String) {
+        DebugFunctions.addDebug("AboutViewModel","setTextGoodnight")
         setWrapper(textGoodnight, text, KEY_WISH_GOODNIGHT)
     }
 
     suspend fun updateHandbook(): MutableMap<String, String> {
+        DebugFunctions.addDebug("AboutViewModel","updateHandbook")
         val dict = NetworkHandbook.getHandbook()
         staticHandbook = dict
         setApelsinkaTitle(staticHandbook[KEY_TITLE_APELSINKA].toString())
@@ -157,6 +177,7 @@ class AboutViewModel : ViewModel() {
         return dict
     }
     suspend fun updatePhotos() {
+        DebugFunctions.addDebug("AboutViewModel","updatePhotos")
         val logoPicture = NetworkPictures.getAllLogoPicture(0, 100)
         deletePicturesLogoFromDB()
         savePicturesToDB(logoPicture)
@@ -191,6 +212,7 @@ class AboutViewModel : ViewModel() {
     }
 
     suspend fun nextPicturesOscar(): Boolean {
+        DebugFunctions.addDebug("AboutViewModel","nextPicturesOscar")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllOscarPicture(it) },
             { pictureRealization.oscarPicture() },
@@ -200,6 +222,7 @@ class AboutViewModel : ViewModel() {
     }
 
     suspend fun nextPicturesLogo(): Boolean {
+        DebugFunctions.addDebug("AboutViewModel","nextPicturesLogo")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllLogoPicture(it) },
             { pictureRealization.logoPicture() },
@@ -209,6 +232,7 @@ class AboutViewModel : ViewModel() {
     }
 
     suspend fun nextPicturesLera(): Boolean {
+        DebugFunctions.addDebug("AboutViewModel","nextPicturesLera")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllLeraPicture(it) },
             { pictureRealization.leraPicture() },
@@ -218,6 +242,7 @@ class AboutViewModel : ViewModel() {
     }
 
     suspend fun nextPicturesLexa(): Boolean {
+        DebugFunctions.addDebug("AboutViewModel","nextPicturesLexa")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllRylexiumPicture(it) },
             { pictureRealization.rylexiumPicture() },

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.adapter.PhotosAdapter
-import com.example.gift_for_apelsinka.util.ShowToast
+import com.example.gift_for_apelsinka.util.DebugFunctions
+import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import kotlinx.coroutines.launch
 
 
@@ -30,11 +32,15 @@ class PhotosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photos)
+
+        DebugFunctions.addDebug("PhotosActivity", "onCreate")
+
         initComponents()
         applyEvents()
     }
 
     private fun initComponents() {
+        DebugFunctions.addDebug("PhotosActivity","initComponents")
         viewModel = ViewModelProvider(this,
             PhotosViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[PhotosViewModel::class.java]
         recv = findViewById(R.id.recycler_view_photos)
@@ -50,6 +56,7 @@ class PhotosActivity : AppCompatActivity() {
     }
 
     private fun applyEvents() {
+        DebugFunctions.addDebug("PhotosActivity","applyEvents")
         recv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             var isUpdate = false
             var isShowToastDownload = false
