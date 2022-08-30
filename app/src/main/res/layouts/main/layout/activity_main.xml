@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefreshLayoutMain"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
     <ScrollView
         android:id="@+id/scrollview_main"
         android:layout_width="match_parent"
@@ -17,7 +18,9 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:orientation="vertical">
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_bar"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -130,6 +133,7 @@
                 android:id="@+id/facts_about_apelsinka"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="54dp"
                 android:text="Я и мои друзья"
                 android:textAllCaps="false"
                 android:layout_marginStart="9dp"
@@ -139,6 +143,7 @@
                 android:id="@+id/photo_with_apelsinka"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="54dp"
                 android:text="Мои фотки"
                 android:textAllCaps="false"
                 android:layout_marginStart="9dp"
@@ -148,13 +153,16 @@
                 android:id="@+id/change_theme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="54dp"
                 android:text="Поменять тему"
                 android:textAllCaps="false"
                 android:layout_marginStart="9dp"
                 android:layout_marginEnd="9dp"
                 />
             <include layout="@layout/field_of_developer" />
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_bar"/>
         </LinearLayout>
 
     </ScrollView>

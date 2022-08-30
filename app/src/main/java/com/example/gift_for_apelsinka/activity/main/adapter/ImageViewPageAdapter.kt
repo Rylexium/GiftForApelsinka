@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.main.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -16,11 +17,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
 class ImageViewPageAdapter(
-    context: Context,
-    list: List<Any>
+    private var activity: Activity,
+    private var imageArray: List<Any>
 ) : PagerAdapter() {
-    private var ctx : Context = context
-    private var imageArray = list
     private lateinit var layoutInflater : LayoutInflater
 
     override fun getCount(): Int {
@@ -32,20 +31,20 @@ class ImageViewPageAdapter(
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any = runBlocking {
-        layoutInflater = LayoutInflater.from(ctx)
+        layoutInflater = LayoutInflater.from(activity)
         val view = layoutInflater.inflate(R.layout.field_of_picture, container, false)
 
         val imageView = view.findViewById<ImageView>(R.id.field_of_picture)
 
         view.setPadding(18, 9, 18, 9)
         if(imageArray[position] is Int) {
-            wrapperOpenShowPictureActivity(imageView, ctx, imageArray[position].toString())
-            setImageWithCorners(imageArray[position] as Int, imageView, ctx)
+            wrapperOpenShowPictureActivity(imageView, activity, imageArray[position].toString())
+            setImageWithCorners(imageArray[position] as Int, imageView, activity)
         }
         else {
-            wrapperOpenShowPictureActivity(imageView, ctx, (imageArray[position] as FieldPhoto).picture)
+            wrapperOpenShowPictureActivity(imageView, activity, (imageArray[position] as FieldPhoto).picture)
             val task = async { ConvertClass.convertStringToBitmap((imageArray[position] as FieldPhoto).picture) }
-            setImageWithCorners(task.await()!!, imageView, ctx)
+            setImageWithCorners(task.await()!!, imageView, activity)
         }
         container.addView(view, 0)
         return@runBlocking view

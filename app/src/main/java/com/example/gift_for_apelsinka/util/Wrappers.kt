@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
@@ -7,6 +8,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -60,9 +62,9 @@ fun liveDataObserveTextWrapper(liveData: MutableLiveData<String>, textView: Text
         textView.text = it
     }
 }
-fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager, lifecycleOwner: LifecycleOwner, context: Context) {
+fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPager: ViewPager, lifecycleOwner: LifecycleOwner, activity: Activity) {
     liveData.observe(lifecycleOwner) {
-        InitView.initViewPager(viewPager, 0, 0, ImageViewPageAdapter(context, it))
+        InitView.initViewPager(viewPager, 0, 0, ImageViewPageAdapter(activity, it))
     }
 }
 
@@ -106,9 +108,11 @@ fun wrapperEditTextView(textView: TextView, function: () -> Unit, context: Conte
         }
     })
 }
-fun wrapperOpenShowPictureActivity(view : View, context: Context, image : String) {
+fun wrapperOpenShowPictureActivity(view : View, activity: Activity, image : String) {
     view.setOnClickListener {
         ShowPictureActivity.image = image
-        context.startActivity(Intent(context, ShowPictureActivity::class.java))
+        activity.startActivity(Intent(activity, ShowPictureActivity::class.java))
+        ActivityOptionsCompat.makeSceneTransitionAnimation(activity)
+        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }

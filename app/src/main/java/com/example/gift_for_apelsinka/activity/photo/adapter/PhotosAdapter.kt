@@ -1,6 +1,6 @@
 package com.example.gift_for_apelsinka.activity.photo.adapter
 
-import android.content.Context
+import android.app.Activity
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PhotosAdapter(
-    private val context: Context,
+    private val activity: Activity,
     private val photos: List<FieldPhoto>,
     private val viewModel: PhotosViewModel,
     private val recv: RecyclerView)
@@ -56,18 +56,18 @@ class PhotosAdapter(
                     else ConvertClass.convertStringToBitmap(newList.picture)
 
             Handler(Looper.getMainLooper()).post {
-                Glide.with(context)
+                Glide.with(activity)
                     .load(image)
                     .format(DecodeFormat.PREFER_RGB_565)
                     .into(holder.photo)
             }
         }
 
-        wrapperOpenShowPictureActivity(holder.photo, context, newList.picture)
+        wrapperOpenShowPictureActivity(holder.photo, activity, newList.picture)
 
         val hasDB = !isNumeric(newList.picture)
         holder.photo.setOnLongClickListener {
-            editTextView(holder.title, context) {
+            editTextView(holder.title, activity) {
                 CoroutineScope(Dispatchers.IO).launch {
                     viewModel.changePhotoAtIndex(position, newList.id, holder.title.text.toString(), hasDB, this@PhotosAdapter.recv)
                 }

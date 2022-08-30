@@ -30,8 +30,8 @@
             />
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorPrimaryVariant"
+            android:layout_height="@dimen/height_title_line"
+            android:background="#992e1e"
             />
         <RelativeLayout
             android:layout_width="match_parent"

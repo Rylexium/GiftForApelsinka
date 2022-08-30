@@ -131,10 +131,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataComponents() {
         viewModel.getPictures().observe(this) {
-            initViewPager(viewPageOfImage, 35, 70, ImageViewPageAdapter(this, it))
+            initViewPager(viewPageOfImage, 40, 40, ImageViewPageAdapter(this@MainActivity, it))
         }
         viewModel.getStatements().observe(this) {
-            initViewPager(viewPageOfStatement, 45, 70, StatementViewPageAdapter(this, it))
+            initViewPager(viewPageOfStatement, 70, 70, StatementViewPageAdapter(this, it))
         }
         setGreeting()
         setImageWithCircle(R.drawable.developer, findViewById(R.id.photo_of_developer),this)
@@ -180,8 +180,17 @@ class MainActivity : AppCompatActivity() {
 
         viewPageOfStatement.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener{
             var isUpdate = false
+            var isSwipeOutAtStart = false
+            var countSwipeOutAtStart = 0
+            val borders = (10..15).random()
             override fun onSwipeOutAtStart() {
-                ShowToast.show(this@MainActivity, "Зачем тебе туда?")
+                if(isSwipeOutAtStart) return
+                isSwipeOutAtStart = true
+                countSwipeOutAtStart += 1
+                if(countSwipeOutAtStart < borders) ShowToast.show(this@MainActivity, "Зачем тебе туда?")
+                else if(countSwipeOutAtStart in 25..27) ShowToast.show(this@MainActivity, "Тебе делать нечего?!?!")
+                else ShowToast.show(this@MainActivity, "Счётчик твоих попыток: $countSwipeOutAtStart")
+                Handler(Looper.getMainLooper()).postDelayed({ isSwipeOutAtStart = false }, 2000)
             }
 
             override fun onSwipeOutAtEnd() {

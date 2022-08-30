@@ -10,12 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activity.about.AboutActivity">
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_bar"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_bar"/>
             <include layout="@layout/field_about_apelsinka" />
 
             <include layout="@layout/field_about_oscar" />
@@ -30,6 +35,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_bar"/>
         </LinearLayout>
 
     </ScrollView>
