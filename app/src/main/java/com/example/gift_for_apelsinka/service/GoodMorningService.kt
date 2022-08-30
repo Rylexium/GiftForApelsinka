@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
+import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,7 @@ class GoodMorningService : Service() {
     private val KEY_MINUTE = "GoodMorningRandomMinute"
 
     private var backgroundThread : Thread? = null
+    private var killThread = false
 
     @SuppressLint("NewApi")
     override fun onCreate() {
@@ -61,6 +63,7 @@ class GoodMorningService : Service() {
     }
 
     private fun initTask() {
+        killThread = false
         backgroundThread = taskGoodMorning()
         backgroundThread?.start()
     }
@@ -79,8 +82,11 @@ class GoodMorningService : Service() {
     }
 
     override fun onDestroy() {
-        taskGoodMorning()
+        killThread = true
+        stopSelf()
+        WorkWithServices.restartAllServices(this@GoodMorningService)
     }
+
 
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
@@ -89,6 +95,7 @@ class GoodMorningService : Service() {
 
         return Thread {
             while (true) {
+                if(killThread) break
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
                 if(nowHour == randomHour && randomMinute <= nowMinute) {

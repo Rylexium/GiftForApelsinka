@@ -1,9 +1,11 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -27,10 +30,10 @@ import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.service.GoodMorningService
+import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
-import com.example.gift_for_apelsinka.util.AnimView
-import com.example.gift_for_apelsinka.util.DebugFunctions
+import com.example.gift_for_apelsinka.util.*
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
@@ -39,8 +42,6 @@ import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.views.DynamicViewPager
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
-import com.example.gift_for_apelsinka.util.wrapperDisableSwitchLayout
-import com.example.gift_for_apelsinka.util.wrapperForSwipeOutViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.CoroutineScope
@@ -86,28 +87,20 @@ class MainActivity : AppCompatActivity() {
     private fun startServices() {
         setAndroidId(this)
         DebugFunctions.addDebug("MainActivity","startServices")
-        stopService(Intent(this, GoodMorningService::class.java))
-        stopService(Intent(this, RandomQuestionService::class.java))
-        stopService(Intent(this, NotificationFromServerService::class.java))
+        WorkWithServices.restartAllServices(this)
+        requestPermission()
+    }
 
-        startService(Intent(this, GoodMorningService::class.java))
-        startService(Intent(this, RandomQuestionService::class.java))
-        startService(Intent(this, NotificationFromServerService::class.java))
-//        requestPermission()
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//        {
-//            startService(Intent(this, LocationService::class.java))
-//        }
-//        override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//            if(requestCode == 1 && grantResults.isNotEmpty())
-//                startService(Intent(this, LocationService::class.java))
-//        }
-//
-//        private fun requestPermission() {
-//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
-//        }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            if(!WorkWithServices.isServiceRunning(this, LocationService::class.java)) {
+                startService(Intent(this, LocationService::class.java))
+            }
+        }
+    }
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
     }
 
     private fun initComponents() {

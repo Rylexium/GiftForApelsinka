@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
+import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime
 import kotlinx.coroutines.*
 
@@ -21,12 +22,12 @@ class RandomQuestionService : Service() {
     private val KEY_MINUTE = "EquationRandomMinute"
 
     private var backgroundThread : Thread? = null
+    private var killThread = false
 
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("RandomQuestionService", "onCreate")
         startMyOwnForeground()
-        (this@RandomQuestionService.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -64,7 +65,9 @@ class RandomQuestionService : Service() {
     }
 
     override fun onDestroy() {
-        initTask()
+        killThread = true
+        stopSelf()
+        WorkWithServices.restartAllServices(this@RandomQuestionService)
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -91,6 +94,7 @@ class RandomQuestionService : Service() {
         var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 28)
         return Thread {
             while (true) {
+                if(killThread) break
                 val nowHour = WorkWithTime.getNowHour()
                 val nowMinute = WorkWithTime.getNowMinute()
                 if(nowHour == randomHour && nowMinute >= randomMinute) {
@@ -102,7 +106,7 @@ class RandomQuestionService : Service() {
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
                 }
-                Thread.sleep(60_000)
+                Thread.sleep(60_000) //60_000
             }
         }
     }

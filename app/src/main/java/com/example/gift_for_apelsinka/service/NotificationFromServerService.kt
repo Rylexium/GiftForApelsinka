@@ -17,6 +17,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
+import com.example.gift_for_apelsinka.util.WorkWithServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,12 +26,12 @@ import kotlinx.coroutines.launch
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
     private var channelId = 10
+    private var killThread = false
 
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("NotificationFromServerService", "onCreate")
         startMyOwnForeground()
-        (this@NotificationFromServerService.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,6 +64,7 @@ class NotificationFromServerService : Service() {
     }
 
     private fun initTask() {
+        killThread = false
         backgroundThread = task()
         backgroundThread?.start()
     }
@@ -72,7 +74,9 @@ class NotificationFromServerService : Service() {
     }
 
     override fun onDestroy() {
-        initTask()
+        killThread = true
+        stopSelf()
+        WorkWithServices.restartAllServices(this@NotificationFromServerService)
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
@@ -138,6 +142,7 @@ class NotificationFromServerService : Service() {
     private fun task() : Thread {
         return Thread {
             while (true) {
+                if(killThread) break
                 CoroutineScope(Dispatchers.IO).launch {
                     val notifications =
                         NetworkNotifications
