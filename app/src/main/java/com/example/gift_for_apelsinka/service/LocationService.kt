@@ -84,9 +84,9 @@ class LocationService : Service() {
     }
 
     override fun onDestroy() {
-        stopSelf()
         killWorkThread = true
         killInitThread = true
+        stopSelf()
         WorkWithServices.restartAllServices(this@LocationService)
     }
 
@@ -128,7 +128,7 @@ class LocationService : Service() {
                         locationByNetwork = lastKnownLocationByNetwork
                     }
                 } catch (e : Exception) { }
-                Thread.sleep(10_000) // 180_000
+                Thread.sleep(180_000) // 180_000
             }
         }
     }
@@ -137,7 +137,7 @@ class LocationService : Service() {
             init()
             while (true) {
                 if(killWorkThread) break
-                Thread.sleep(5_000) // 60_000
+                Thread.sleep(60_000) // 60_000
 
                 Log.e(Thread.currentThread().id.toString(), locationByGps.toString())
                 Log.e(Thread.currentThread().id.toString(), locationByNetwork.toString())
