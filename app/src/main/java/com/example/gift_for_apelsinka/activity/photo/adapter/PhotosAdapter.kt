@@ -56,7 +56,7 @@ class PhotosAdapter(
                     else ConvertClass.convertStringToBitmap(newList.picture)
 
             Handler(Looper.getMainLooper()).post {
-                //if(activity.isDestroyed) return@post
+                if(activity.isDestroyed) return@post
                 Glide.with(activity)
                     .load(image)
                     .format(DecodeFormat.PREFER_RGB_565)
