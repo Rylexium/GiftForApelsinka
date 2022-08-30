@@ -1,44 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeRefreshLayoutAbout"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
-    <ScrollView
+    android:orientation="vertical">
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".activity.about.AboutActivity">
-        <View
+        android:layout_height="@dimen/height_bar"/>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayoutAbout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/height_bar"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-            <View
+            android:layout_height="match_parent"
+            tools:context=".activity.about.AboutActivity">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_bar"/>
-            <include layout="@layout/field_about_apelsinka" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+                <include layout="@layout/field_about_apelsinka" />
 
-            <include layout="@layout/field_about_oscar" />
+                <include layout="@layout/field_about_oscar" />
 
-            <include layout="@layout/field_about_lera" />
+                <include layout="@layout/field_about_lera" />
 
-            <include layout="@layout/field_about_lexa" />
+                <include layout="@layout/field_about_lexa" />
 
-            <include layout="@layout/field_of_goodnight" />
+                <include layout="@layout/field_of_goodnight" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_bar"/>
-        </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    />
+            </LinearLayout>
 
-    </ScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_bar"/>
+</LinearLayout>

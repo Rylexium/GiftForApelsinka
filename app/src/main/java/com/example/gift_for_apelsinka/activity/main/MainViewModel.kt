@@ -142,8 +142,10 @@ class MainViewModel : ViewModel() {
         }
         if(statementsFromNetwork.isEmpty()) return false
 
-        if(statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()).isNotEmpty()) { //если текущее высказывания и в базе не совпадают, то делаем
-            val result = listOfStatements.value as MutableList
+        val result = listOfStatements.value as MutableList
+
+        if(statementsFromNetwork.map { it.id }.subtract(statementsFromBD.map { it.id }.toSet()).isNotEmpty() ||
+            statementsFromNetwork.subtract(result.toSet()).isNotEmpty()) { //если текущее высказывания и в базе не совпадают, то делаем
             result.addAll(statementsFromBD)
             listOfStatements.value = result.distinct()
         }
