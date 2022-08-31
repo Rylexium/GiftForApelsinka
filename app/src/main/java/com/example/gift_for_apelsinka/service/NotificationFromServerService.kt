@@ -18,6 +18,7 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotificat
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
+import com.example.gift_for_apelsinka.util.WorkWithServices.createChannelAndHiddenNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,24 +39,8 @@ class NotificationFromServerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            channelName,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        chan.lightColor = Color.BLUE
-        chan.enableVibration(true)
-        chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-        manager.createNotificationChannel(chan)
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        val notification: Notification = notificationBuilder.setOngoing(true)
-            .setSmallIcon(R.drawable.icon_of_developer)
-            .setPriority(NotificationManager.IMPORTANCE_MAX)
-            .setCategory(Notification.CATEGORY_SERVICE)
-            .build()
-        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(3, notification)
+        startForeground(3,
+            createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@NotificationFromServerService))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -75,18 +60,13 @@ class NotificationFromServerService : Service() {
 
     override fun onDestroy() {
         killThread = true
-        stopSelf()
-        WorkWithServices.restartAllServices(this@NotificationFromServerService)
+        WorkWithServices.restartService(applicationContext, this.javaClass)
+        super.onDestroy()
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onTaskRemoved(rootIntent: Intent?) {
+        WorkWithServices.restartService(applicationContext, this.javaClass)
         super.onTaskRemoved(rootIntent)
-        val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
-
-        val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT)
-        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi)
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {

@@ -2,10 +2,7 @@ package com.example.gift_for_apelsinka.service
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,25 +46,8 @@ class LocationService : Service() {
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            channelName,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        chan.lightColor = Color.BLUE
-        chan.enableVibration(true)
-        chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-        manager.createNotificationChannel(chan)
-//        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-//        val notification: Notification = notificationBuilder.setOngoing(true)
-//            .setSmallIcon(R.drawable.icon_of_developer)
-//            .setContentTitle("LS is running in background")
-//            .setPriority(NotificationManager.IMPORTANCE_MAX)
-//            .setCategory(Notification.CATEGORY_SERVICE)
-//            .build()
-//        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-//        startForeground(4, notification)
+        startForeground(4,
+            WorkWithServices.createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@LocationService))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -89,8 +69,13 @@ class LocationService : Service() {
     override fun onDestroy() {
         killWorkThread = true
         killInitThread = true
-        stopSelf()
-        WorkWithServices.restartAllServices(this@LocationService)
+        WorkWithServices.restartService(applicationContext, this.javaClass)
+        super.onDestroy()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        WorkWithServices.restartService(applicationContext, this.javaClass)
+        super.onTaskRemoved(rootIntent)
     }
 
     private fun init(): Thread {

@@ -39,24 +39,8 @@ class GoodMorningService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            channelName,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        chan.enableVibration(true)
-        chan.lightColor = Color.BLUE
-        chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-        manager.createNotificationChannel(chan)
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        val notification: Notification = notificationBuilder.setOngoing(true)
-            .setSmallIcon(R.drawable.icon_of_developer)
-            .setPriority(Notification.PRIORITY_MIN)
-            .setCategory(Notification.CATEGORY_SERVICE)
-            .build()
-        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(1, notification)
+        startForeground(1,
+            WorkWithServices.createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@GoodMorningService))
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initTask()
@@ -70,12 +54,8 @@ class GoodMorningService : Service() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        WorkWithServices.restartService(applicationContext, this.javaClass)
         super.onTaskRemoved(rootIntent)
-        val restartIntent = Intent(applicationContext, NotificationFromServerService::class.java)
-
-        val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getService(this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT)
-        am.setExact(AlarmManager.RTC, System.currentTimeMillis() + 3000, pi)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -84,8 +64,8 @@ class GoodMorningService : Service() {
 
     override fun onDestroy() {
         killThread = true
-        stopSelf()
-        WorkWithServices.restartAllServices(this@GoodMorningService)
+        WorkWithServices.restartService(applicationContext, this.javaClass)
+        super.onDestroy()
     }
 
 
@@ -97,18 +77,20 @@ class GoodMorningService : Service() {
         return Thread {
             while (true) {
                 if(killThread) break
-                goodMorningNotification()
-//                val nowHour = getNowHour()
-//                val nowMinute = getNowMinute()
-//                if(nowHour == randomHour && randomMinute <= nowMinute) {
-//                    goodMorningNotification()
-//                    randomHour = (8..12).random()
-//                    randomMinute = (System.currentTimeMillis() % 59).toInt()
-//                    sharedPreferences.edit()
-//                        .putInt(KEY_HOUR, randomHour)
-//                        .putInt(KEY_MINUTE, randomMinute)
-//                        .apply()
-//                }
+
+                goodMorningNotification() //debug
+
+                val nowHour = getNowHour()
+                val nowMinute = getNowMinute()
+                if(nowHour == randomHour && randomMinute <= nowMinute) {
+                    goodMorningNotification()
+                    randomHour = (8..12).random()
+                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+                    sharedPreferences.edit()
+                        .putInt(KEY_HOUR, randomHour)
+                        .putInt(KEY_MINUTE, randomMinute)
+                        .apply()
+                }
                 Thread.sleep(120_000) // 600_000
             }
         }

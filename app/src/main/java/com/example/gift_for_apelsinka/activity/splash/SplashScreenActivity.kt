@@ -40,7 +40,7 @@ class SplashScreenActivity : AppCompatActivity() {
     @SuppressLint("HardwareIds")
     private fun startServices() {
         setAndroidId(this)
-        WorkWithServices.restartAllServices(applicationContext)
+        WorkWithServices.startAllServices(applicationContext)
     }
 
     private fun startMainActivity() {

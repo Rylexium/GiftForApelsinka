@@ -1,12 +1,16 @@
 package com.example.gift_for_apelsinka.util
 
 import android.Manifest
-import android.app.ActivityManager
+import android.annotation.SuppressLint
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
+import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
@@ -14,7 +18,7 @@ import com.example.gift_for_apelsinka.service.RandomQuestionService
 
 
 object WorkWithServices {
-    fun restartAllServices(context : Context) {
+    fun startAllServices(context : Context) {
         if(!isServiceRunning(context, GoodMorningService::class.java))
             context.startService(Intent(context, GoodMorningService::class.java))
 
@@ -47,5 +51,33 @@ object WorkWithServices {
             }
         }
         return false
+    }
+
+    fun restartService(applicationContext : Context, serviceClass : Class<*>) {
+        val restartService = Intent(applicationContext, serviceClass)
+        val pendingIntent = PendingIntent.getService(applicationContext, 1, restartService, PendingIntent.FLAG_ONE_SHOT)
+        val alarmManager = applicationContext.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.ELAPSED_REALTIME, 5000] = pendingIntent
+    }
+    @SuppressLint("NewApi")
+    fun createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID : String, channelName : String, context: Context): Notification {
+        val chan = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            channelName,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        chan.lightColor = Color.BLUE
+        chan.enableVibration(true)
+        chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        val manager = (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager)
+        manager.createNotificationChannel(chan)
+        val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        val notification: Notification = notificationBuilder.setOngoing(true)
+            .setSmallIcon(R.drawable.icon_of_developer)
+            .setPriority(NotificationManager.IMPORTANCE_MAX)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .build()
+        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+        return notification
     }
 }
