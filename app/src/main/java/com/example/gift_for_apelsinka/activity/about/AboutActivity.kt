@@ -22,6 +22,7 @@ import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {
@@ -145,13 +146,22 @@ class AboutActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
                 return@setOnRefreshListener
             }
+
+            wrapperNothingHappen(this) {
+                progressbarViewPagerOfImageLogo.visibility =  View.GONE
+                progressbarViewPagerOfImageOscar.visibility = View.GONE
+                progressbarViewPagerOfImageLera.visibility =  View.GONE
+                progressbarViewPagerOfImageLexa.visibility =  View.GONE
+                swipeRefreshLayout.isRefreshing = false
+            }
+
             progressbarViewPagerOfImageLogo.visibility = View.VISIBLE
             progressbarViewPagerOfImageOscar.visibility = View.VISIBLE
             progressbarViewPagerOfImageLera.visibility = View.VISIBLE
             progressbarViewPagerOfImageLexa.visibility = View.VISIBLE
             viewModel.viewModelScope.launch {
-                viewModel.updateHandbook()
-                viewModel.updatePhotos()
+                    viewModel.updateHandbook()
+                    viewModel.updatePhotos()
                 Handler(Looper.getMainLooper()).post {
                     progressbarViewPagerOfImageLogo.visibility =  View.GONE
                     progressbarViewPagerOfImageOscar.visibility = View.GONE

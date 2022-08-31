@@ -19,6 +19,7 @@ import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.db.model.FieldPhoto
 import com.example.gift_for_apelsinka.db.savePicturesToDB
 import com.example.gift_for_apelsinka.util.dialogs.DialogEditText
+import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import kotlinx.coroutines.launch
@@ -73,17 +74,21 @@ fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPa
 }
 
 fun wrapperForSwipeOutViewPager(viewPager: ImageViewPager, nextPicture: suspend () -> Boolean,
-                                        progressBar : ProgressBar, finish: () -> Unit, viewModel : ViewModel, context: Context) {
+                                progressBar : ProgressBar, finish: () -> Unit, viewModel : ViewModel, context: Context) {
     viewPager.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
         override fun onSwipeOutAtStart() {}
 
         var isUpdate = false
         override fun onSwipeOutAtEnd() {
             if(!IP.isInternetAvailable(context)) return
+            wrapperNothingHappen(context) {
+                isUpdate = false
+                progressBar.visibility = View.GONE
+            }
+            
             if(isUpdate) return
             progressBar.visibility = View.VISIBLE
             viewModel.viewModelScope.launch { //долистали до ласт элемента
-                isUpdate = true
                 val flag : Boolean = nextPicture()
                 Handler(Looper.getMainLooper()).postDelayed({ isUpdate = false }, 2_000)
                 Handler(Looper.getMainLooper()).post { progressBar.visibility = View.GONE }
@@ -119,4 +124,10 @@ fun wrapperOpenShowPictureActivity(view : View, activity: Activity, image : Stri
         activity.startActivity(Intent(activity, ShowPictureActivity::class.java))
         activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
+}
+fun wrapperNothingHappen(context: Context, runnable: Runnable) {
+    Handler(Looper.getMainLooper()).postDelayed({ //если через 10 секунд ничего не происходит
+        IP.isInternetAvailable(context)
+        runnable.run()
+    }, 10_000)
 }

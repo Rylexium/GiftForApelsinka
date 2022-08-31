@@ -212,6 +212,11 @@ class MainActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
                 return@setOnRefreshListener
             }
+
+            wrapperNothingHappen(this){
+                swipeRefreshLayout.isRefreshing = false
+            }
+
             val context = this
             var isNewStatements = false
             viewModel.viewModelScope.launch {

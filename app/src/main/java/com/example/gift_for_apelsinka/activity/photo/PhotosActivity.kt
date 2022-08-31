@@ -19,6 +19,7 @@ import com.example.gift_for_apelsinka.cache.colorPrimary
 import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.dialogs.ShowToast
+import com.example.gift_for_apelsinka.util.wrapperNothingHappen
 import kotlinx.coroutines.launch
 
 
@@ -71,7 +72,11 @@ class PhotosActivity : AppCompatActivity() {
                         swipeRefreshLayout.isRefreshing = false
                         return
                     }
-
+                    wrapperNothingHappen(this@PhotosActivity) {
+                        progressBar.visibility = View.GONE
+                        isUpdate = false
+                        isShowToastDownload = false
+                    }
                     if(progressBar.visibility == View.VISIBLE && !isShowToastDownload) { // если загрузка
                         isShowToastDownload = true
                         ShowToast.show(this@PhotosActivity, "Загружаю фотографии")
@@ -98,6 +103,10 @@ class PhotosActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
                 return@setOnRefreshListener
             }
+            wrapperNothingHappen(this) {
+                swipeRefreshLayout.isRefreshing = false
+            }
+
             val previousFlag = updateFlag
             updateFlag = null
             viewModel.viewModelScope.launch {

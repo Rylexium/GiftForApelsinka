@@ -33,7 +33,14 @@ object IP {
         }
         return null
     }
+
+    var trying = false
+    var connected = false
     fun isInternetAvailable(context : Context): Boolean {
+        if(trying) return connected
+
+        trying = true
+
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager? ?: return false
         val connected =
@@ -42,6 +49,7 @@ object IP {
 
         if(!connected) ShowToast.show(context, "Проверьте подключение к интернету")
 
+        Handler(Looper.getMainLooper()).postDelayed({ trying = false }, 2_500)
         return connected
     }
 
