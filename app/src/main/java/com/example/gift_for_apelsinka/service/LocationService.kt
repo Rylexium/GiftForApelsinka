@@ -66,18 +66,18 @@ class LocationService : Service() {
         backgroundWorkThread?.start()
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        WorkWithServices.restartService(this, this.javaClass)
+        WorkWithServices.startAllServices(this)
+    }
+
     override fun onDestroy() {
         killWorkThread = true
         killInitThread = true
         WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
         super.onDestroy()
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
     }
 
     private fun init(): Thread {

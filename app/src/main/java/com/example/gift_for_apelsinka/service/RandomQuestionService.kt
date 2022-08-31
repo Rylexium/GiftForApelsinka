@@ -54,7 +54,7 @@ class RandomQuestionService : Service() {
 
     override fun onDestroy() {
         killThread = true
-        WorkWithServices.restartService(applicationContext, this.javaClass)
+        WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
