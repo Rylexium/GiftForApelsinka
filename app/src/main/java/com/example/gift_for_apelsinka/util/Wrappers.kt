@@ -30,7 +30,7 @@ suspend fun wrapperNextPictures(getPicturesFromNetwork : suspend (page : Int) ->
                                 liveData : MutableLiveData<List<Any>>,
                                 defaultList : List<Any>, context: Context) : Pair<Int, Boolean> {
 
-    if(!IP.isInternetAvailable(context)) return Pair(pageOf, false)
+    if(IP.isInternetAvailable(context)) return Pair(pageOf, false)
 
     var picturesFromNetwork : List<FieldPhoto>
 

@@ -8,6 +8,8 @@ import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,6 +63,15 @@ class PhotosActivity : AppCompatActivity() {
 
     private fun applyEvents() {
         DebugFunctions.addDebug("PhotosActivity","applyEvents")
+        ViewCompat.setOnApplyWindowInsetsListener(recv) { _, insets ->
+            val systemWindowInsets = insets.systemWindowInsets
+            recv.updatePadding(
+                left = systemWindowInsets.left,
+                bottom = systemWindowInsets.bottom + systemWindowInsets.top,
+                right = systemWindowInsets.right
+            )
+            insets
+        }
         recv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             var isUpdate = false
             var isShowToastDownload = false

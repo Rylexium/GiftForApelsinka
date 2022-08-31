@@ -36,6 +36,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
+            android:scrollbars="none"
+            android:clipToPadding="false"
             />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
