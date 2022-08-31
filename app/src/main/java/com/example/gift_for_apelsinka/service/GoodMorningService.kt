@@ -82,7 +82,7 @@ class GoodMorningService : Service() {
 
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
-                if(nowHour == randomHour && randomMinute <= nowMinute) {
+                if(nowHour == randomHour && nowMinute >= randomMinute) {
                     goodMorningNotification()
                     randomHour = (8..12).random()
                     randomMinute = (System.currentTimeMillis() % 59).toInt()
