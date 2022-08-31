@@ -1,6 +1,5 @@
 package com.example.gift_for_apelsinka.activity.about
 
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,7 +21,6 @@ import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {

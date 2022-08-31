@@ -31,7 +31,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_title_line"
-            android:background="#992e1e"
+            android:background="@color/color_rylexium"
             />
         <RelativeLayout
             android:layout_width="match_parent"

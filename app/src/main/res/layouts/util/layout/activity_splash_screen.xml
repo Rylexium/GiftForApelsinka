@@ -19,7 +19,6 @@
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="20dp"
         android:foreground="?attr/selectableItemBackground"
-        app:cardBackgroundColor="?attr/colorPrimary"
         >
         <ImageView
             android:id="@+id/image_splash"
