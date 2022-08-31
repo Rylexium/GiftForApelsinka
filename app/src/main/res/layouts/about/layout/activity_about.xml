@@ -41,7 +41,4 @@
 
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_bar"/>
 </LinearLayout>
