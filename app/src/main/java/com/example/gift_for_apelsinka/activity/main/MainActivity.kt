@@ -6,11 +6,11 @@ import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.text.Html
 import android.util.Log
 import android.view.View
@@ -25,28 +25,21 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
-import com.example.gift_for_apelsinka.cache.androidId
 import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
-import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
-import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
-import com.example.gift_for_apelsinka.service.NotificationFromServerService
-import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.*
 import com.example.gift_for_apelsinka.util.IP.isInternetAvailable
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
-import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
+import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.views.DynamicViewPager
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
@@ -143,6 +136,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.getHandbook().observe(this) {
             updateDeveloper(it)
         }
+
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
 
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image).setupWithViewPager(viewPageOfImage)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_statement).setupWithViewPager(viewPageOfStatement)

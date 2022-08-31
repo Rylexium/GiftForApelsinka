@@ -1,10 +1,10 @@
 package com.example.gift_for_apelsinka.activity.photo
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 
 class PhotosActivity : AppCompatActivity() {
-    private lateinit var switchRefreshLayout: SwipeRefreshLayout
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recv : RecyclerView
     private lateinit var viewModel: PhotosViewModel
     private lateinit var progressBar: ProgressBar
@@ -45,7 +45,8 @@ class PhotosActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this,
             PhotosViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[PhotosViewModel::class.java]
         recv = findViewById(R.id.recycler_view_photos)
-        switchRefreshLayout = findViewById(R.id.swipeRefreshLayoutPhotos)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutPhotos)
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
         progressBar = findViewById(R.id.progress_download_photos)
         viewModel.getPhotosList().observe(this) {
             viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())
@@ -66,7 +67,7 @@ class PhotosActivity : AppCompatActivity() {
                 if (!recyclerView.canScrollVertically(1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
 
                     if(!IP.isInternetAvailable(this@PhotosActivity)) {
-                        switchRefreshLayout.isRefreshing = false
+                        swipeRefreshLayout.isRefreshing = false
                         return
                     }
 
@@ -91,9 +92,9 @@ class PhotosActivity : AppCompatActivity() {
                 }
             }
         })
-        switchRefreshLayout.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
             if(!IP.isInternetAvailable(this@PhotosActivity)) {
-                switchRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.isRefreshing = false
                 return@setOnRefreshListener
             }
             val previousFlag = updateFlag
@@ -101,7 +102,7 @@ class PhotosActivity : AppCompatActivity() {
             viewModel.viewModelScope.launch {
                 viewModel.updatePhotosList()
                 updateFlag = previousFlag
-                Handler(Looper.getMainLooper()).post { switchRefreshLayout.isRefreshing = false }
+                Handler(Looper.getMainLooper()).post { swipeRefreshLayout.isRefreshing = false }
             }
         }
     }

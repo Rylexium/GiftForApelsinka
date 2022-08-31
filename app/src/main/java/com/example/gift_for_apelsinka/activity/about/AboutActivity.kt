@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.about
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,8 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.util.*
-import com.example.gift_for_apelsinka.util.dialogs.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
+import com.example.gift_for_apelsinka.util.dialogs.DialogEditText.editTextView
 import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import com.example.gift_for_apelsinka.util.listener.DoubleClickListener
 import com.example.gift_for_apelsinka.util.views.ImageViewPager
@@ -23,7 +24,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
 class AboutActivity : AppCompatActivity() {
-    private lateinit var switchRefreshLayout : SwipeRefreshLayout
+    private lateinit var swipeRefreshLayout : SwipeRefreshLayout
     private lateinit var viewModel: AboutViewModel
     private lateinit var viewPageOfImageOscar : ImageViewPager
     private lateinit var viewPageOfImageLera : ImageViewPager
@@ -55,7 +56,7 @@ class AboutActivity : AppCompatActivity() {
     private fun initComponents() {
         DebugFunctions.addDebug("AboutActivity","onCreate")
         viewModel = ViewModelProvider(this)[AboutViewModel::class.java]
-        switchRefreshLayout = findViewById(R.id.swipeRefreshLayoutAbout)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutAbout)
         viewPageOfImageOscar = findViewById(R.id.view_pager_of_image_oscar)
         viewPageOfImageLera = findViewById(R.id.view_pager_of_image_lera)
         viewPageOfImageLexa = findViewById(R.id.view_pager_of_image_lexa)
@@ -96,14 +97,15 @@ class AboutActivity : AppCompatActivity() {
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_oscar).setupWithViewPager(viewPageOfImageOscar)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lera).setupWithViewPager(viewPageOfImageLera)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lexa).setupWithViewPager(viewPageOfImageLexa)
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
     }
 
     private suspend fun applyEvents() {
         DebugFunctions.addDebug("AboutActivity","applyEvents")
-        wrapperDisableSwitchLayout(viewPageOfImageLogo, switchRefreshLayout)
-        wrapperDisableSwitchLayout(viewPageOfImageOscar, switchRefreshLayout)
-        wrapperDisableSwitchLayout(viewPageOfImageLera, switchRefreshLayout)
-        wrapperDisableSwitchLayout(viewPageOfImageLexa, switchRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageLogo, swipeRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageOscar, swipeRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageLera, swipeRefreshLayout)
+        wrapperDisableSwitchLayout(viewPageOfImageLexa, swipeRefreshLayout)
 
         wrapperForSwipeOutViewPager(viewPageOfImageLogo,
             { viewModel.nextPicturesLogo(this) },
@@ -137,9 +139,9 @@ class AboutActivity : AppCompatActivity() {
             }
         })
 
-        switchRefreshLayout.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
             if(!IP.isInternetAvailable(this@AboutActivity)) {
-                switchRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.isRefreshing = false
                 return@setOnRefreshListener
             }
             progressbarViewPagerOfImageLogo.visibility = View.VISIBLE
@@ -154,7 +156,7 @@ class AboutActivity : AppCompatActivity() {
                     progressbarViewPagerOfImageOscar.visibility = View.GONE
                     progressbarViewPagerOfImageLera.visibility =  View.GONE
                     progressbarViewPagerOfImageLexa.visibility =  View.GONE
-                    switchRefreshLayout.isRefreshing = false
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
