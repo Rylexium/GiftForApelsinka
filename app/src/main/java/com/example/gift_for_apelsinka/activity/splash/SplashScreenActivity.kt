@@ -28,8 +28,10 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
         startServices()
         initDB(applicationContext)
+
         initComponents()
         initData()
         startMainActivity()
@@ -66,6 +68,5 @@ class SplashScreenActivity : AppCompatActivity() {
         InitView.setImageWithCircle(R.drawable.developer, imageViewDev, this)
         InitView.setImageWithCorners(list[(System.currentTimeMillis() % (list.size - 1)).toInt()].picture.toInt(), imageView, this)
     }
-
 
 }
