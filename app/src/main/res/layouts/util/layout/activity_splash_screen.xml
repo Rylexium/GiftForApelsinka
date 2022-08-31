@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layout_splash"
-
+    android:layout_gravity="center"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context=".activity.splash.SplashScreenActivity">
     <View
