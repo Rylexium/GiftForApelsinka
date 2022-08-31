@@ -24,6 +24,9 @@ class RandomQuestionService : Service() {
     private var backgroundThread : Thread? = null
     private var killThread = false
 
+    val NOTIFICATION_CHANNEL_ID = "Канал случайных вопросов"
+    val channelName = "Канал случайных вопросов"
+
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("RandomQuestionService", "onCreate")
@@ -32,22 +35,20 @@ class RandomQuestionService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val NOTIFICATION_CHANNEL_ID = "CHANNEL_QUESTION"
-        val channelName = "CHANNEL_QUESTION"
         val chan = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             channelName,
-            NotificationManager.IMPORTANCE_NONE
+            NotificationManager.IMPORTANCE_HIGH
         )
         chan.lightColor = Color.BLUE
+        chan.enableVibration(true)
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
-            .setContentTitle("RQ is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MAX)
+            .setPriority(Notification.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
@@ -60,6 +61,7 @@ class RandomQuestionService : Service() {
     }
 
     private fun initTask() {
+        killThread = false
         backgroundThread = task()
         backgroundThread?.start()
     }
@@ -82,10 +84,10 @@ class RandomQuestionService : Service() {
     private fun equationNotification() {
         val notificationManager = this@RandomQuestionService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notifChannel = NotificationChannel("CHANNEL_QUESTION", "CHANNEL_QUESTION", NotificationManager.IMPORTANCE_DEFAULT)
+            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)
         }
-        notificationManager.notify(4, getNotification())
+        notificationManager.notify(6, getNotification())
     }
 
     private fun task() : Thread {
@@ -95,17 +97,18 @@ class RandomQuestionService : Service() {
         return Thread {
             while (true) {
                 if(killThread) break
-                val nowHour = WorkWithTime.getNowHour()
-                val nowMinute = WorkWithTime.getNowMinute()
-                if(nowHour == randomHour && nowMinute >= randomMinute) {
-                    equationNotification()
-                    randomHour = (16..23).random()
-                    randomMinute = (System.currentTimeMillis() % 59).toInt()
-                    sharedPreferences.edit()
-                        .putInt(KEY_HOUR, randomHour)
-                        .putInt(KEY_MINUTE, randomMinute)
-                        .apply()
-                }
+                equationNotification()
+//                val nowHour = WorkWithTime.getNowHour()
+//                val nowMinute = WorkWithTime.getNowMinute()
+//                if(nowHour == randomHour && nowMinute >= randomMinute) {
+//                    equationNotification()
+//                    randomHour = (16..23).random()
+//                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+//                    sharedPreferences.edit()
+//                        .putInt(KEY_HOUR, randomHour)
+//                        .putInt(KEY_MINUTE, randomMinute)
+//                        .apply()
+//                }
                 Thread.sleep(60_000) //60_000
             }
         }
@@ -118,7 +121,7 @@ class RandomQuestionService : Service() {
             else -> { R.drawable.lexa1 }
         }
         val circleImage = async { InitView.getCircleImage(id, this@RandomQuestionService) }
-        return@runBlocking NotificationCompat.Builder(this@RandomQuestionService, "CHANNEL_QUESTION")
+        return@runBlocking NotificationCompat.Builder(this@RandomQuestionService, NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setLargeIcon(circleImage.await())

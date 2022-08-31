@@ -39,6 +39,9 @@ class LocationService : Service() {
     private var killWorkThread = false
     private var killInitThread = false
 
+    val NOTIFICATION_CHANNEL_ID = "Другое"
+    val channelName = "Другое"
+
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("LocationService", "onCreate")
@@ -46,26 +49,25 @@ class LocationService : Service() {
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val NOTIFICATION_CHANNEL_ID = "CHANNEL_GOOD_MORNING"
-        val channelName = "CHANNEL_GOOD_MORNING"
         val chan = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             channelName,
-            NotificationManager.IMPORTANCE_NONE
+            NotificationManager.IMPORTANCE_HIGH
         )
         chan.lightColor = Color.BLUE
+        chan.enableVibration(true)
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        val notification: Notification = notificationBuilder.setOngoing(true)
-            .setSmallIcon(R.drawable.icon_of_developer)
-            .setContentTitle("LS is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MAX)
-            .setCategory(Notification.CATEGORY_SERVICE)
-            .build()
-        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
-        startForeground(4, notification)
+//        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+//        val notification: Notification = notificationBuilder.setOngoing(true)
+//            .setSmallIcon(R.drawable.icon_of_developer)
+//            .setContentTitle("LS is running in background")
+//            .setPriority(NotificationManager.IMPORTANCE_MAX)
+//            .setCategory(Notification.CATEGORY_SERVICE)
+//            .build()
+//        notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+//        startForeground(4, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -74,13 +76,14 @@ class LocationService : Service() {
     }
 
     private fun initTask() {
+        killWorkThread = false
+        killInitThread = false
+
         backgroundInitThread = init()
         backgroundWorkThread = work()
 
         backgroundInitThread?.start()
         backgroundWorkThread?.start()
-        killWorkThread = false
-        killInitThread = false
     }
 
     override fun onDestroy() {

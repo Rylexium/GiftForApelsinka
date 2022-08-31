@@ -26,23 +26,31 @@
             android:name=".service.GoodMorningService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:process=":newprocc"
+            />
         <service
             android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:process=":newprocc"
+            />
         <service
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:process=":newprocc"
+            />
         <service
             android:name=".service.LocationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:process=":newprocc"
+            />
 
         <receiver
             android:name=".service.receiver.MyReceiver"

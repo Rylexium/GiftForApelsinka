@@ -27,6 +27,8 @@ class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
     private var channelId = 10
     private var killThread = false
+    private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
+    private val channelName = "Канал уведомлений от сервера"
 
     @SuppressLint("NewApi")
     override fun onCreate() {
@@ -36,21 +38,19 @@ class NotificationFromServerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val NOTIFICATION_CHANNEL_ID = "CHANNEL_NOTIFICATIONS_FROM_SERVER"
-        val channelName = "CHANNEL_NOTIFICATIONS_FROM_SERVER"
         val chan = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             channelName,
-            NotificationManager.IMPORTANCE_NONE
+            NotificationManager.IMPORTANCE_HIGH
         )
         chan.lightColor = Color.BLUE
+        chan.enableVibration(true)
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
-            .setContentTitle("NFS is running in background")
             .setPriority(NotificationManager.IMPORTANCE_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
@@ -102,7 +102,7 @@ class NotificationFromServerService : Service() {
     }
 
     private suspend fun createNotification(notif: com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Notification {
-        return NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
+        return NotificationCompat.Builder(this@NotificationFromServerService, NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setLargeIcon(getCircleImage(notif))
@@ -115,7 +115,7 @@ class NotificationFromServerService : Service() {
     }
     private fun createSummingNotification(listNotification : List<Notification>, listData : List<String>): Notification {
         val text = "${listNotification.size} " + if(listNotification.size == 1) "новое сообщение" else "новых сообщений"
-        return NotificationCompat.Builder(this@NotificationFromServerService, "CHANNEL_NOTIFICATIONS_FROM_SERVER")
+        return NotificationCompat.Builder(this@NotificationFromServerService, NOTIFICATION_CHANNEL_ID)
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setStyle(
@@ -133,7 +133,7 @@ class NotificationFromServerService : Service() {
     private fun notifForSdkO() {
         val notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notifChannel = NotificationChannel("CHANNEL_NOTIFICATIONS_FROM_SERVER", "CHANNEL_NOTIFICATIONS_FROM_SERVER", NotificationManager.IMPORTANCE_DEFAULT)
+            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)
         }
     }

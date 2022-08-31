@@ -10,15 +10,13 @@ object Notifaction {
     fun generateTitleOfGoodMorning() : String {
         var res = ""
         when((System.currentTimeMillis() % 4).toInt()) {
-            0 -> res = "Доброе утро, "
-            1 -> res = "Доброе утречка, "
-            2 -> res = "Доброго утра, "
-            3 -> res = "Доброго утречка, "
+            0 -> res = "Доброе утро"
+            1 -> res = "Доброе утречка"
+            2 -> res = "Доброго утра"
+            3 -> res = "Доброго утречка"
         }
         val value = (System.currentTimeMillis() % nameOfApelsinka.size).toInt()
-        if(value == nameOfApelsinka.size)
-            return res.subSequence(0, res.length - 2).toString() + "!"
-        return res + nameOfApelsinka[value] + "!"
+        return if(value == nameOfApelsinka.size - 1) "$res!" else res + ", " + nameOfApelsinka[value] + "!"
     }
     fun generateTextOfGoodMorning(): String {
         val list = listOf(

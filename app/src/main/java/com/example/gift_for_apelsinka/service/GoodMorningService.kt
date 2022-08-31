@@ -25,6 +25,9 @@ class GoodMorningService : Service() {
     private val KEY_HOUR = "GoodMorningRandomHour"
     private val KEY_MINUTE = "GoodMorningRandomMinute"
 
+    private val NOTIFICATION_CHANNEL_ID = "Канал доброго утра"
+    private val channelName = "Канал доброго утра"
+
     private var backgroundThread : Thread? = null
     private var killThread = false
 
@@ -36,13 +39,12 @@ class GoodMorningService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val NOTIFICATION_CHANNEL_ID = "CHANNEL_GOOD_MORNING"
-        val channelName = "CHANNEL_GOOD_MORNING"
         val chan = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             channelName,
-            NotificationManager.IMPORTANCE_NONE
+            NotificationManager.IMPORTANCE_HIGH
         )
+        chan.enableVibration(true)
         chan.lightColor = Color.BLUE
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val manager = (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
@@ -50,8 +52,7 @@ class GoodMorningService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.icon_of_developer)
-            .setContentTitle("GM is running in background")
-            .setPriority(NotificationManager.IMPORTANCE_MAX)
+            .setPriority(Notification.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
@@ -96,18 +97,19 @@ class GoodMorningService : Service() {
         return Thread {
             while (true) {
                 if(killThread) break
-                val nowHour = getNowHour()
-                val nowMinute = getNowMinute()
-                if(nowHour == randomHour && randomMinute <= nowMinute) {
-                    goodMorningNotification()
-                    randomHour = (8..12).random()
-                    randomMinute = (System.currentTimeMillis() % 59).toInt()
-                    sharedPreferences.edit()
-                        .putInt(KEY_HOUR, randomHour)
-                        .putInt(KEY_MINUTE, randomMinute)
-                        .apply()
-                }
-                Thread.sleep(600_000)
+                goodMorningNotification()
+//                val nowHour = getNowHour()
+//                val nowMinute = getNowMinute()
+//                if(nowHour == randomHour && randomMinute <= nowMinute) {
+//                    goodMorningNotification()
+//                    randomHour = (8..12).random()
+//                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+//                    sharedPreferences.edit()
+//                        .putInt(KEY_HOUR, randomHour)
+//                        .putInt(KEY_MINUTE, randomMinute)
+//                        .apply()
+//                }
+                Thread.sleep(120_000) // 600_000
             }
         }
     }
@@ -116,7 +118,7 @@ class GoodMorningService : Service() {
         val notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
             val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, this@GoodMorningService)
-            val notificationGoodMorning = NotificationCompat.Builder(this@GoodMorningService, "CHANNEL_GOOD_MORNING")
+            val notificationGoodMorning = NotificationCompat.Builder(this@GoodMorningService, NOTIFICATION_CHANNEL_ID)
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setLargeIcon(circleImageApelsinka)
@@ -127,7 +129,7 @@ class GoodMorningService : Service() {
                 .build()
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notifChannel = NotificationChannel("CHANNEL_GOOD_MORNING", "CHANNEL_GOOD_MORNING", NotificationManager.IMPORTANCE_DEFAULT)
+                val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
                 notificationManager.createNotificationChannel(notifChannel)
             }
             notificationManager.notify(5, notificationGoodMorning)
