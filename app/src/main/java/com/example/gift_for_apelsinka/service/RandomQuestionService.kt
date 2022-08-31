@@ -11,12 +11,12 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 
 class RandomQuestionService : Service() {
@@ -92,19 +92,24 @@ class RandomQuestionService : Service() {
                     var max = 16
                     var min = 23
                     randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
-                    randomHour = (16..23).random()
 
                     max = 59
                     min = 0
                     randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
                     randomMinute = (System.currentTimeMillis() % 59).toInt()
 
+                    CoroutineScope(Dispatchers.IO).launch {
+                        NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute")
+                    }
+
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
+
+                    Thread.sleep(18_000_000) // на 5 часов засыпаем
                 }
-                Thread.sleep(180_000) //60_000
+                Thread.sleep(180_000) // 3 минуты
             }
         }
     }

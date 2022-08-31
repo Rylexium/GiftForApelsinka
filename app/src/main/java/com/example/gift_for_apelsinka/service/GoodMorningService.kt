@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithServices
@@ -84,7 +85,7 @@ class GoodMorningService : Service() {
 
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
-                if(nowHour == randomHour && nowMinute >= randomMinute) {
+                if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
                     goodMorningNotification()
 
                     var max = 12
@@ -95,12 +96,18 @@ class GoodMorningService : Service() {
                     min = 0
                     randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
 
+                    CoroutineScope(Dispatchers.IO).launch {
+                        NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute")
+                    }
+
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
+
+                    Thread.sleep(61_200_000) // на 17 часов засыпаем
                 }
-                Thread.sleep(120_000) // 600_000
+                Thread.sleep(600_000) // 10 минут
             }
         }
     }
