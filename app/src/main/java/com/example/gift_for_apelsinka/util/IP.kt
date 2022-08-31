@@ -3,6 +3,8 @@ package com.example.gift_for_apelsinka.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.gift_for_apelsinka.util.dialogs.ShowToast
@@ -33,9 +35,9 @@ object IP {
     }
     fun isInternetAvailable(context : Context): Boolean {
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager? ?: return false
         val connected =
-            connectivityManager!!.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
+            connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)!!.state == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)!!.state == NetworkInfo.State.CONNECTED
 
         if(!connected) ShowToast.show(context, "Проверьте подключение к интернету")
