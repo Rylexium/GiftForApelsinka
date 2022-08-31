@@ -52,11 +52,11 @@ object WorkWithServices {
         return false
     }
 
-    fun restartService(applicationContext : Context, serviceClass : Class<*>) {
-        val restartService = Intent(applicationContext, serviceClass)
-        val pendingIntent = PendingIntent.getService(applicationContext, 1, restartService, PendingIntent.FLAG_ONE_SHOT)
-        val alarmManager = applicationContext.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-        alarmManager[AlarmManager.ELAPSED_REALTIME, 5000] = pendingIntent
+    fun restartService(context: Context, serviceClass : Class<*>) {
+        val restartService = Intent(context, serviceClass)
+        val pendingIntent = PendingIntent.getService(context, 1, restartService, PendingIntent.FLAG_ONE_SHOT)
+        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000] = pendingIntent
     }
     @SuppressLint("NewApi")
     fun createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID : String, channelName : String, context: Context): Notification {

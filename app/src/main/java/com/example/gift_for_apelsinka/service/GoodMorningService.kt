@@ -54,8 +54,9 @@ class GoodMorningService : Service() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        WorkWithServices.restartService(applicationContext, this.javaClass)
         super.onTaskRemoved(rootIntent)
+        WorkWithServices.restartService(this, this.javaClass)
+        WorkWithServices.startAllServices(this)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -64,7 +65,8 @@ class GoodMorningService : Service() {
 
     override fun onDestroy() {
         killThread = true
-        WorkWithServices.restartService(applicationContext, this.javaClass)
+        WorkWithServices.restartService(this, this.javaClass)
+        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 

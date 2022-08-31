@@ -60,13 +60,15 @@ class NotificationFromServerService : Service() {
 
     override fun onDestroy() {
         killThread = true
-        WorkWithServices.restartService(applicationContext, this.javaClass)
+        WorkWithServices.restartService(this, this.javaClass)
+        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        WorkWithServices.restartService(applicationContext, this.javaClass)
         super.onTaskRemoved(rootIntent)
+        WorkWithServices.restartService(this, this.javaClass)
+        WorkWithServices.startAllServices(this)
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
