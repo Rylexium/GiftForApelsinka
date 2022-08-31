@@ -76,27 +76,19 @@ class RandomQuestionService : Service() {
 
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 28)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 10)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 48)
         return Thread {
             while (true) {
                 if(killThread) break
 
-                equationNotification() //debug
-
                 val nowHour = WorkWithTime.getNowHour()
                 val nowMinute = WorkWithTime.getNowMinute()
-                if(nowHour == randomHour && nowMinute >= randomMinute) {
+                if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
                     equationNotification()
 
-                    var max = 16
-                    var min = 23
-                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
-
-                    max = 59
-                    min = 0
-                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
-                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+                    randomHour += 1
+                    randomMinute -= 2
 
                     CoroutineScope(Dispatchers.IO).launch {
                         NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute")
@@ -106,9 +98,27 @@ class RandomQuestionService : Service() {
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
-
-                    Thread.sleep(18_000_000) // на 5 часов засыпаем
                 }
+//                    var max = 16
+//                    var min = 23
+//                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
+//
+//                    max = 59
+//                    min = 0
+//                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
+//                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+//
+//                    CoroutineScope(Dispatchers.IO).launch {
+//                        NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute")
+//                    }
+//
+//                    sharedPreferences.edit()
+//                        .putInt(KEY_HOUR, randomHour)
+//                        .putInt(KEY_MINUTE, randomMinute)
+//                        .apply()
+//
+//                    Thread.sleep(18_000_000) // на 5 часов засыпаем
+//              }
                 Thread.sleep(180_000) // 3 минуты
             }
         }

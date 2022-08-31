@@ -81,20 +81,13 @@ class GoodMorningService : Service() {
             while (true) {
                 if(killThread) break
 
-                goodMorningNotification() //debug
-
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
                     goodMorningNotification()
 
-                    var max = 12
-                    var min = 8
-                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
-
-                    max = 59
-                    min = 0
-                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
+                    randomHour += 1
+                    randomMinute -= 2
 
                     CoroutineScope(Dispatchers.IO).launch {
                         NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute")
@@ -104,10 +97,36 @@ class GoodMorningService : Service() {
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)
                         .apply()
-
-                    Thread.sleep(61_200_000) // на 17 часов засыпаем
                 }
-                Thread.sleep(600_000) // 10 минут
+                Thread.sleep(300_000) // 10 минут = 600_000
+
+//                goodMorningNotification() //debug
+//
+//                val nowHour = getNowHour()
+//                val nowMinute = getNowMinute()
+//                if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
+//                    goodMorningNotification()
+//
+//                    var max = 12
+//                    var min = 8
+//                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
+//
+//                    max = 59
+//                    min = 0
+//                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
+//
+//                    CoroutineScope(Dispatchers.IO).launch {
+//                        NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute")
+//                    }
+//
+//                    sharedPreferences.edit()
+//                        .putInt(KEY_HOUR, randomHour)
+//                        .putInt(KEY_MINUTE, randomMinute)
+//                        .apply()
+//
+//                    Thread.sleep(61_200_000) // на 17 часов засыпаем
+//                }
+//                Thread.sleep(600_000) // 10 минут
             }
         }
     }
