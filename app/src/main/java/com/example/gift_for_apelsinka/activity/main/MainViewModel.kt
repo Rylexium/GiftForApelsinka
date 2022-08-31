@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.main
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.R
@@ -161,13 +162,12 @@ class MainViewModel : ViewModel() {
         return true
     }
 
-    suspend fun nextMainPictures() : Boolean {
+    suspend fun nextMainPictures(context : Context) : Boolean {
         DebugFunctions.addDebug("MainViewModel","nextMainPictures")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllMainPicture(it) },
             { pictureRealization.mainPicture() },
-            pageOfMainPicture, listOfPictures, defaultListOfMainPictures()
-        )
+            pageOfMainPicture, listOfPictures, defaultListOfMainPictures(), context)
         pageOfMainPicture = res.first
         return res.second
     }

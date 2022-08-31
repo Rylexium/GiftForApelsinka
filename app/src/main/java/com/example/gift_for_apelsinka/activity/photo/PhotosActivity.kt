@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.adapter.PhotosAdapter
 import com.example.gift_for_apelsinka.util.DebugFunctions
+import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.dialogs.ShowToast
 import kotlinx.coroutines.launch
 
@@ -63,6 +64,12 @@ class PhotosActivity : AppCompatActivity() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
+
+                    if(!IP.isInternetAvailable(this@PhotosActivity)) {
+                        switchRefreshLayout.isRefreshing = false
+                        return
+                    }
+
                     if(progressBar.visibility == View.VISIBLE && !isShowToastDownload) { // если загрузка
                         isShowToastDownload = true
                         ShowToast.show(this@PhotosActivity, "Загружаю фотографии")
@@ -85,6 +92,10 @@ class PhotosActivity : AppCompatActivity() {
             }
         })
         switchRefreshLayout.setOnRefreshListener {
+            if(!IP.isInternetAvailable(this@PhotosActivity)) {
+                switchRefreshLayout.isRefreshing = false
+                return@setOnRefreshListener
+            }
             val previousFlag = updateFlag
             updateFlag = null
             viewModel.viewModelScope.launch {

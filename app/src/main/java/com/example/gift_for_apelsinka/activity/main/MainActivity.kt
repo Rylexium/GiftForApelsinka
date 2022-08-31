@@ -34,6 +34,7 @@ import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.RandomQuestionService
 import com.example.gift_for_apelsinka.util.*
+import com.example.gift_for_apelsinka.util.IP.isInternetAvailable
 import com.example.gift_for_apelsinka.util.InitView.dpToPx
 import com.example.gift_for_apelsinka.util.InitView.initViewPager
 import com.example.gift_for_apelsinka.util.InitView.setImage
@@ -173,9 +174,9 @@ class MainActivity : AppCompatActivity() {
     private fun applyEvents() {
         DebugFunctions.addDebug("MainActivity","applyEvents")
         wrapperForSwipeOutViewPager(viewPageOfImage,
-            { viewModel.nextMainPictures() },
+            { viewModel.nextMainPictures(this) },
             progressBarViewPageOfImage,
-            { ShowToast.show(this@MainActivity, "Все фото загружены") }, viewModel)
+            { ShowToast.show(this@MainActivity, "Все фото загружены") }, viewModel, this)
         wrapperDisableSwitchLayout(viewPageOfStatement, swipeRefreshLayout)
         wrapperDisableSwitchLayout(viewPageOfImage, swipeRefreshLayout)
 
@@ -196,6 +197,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwipeOutAtEnd() {
+                if(!isInternetAvailable(this@MainActivity)) return
                 if(isUpdate) return
                 progressBarViewPageOfStatement.visibility = View.VISIBLE
                 viewModel.viewModelScope.launch { //долистали до ласт элемента
@@ -210,6 +212,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         swipeRefreshLayout.setOnRefreshListener {
+            if(!isInternetAvailable(this@MainActivity)) {
+                swipeRefreshLayout.isRefreshing = false
+                return@setOnRefreshListener
+            }
             val context = this
             var isNewStatements = false
             viewModel.viewModelScope.launch {
@@ -248,6 +254,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         textVkDeveloper.setOnClickListener {
+            if(!isInternetAvailable(this@MainActivity)) return@setOnClickListener
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/rylexium")))
         }
 

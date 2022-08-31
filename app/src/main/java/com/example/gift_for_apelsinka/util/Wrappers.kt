@@ -27,7 +27,10 @@ suspend fun wrapperNextPictures(getPicturesFromNetwork : suspend (page : Int) ->
                                 getPicturesFromBD  : suspend () -> List<FieldPhoto>,
                                 pageOf : Int,
                                 liveData : MutableLiveData<List<Any>>,
-                                defaultList : List<Any>) : Pair<Int, Boolean> {
+                                defaultList : List<Any>, context: Context) : Pair<Int, Boolean> {
+
+    if(!IP.isInternetAvailable(context)) return Pair(pageOf, false)
+
     var picturesFromNetwork : List<FieldPhoto>
 
     var picturesFromBD : List<FieldPhoto>
@@ -70,12 +73,13 @@ fun liveDataObserveViewPagerWrapper(liveData: MutableLiveData<List<Any>>, viewPa
 }
 
 fun wrapperForSwipeOutViewPager(viewPager: ImageViewPager, nextPicture: suspend () -> Boolean,
-                                        progressBar : ProgressBar, finish: () -> Unit, viewModel : ViewModel) {
+                                        progressBar : ProgressBar, finish: () -> Unit, viewModel : ViewModel, context: Context) {
     viewPager.setOnSwipeOutListener(object : ImageViewPager.OnSwipeOutListener {
         override fun onSwipeOutAtStart() {}
 
         var isUpdate = false
         override fun onSwipeOutAtEnd() {
+            if(!IP.isInternetAvailable(context)) return
             if(isUpdate) return
             progressBar.visibility = View.VISIBLE
             viewModel.viewModelScope.launch { //долистали до ласт элемента

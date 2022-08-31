@@ -1,5 +1,6 @@
 package com.example.gift_for_apelsinka.activity.about
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gift_for_apelsinka.cache.*
@@ -211,42 +212,42 @@ class AboutViewModel : ViewModel() {
         return list1
     }
 
-    suspend fun nextPicturesOscar(): Boolean {
+    suspend fun nextPicturesOscar(context : Context): Boolean {
         DebugFunctions.addDebug("AboutViewModel","nextPicturesOscar")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllOscarPicture(it) },
             { pictureRealization.oscarPicture() },
-            pageOfOscar, imagesOfOscar, defaultPicturesOscar())
+            pageOfOscar, imagesOfOscar, defaultPicturesOscar(), context)
         pageOfLogo = res.first
         return res.second
     }
 
-    suspend fun nextPicturesLogo(): Boolean {
+    suspend fun nextPicturesLogo(context : Context): Boolean {
         DebugFunctions.addDebug("AboutViewModel","nextPicturesLogo")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllLogoPicture(it) },
             { pictureRealization.logoPicture() },
-            pageOfLogo, imageOfLogo, defaultPicturesLogo())
+            pageOfLogo, imageOfLogo, defaultPicturesLogo(), context)
         pageOfLogo = res.first
         return res.second
     }
 
-    suspend fun nextPicturesLera(): Boolean {
+    suspend fun nextPicturesLera(context : Context): Boolean {
         DebugFunctions.addDebug("AboutViewModel","nextPicturesLera")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllLeraPicture(it) },
             { pictureRealization.leraPicture() },
-            pageOfLera, imagesOfLera, defaultPicturesLera())
+            pageOfLera, imagesOfLera, defaultPicturesLera(), context)
         pageOfLera = res.first
         return res.second
     }
 
-    suspend fun nextPicturesLexa(): Boolean {
+    suspend fun nextPicturesLexa(context : Context): Boolean {
         DebugFunctions.addDebug("AboutViewModel","nextPicturesLexa")
         val res = wrapperNextPictures(
             { NetworkPictures.getAllRylexiumPicture(it) },
             { pictureRealization.rylexiumPicture() },
-            pageOfLexa, imagesOfLexa, defaultPicturesLexa())
+            pageOfLexa, imagesOfLexa, defaultPicturesLexa(), context)
         pageOfLexa = res.first
         return res.second
     }

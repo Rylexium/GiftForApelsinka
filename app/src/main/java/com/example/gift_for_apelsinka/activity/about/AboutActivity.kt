@@ -106,21 +106,21 @@ class AboutActivity : AppCompatActivity() {
         wrapperDisableSwitchLayout(viewPageOfImageLexa, switchRefreshLayout)
 
         wrapperForSwipeOutViewPager(viewPageOfImageLogo,
-            { viewModel.nextPicturesLogo() },
+            { viewModel.nextPicturesLogo(this) },
             progressbarViewPagerOfImageLogo,
-            { ShowToast.show(this@AboutActivity, "Все фотки логотипов загружены") }, viewModel)
+            { ShowToast.show(this@AboutActivity, "Все фотки логотипов загружены") }, viewModel, this)
         wrapperForSwipeOutViewPager(viewPageOfImageOscar,
-            { viewModel.nextPicturesOscar() },
+            { viewModel.nextPicturesOscar(this) },
             progressbarViewPagerOfImageOscar,
-            { ShowToast.show(this@AboutActivity, "Все фотки Оскара загружены") }, viewModel)
+            { ShowToast.show(this@AboutActivity, "Все фотки Оскара загружены") }, viewModel, this)
         wrapperForSwipeOutViewPager(viewPageOfImageLera,
-            { viewModel.nextPicturesLera() },
+            { viewModel.nextPicturesLera(this) },
             progressbarViewPagerOfImageLera,
-            { ShowToast.show(this@AboutActivity, "Все фотки Леры загружены") }, viewModel)
+            { ShowToast.show(this@AboutActivity, "Все фотки Леры загружены") }, viewModel, this)
         wrapperForSwipeOutViewPager(viewPageOfImageLexa,
-            { viewModel.nextPicturesLexa() },
+            { viewModel.nextPicturesLexa(this) },
             progressbarViewPagerOfImageLexa,
-            { ShowToast.show(this@AboutActivity, "Все фотки Лёши загружены") }, viewModel)
+            { ShowToast.show(this@AboutActivity, "Все фотки Лёши загружены") }, viewModel, this)
 
         wrapperEditTextView(textViewAboutApelsinka, { viewModel.setTextAboutApelsinka(textViewAboutApelsinka.text.toString()) }, this)
         wrapperEditTextView(textViewTextOfGoodnight, { viewModel.setTextGoodnight(textViewTextOfGoodnight.text.toString()) }, this)
@@ -138,6 +138,10 @@ class AboutActivity : AppCompatActivity() {
         })
 
         switchRefreshLayout.setOnRefreshListener {
+            if(!IP.isInternetAvailable(this@AboutActivity)) {
+                switchRefreshLayout.isRefreshing = false
+                return@setOnRefreshListener
+            }
             progressbarViewPagerOfImageLogo.visibility = View.VISIBLE
             progressbarViewPagerOfImageOscar.visibility = View.VISIBLE
             progressbarViewPagerOfImageLera.visibility = View.VISIBLE
