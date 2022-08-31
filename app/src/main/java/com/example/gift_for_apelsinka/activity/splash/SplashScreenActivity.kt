@@ -34,7 +34,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         initComponents()
         initData()
-        //startMainActivity()
+        startMainActivity()
     }
 
     @SuppressLint("HardwareIds")
