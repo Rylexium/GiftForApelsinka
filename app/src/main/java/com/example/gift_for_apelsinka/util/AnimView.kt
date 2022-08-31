@@ -31,7 +31,6 @@ object AnimView {
         val animate = TranslateAnimation(0f, 0f, 0f, (-view.height / 2).toFloat())
         animate.duration = 500
         view.startAnimation(animate)
-        view.visibility = View.INVISIBLE
         Handler(Looper.getMainLooper()).postDelayed({ view.visibility = View.GONE }, animate.duration)
     }
 }

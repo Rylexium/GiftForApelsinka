@@ -142,6 +142,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setGreeting() {
         DebugFunctions.addDebug("MainActivity","setGreeting")
+        AnimView.animVisible(layoutGreeting, 500)
         val image = viewModel.getImageOfTime()
         setImage(image, findViewById(R.id.image_of_time1), this)
         setImage(image, findViewById(R.id.image_of_time2), this)
