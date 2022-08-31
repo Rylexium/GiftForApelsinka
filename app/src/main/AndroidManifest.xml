@@ -26,26 +26,23 @@
             android:name=".service.GoodMorningService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode = "singleTop"
- />
+            android:launchMode="singleTop" />
         <service
             android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode = "singleTop"
- />
+            android:launchMode="singleTop" />
         <service
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode = "singleTop"
- />
+            android:launchMode="singleTop" />
         <service
             android:name=".service.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:launchMode = "singleTop"
-            android:foregroundServiceType="location" />
+            android:foregroundServiceType="location"
+            android:launchMode="singleTop" />
 
         <receiver
             android:name=".service.receiver.MyReceiver"
@@ -63,20 +60,24 @@
 
         <activity
             android:name=".activity.util.ShowPictureActivity"
-            android:launchMode = "singleTop"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.about.AboutActivity"
-            android:launchMode = "singleTop"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.photo.PhotosActivity"
-            android:launchMode = "singleTop"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.main.MainActivity"
-            android:launchMode = "singleTop"
-            android:exported="true">
+            android:exported="false"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.splash.SplashScreenActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

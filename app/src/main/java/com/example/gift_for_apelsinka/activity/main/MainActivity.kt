@@ -25,6 +25,7 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.activity.splash.SplashScreenActivity
 import com.example.gift_for_apelsinka.cache.colorPrimary
 import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
@@ -65,24 +66,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progressBarViewPageOfImage : ProgressBar
     private lateinit var progressBarViewPageOfStatement : ProgressBar
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Thread { startServices() }.start()
         setContentView(R.layout.activity_main)
-
-        initDB(applicationContext)
+        DebugFunctions.addDebug("MainActivity","onCreate")
 
         initComponents()
         initDataComponents()
         applyEvents()
-    }
-
-    @SuppressLint("HardwareIds")
-    private fun startServices() {
-        setAndroidId(this)
-        DebugFunctions.addDebug("MainActivity","startServices")
-        WorkWithServices.restartAllServices(this)
         requestPermission()
     }
 
