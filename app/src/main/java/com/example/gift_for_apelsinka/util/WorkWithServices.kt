@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
