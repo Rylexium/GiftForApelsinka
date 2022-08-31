@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
+import com.example.gift_for_apelsinka.cache.colorPrimary
 import com.example.gift_for_apelsinka.cache.staticHandbook
 import com.example.gift_for_apelsinka.util.*
 import com.example.gift_for_apelsinka.util.InitView.setImageWithCircle
@@ -97,7 +98,7 @@ class AboutActivity : AppCompatActivity() {
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_oscar).setupWithViewPager(viewPageOfImageOscar)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lera).setupWithViewPager(viewPageOfImageLera)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image_lexa).setupWithViewPager(viewPageOfImageLexa)
-        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(colorPrimary)
     }
 
     private suspend fun applyEvents() {

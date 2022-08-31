@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.activity.photo.adapter.PhotosAdapter
+import com.example.gift_for_apelsinka.cache.colorPrimary
 import com.example.gift_for_apelsinka.util.DebugFunctions
 import com.example.gift_for_apelsinka.util.IP
 import com.example.gift_for_apelsinka.util.dialogs.ShowToast
@@ -46,7 +47,7 @@ class PhotosActivity : AppCompatActivity() {
             PhotosViewModelFactory(applicationContext.getSharedPreferences("preference_key", Context.MODE_PRIVATE)))[PhotosViewModel::class.java]
         recv = findViewById(R.id.recycler_view_photos)
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutPhotos)
-        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(colorPrimary)
         progressBar = findViewById(R.id.progress_download_photos)
         viewModel.getPhotosList().observe(this) {
             viewModel.setScrollState(recv.layoutManager?.onSaveInstanceState())

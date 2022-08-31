@@ -25,6 +25,7 @@ import com.example.gift_for_apelsinka.activity.about.AboutActivity
 import com.example.gift_for_apelsinka.activity.main.adapter.ImageViewPageAdapter
 import com.example.gift_for_apelsinka.activity.main.adapter.StatementViewPageAdapter
 import com.example.gift_for_apelsinka.activity.photo.PhotosActivity
+import com.example.gift_for_apelsinka.cache.colorPrimary
 import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.service.LocationService
@@ -137,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             updateDeveloper(it)
         }
 
-        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#ffff8800"))
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(colorPrimary)
 
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_image).setupWithViewPager(viewPageOfImage)
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_statement).setupWithViewPager(viewPageOfStatement)
