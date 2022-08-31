@@ -86,8 +86,15 @@ class GoodMorningService : Service() {
                 val nowMinute = getNowMinute()
                 if(nowHour == randomHour && nowMinute >= randomMinute) {
                     goodMorningNotification()
-                    randomHour = (8..12).random()
-                    randomMinute = (System.currentTimeMillis() % 59).toInt()
+
+                    var max = 12
+                    var min = 8
+                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
+
+                    max = 59
+                    min = 0
+                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
+
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)

@@ -88,8 +88,17 @@ class RandomQuestionService : Service() {
                 val nowMinute = WorkWithTime.getNowMinute()
                 if(nowHour == randomHour && nowMinute >= randomMinute) {
                     equationNotification()
+
+                    var max = 16
+                    var min = 23
+                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
                     randomHour = (16..23).random()
+
+                    max = 59
+                    min = 0
+                    randomMinute = java.util.Random().nextInt(((max - min) + 1) + min)
                     randomMinute = (System.currentTimeMillis() % 59).toInt()
+
                     sharedPreferences.edit()
                         .putInt(KEY_HOUR, randomHour)
                         .putInt(KEY_MINUTE, randomMinute)

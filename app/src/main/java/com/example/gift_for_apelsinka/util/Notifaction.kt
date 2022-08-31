@@ -1,5 +1,7 @@
 package com.example.gift_for_apelsinka.util
 
+import java.util.*
+
 object Notifaction {
     val nameOfApelsinka =
         listOf(
@@ -9,13 +11,13 @@ object Notifaction {
 
     fun generateTitleOfGoodMorning() : String {
         var res = ""
-        when((System.currentTimeMillis() % 4).toInt()) {
+        when(Random().nextInt(4)) {
             0 -> res = "Доброе утро"
             1 -> res = "Доброе утречка"
             2 -> res = "Доброго утра"
             3 -> res = "Доброго утречка"
         }
-        val value = (System.currentTimeMillis() % nameOfApelsinka.size).toInt()
+        val value = Random().nextInt(nameOfApelsinka.size)
         return if(value == nameOfApelsinka.size - 1) "$res!" else res + ", " + nameOfApelsinka[value] + "!"
     }
     fun generateTextOfGoodMorning(): String {
@@ -31,7 +33,7 @@ object Notifaction {
             "\uD83D\uDE04", "\uD83E\uDD29", "\uD83D\uDC4D", "☕", "\uD83E\uDD19", "\uD83E\uDD2F",
             "\uD83D\uDE1C", "\uD83D\uDE0E", "\uD83E\uDD19", "\uD83D\uDE0E", "\uD83C\uDF6A",
             "\uD83D\uDE3B", "\uD83E\uDEF6", "\uD83D\uDE0E", "⭐")
-        return list[(System.currentTimeMillis() % list.size).toInt()] + emoticons[(System.currentTimeMillis() % emoticons.size).toInt()]
+        return list[Random().nextInt(list.size)] + emoticons[Random().nextInt(emoticons.size)]
     }
 
     fun generateTextOfEquation(): String {
@@ -40,6 +42,6 @@ object Notifaction {
             "Го болтать?", "Пошли болтать", "Пошли в дискорд", "Пойдешь в дискорд?",
             "Можем в дискорд пойти", "Пошли на канал?", "Пойдёшь в дискорд болтать?", "Что? Чего? Кого?",
             "Го в фазму", "Го в пиратов", "Пошли в фазму", "Пошли в пиратов", "Пойдешь в фазму?", "Пойдешь в пиратов?")
-        return list[(System.currentTimeMillis() % list.size).toInt()]
+        return list[Random().nextInt(list.size)]
     }
 }

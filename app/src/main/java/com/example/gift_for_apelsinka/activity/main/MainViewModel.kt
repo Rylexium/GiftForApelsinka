@@ -90,23 +90,23 @@ class MainViewModel : ViewModel() {
             23 -> result = "Доброй ночи"
             in 0..4 -> result = "Доброй ночи"
             in 5..11 -> {
-                when((1..4).random()) {
-                    1 -> result = "Доброе утро"
-                    2 -> result = "Доброе утречка"
-                    3 -> result = "Доброго утра"
-                    4 -> result = "Доброго утречка"
+                when(java.util.Random().nextInt(4)) {
+                    0 -> result = "Доброе утро"
+                    1 -> result = "Доброе утречка"
+                    2 -> result = "Доброго утра"
+                    3 -> result = "Доброго утречка"
                 }
             }
             in 12..18 -> {
-                when((1..2).random()) {
-                    1 -> result = "Добрый день"
-                    2 -> result = "Добрейший денёчек"
+                when(java.util.Random().nextInt(2)) {
+                    0 -> result = "Добрый день"
+                    1 -> result = "Добрейший денёчек"
                 }
             }
             in 19..22 -> result = "Добрый вечер"
         }
 
-        val value = (System.currentTimeMillis() % Notifaction.nameOfApelsinka.size).toInt()
+        val value = java.util.Random().nextInt(Notifaction.nameOfApelsinka.size)
         if(value == Notifaction.nameOfApelsinka.size - 1)
             greetingText.value = "$result!"
         else

@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<TabLayout>(R.id.tabDots_for_view_pager_of_statement).setupWithViewPager(viewPageOfStatement)
 
         if(getNowHour() in 0..5) {
-            val chance = System.currentTimeMillis() % 10
+            val chance = java.util.Random().nextInt(10)
             if(chance in 1..3) ShowToast.show(this, "Хули не спим?!?!?!? ❤️")
         }
     }

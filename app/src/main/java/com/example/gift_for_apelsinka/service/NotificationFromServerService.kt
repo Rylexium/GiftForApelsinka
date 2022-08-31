@@ -73,7 +73,7 @@ class NotificationFromServerService : Service() {
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
         val image = if(notif.image != null) ConvertClass.convertStringToBitmap(notif.image) else {
-            when((System.currentTimeMillis() % 5).toInt()) {
+            when(java.util.Random().nextInt(5)) {
                 1 -> R.drawable.mouse_of_apelsinka
                 2 -> R.drawable.developer
                 3 -> R.drawable.icon_of_developer
