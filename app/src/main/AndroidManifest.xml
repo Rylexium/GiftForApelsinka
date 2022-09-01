@@ -27,18 +27,21 @@
             android:enabled="true"
             android:exported="false"
             android:process=":newprocc"
+            android:launchMode="singleTask"
             />
         <service
             android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="false"
             android:process=":newprocc"
+            android:launchMode="singleTask"
             />
         <service
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
             android:process=":newprocc"
+            android:launchMode="singleTask"
             />
         <service
             android:name=".service.LocationService"
@@ -46,6 +49,7 @@
             android:exported="false"
             android:foregroundServiceType="location"
             android:process=":newprocc"
+            android:launchMode="singleTask"
             />
 
         <receiver
