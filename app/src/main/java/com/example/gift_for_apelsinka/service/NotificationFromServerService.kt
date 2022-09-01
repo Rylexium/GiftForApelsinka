@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
+    private var channelId = 10
     private var killThread = false
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
@@ -94,7 +95,7 @@ class NotificationFromServerService : Service() {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
     }
-    private fun createSummingNotification(listNotification : List<Notification>, listData : List<Pair<Int, String>>): Notification {
+    private fun createSummingNotification(listNotification : List<Notification>, listData : List<String>): Notification {
         val text = "${listNotification.size} " + if(listNotification.size == 1) "новое сообщение" else "новых сообщений"
         return NotificationCompat.Builder(this@NotificationFromServerService, NOTIFICATION_CHANNEL_ID)
             .setContentText(text)
@@ -104,7 +105,7 @@ class NotificationFromServerService : Service() {
                     .setBigContentTitle(text)
                     .setSummaryText("Вопросы").also {
                         for(item in listData)
-                            it.addLine(item.second)
+                            it.addLine(item)
                     })
             .setGroup("group")
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -133,12 +134,12 @@ class NotificationFromServerService : Service() {
                     if(notifications.isEmpty()) return@launch
 
                     val listNotification : MutableList<Notification> = mutableListOf()
-                    val listData : MutableList<Pair<Int, String>> = mutableListOf()
+                    val listData : MutableList<String> = mutableListOf()
                     for(notif in notifications) {
                         val notification = createNotification(notif)
 
                         listNotification.add(notification)
-                        listData.add(Pair(notif.id, notif.title + " " + notif.text))
+                        listData.add(notif.title + " " + notif.text)
 
                         notifForSdkO()
                     }
@@ -146,9 +147,10 @@ class NotificationFromServerService : Service() {
                     val summaryNotification = createSummingNotification(listNotification, listData)
 
                     NotificationManagerCompat.from(this@NotificationFromServerService).apply {
-                        for(item in 0 until listData.size)
-                            notify(listData[0].first + 10, listNotification[0])
-
+                        for(item in listNotification.toSet()) {
+                            notify(channelId, item)
+                            channelId += 10
+                        }
                         if(notifications.size != 1) notify(0, summaryNotification)
                     }
                 }
