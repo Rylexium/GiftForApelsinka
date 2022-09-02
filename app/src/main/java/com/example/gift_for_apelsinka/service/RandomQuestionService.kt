@@ -81,7 +81,7 @@ class RandomQuestionService : Service() {
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 14)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 46)
         return Thread {
             while (true) {
                 if(killThread) break
@@ -100,7 +100,7 @@ class RandomQuestionService : Service() {
 
                     CoroutineScope(Dispatchers.IO).launch {
                         NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute")
-                        Handler(Looper.getMainLooper()).postDelayed({ flagSending = false }, 60_000)
+                        Handler(Looper.getMainLooper()).postDelayed({ flagSending = false }, 360_000)
                     }
 
                     sharedPreferences.edit()
