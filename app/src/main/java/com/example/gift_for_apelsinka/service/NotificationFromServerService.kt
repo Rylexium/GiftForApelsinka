@@ -67,6 +67,7 @@ class NotificationFromServerService : Service() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        killThread = true
         WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
     }
@@ -147,6 +148,7 @@ class NotificationFromServerService : Service() {
                     val summaryNotification = createSummingNotification(listNotification, listData)
 
                     NotificationManagerCompat.from(this@NotificationFromServerService).apply {
+                        channelId = 10
                         for(item in listNotification.toSet()) {
                             notify(channelId, item)
                             channelId += 10

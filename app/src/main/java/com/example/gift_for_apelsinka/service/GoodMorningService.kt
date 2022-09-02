@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -31,6 +33,7 @@ class GoodMorningService : Service() {
 
     private var backgroundThread : Thread? = null
     private var killThread = false
+    private var flagSending = false
 
     @SuppressLint("NewApi")
     override fun onCreate() {
@@ -61,8 +64,9 @@ class GoodMorningService : Service() {
         super.onDestroy()
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
+    override fun onTaskRemoved(rootIntent: Intent?) { // onBackPressed и из диспетчера кик проц
         super.onTaskRemoved(rootIntent)
+        killThread = true
         WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
     }
@@ -74,8 +78,8 @@ class GoodMorningService : Service() {
 
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 10)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 41)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 14)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 25)
 
         return Thread {
             while (true) {
@@ -84,13 +88,18 @@ class GoodMorningService : Service() {
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
+                    if(flagSending) continue
+                    flagSending = true
                     goodMorningNotification()
 
-                    randomHour += 1
-                    randomMinute -= 2
+                    val totalMinute = ((nowHour * 60) + nowMinute) + 45
+
+                    randomHour = totalMinute / 60
+                    randomMinute    = totalMinute % 60
 
                     CoroutineScope(Dispatchers.IO).launch {
                         NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute")
+                        Handler(Looper.getMainLooper()).postDelayed({ flagSending = false }, 60_000)
                     }
 
                     sharedPreferences.edit()
