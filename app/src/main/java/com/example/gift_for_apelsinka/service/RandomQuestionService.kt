@@ -24,6 +24,7 @@ import kotlinx.coroutines.*
 class RandomQuestionService : Service() {
     private val KEY_HOUR = "EquationRandomHour"
     private val KEY_MINUTE = "EquationRandomMinute"
+    private val KEY_TEXT = "EquationRandomText"
 
     private var backgroundThread : Thread? = null
     private var killThread = false
@@ -69,44 +70,50 @@ class RandomQuestionService : Service() {
         WorkWithServices.startAllServices(this)
     }
 
-    private fun equationNotification() {
+    private fun equationNotification(text : String) {
         val notificationManager = this@RandomQuestionService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)
         }
-        notificationManager.notify(6, getNotification())
+        notificationManager.notify(6, getNotification(text))
     }
 
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 14)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 46)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 40)
+
         return Thread {
             while (true) {
                 if(killThread) break
 
                 val nowHour = WorkWithTime.getNowHour()
                 val nowMinute = WorkWithTime.getNowMinute()
+
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
                     if(flagSending) continue
                     flagSending = true
-                    equationNotification()
 
-                    val totalMinute = ((nowHour * 60) + nowMinute) + 45
-
-                    randomHour = totalMinute / 60
-                    randomMinute = totalMinute % 60
+                    var text = sharedPreferences.getString(KEY_TEXT, generateTextOfEquation())
+                    equationNotification(text.toString())
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute")
-                        Handler(Looper.getMainLooper()).postDelayed({ flagSending = false }, 360_000)
-                    }
+                        val totalMinute = ((nowHour * 60) + nowMinute) + 45
 
-                    sharedPreferences.edit()
-                        .putInt(KEY_HOUR, randomHour)
-                        .putInt(KEY_MINUTE, randomMinute)
-                        .apply()
+                        randomHour = totalMinute / 60
+                        randomMinute = totalMinute % 60
+
+                        text = generateTextOfEquation()
+
+                        NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute, $text")
+                        sharedPreferences.edit()
+                            .putInt(KEY_HOUR, randomHour)
+                            .putInt(KEY_MINUTE, randomMinute)
+                            .putString(KEY_TEXT, text)
+                            .apply()
+                        flagSending = false
+                    }
                 }
 //                    var max = 16
 //                    var min = 23
@@ -128,12 +135,12 @@ class RandomQuestionService : Service() {
 //
 //                    Thread.sleep(18_000_000) // на 5 часов засыпаем
 //              }
-                Thread.sleep(180_000) // 3 минуты
+                Thread.sleep(300_000) // 5 минуты
             }
         }
     }
 
-    private fun getNotification() = runBlocking {
+    private fun getNotification(text : String) = runBlocking {
         val id = when((1..3).random()) {
             1 -> R.drawable.developer
             2 -> R.drawable.icon_of_developer
@@ -146,7 +153,7 @@ class RandomQuestionService : Service() {
             .setLargeIcon(circleImage.await())
             .setWhen(System.currentTimeMillis())
             .setContentTitle("Вопросик")
-            .setContentText(generateTextOfEquation())
+            .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
     }

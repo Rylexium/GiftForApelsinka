@@ -27,6 +27,8 @@ import kotlinx.coroutines.launch
 class GoodMorningService : Service() {
     private val KEY_HOUR = "GoodMorningRandomHour"
     private val KEY_MINUTE = "GoodMorningRandomMinute"
+    private val KEY_TITLE = "GoodMorningRandomTitle"
+    private val KEY_TEXT = "GoodMorningRandomText"
 
     private val NOTIFICATION_CHANNEL_ID = "Канал доброго утра"
     private val channelName = "Канал доброго утра"
@@ -78,8 +80,8 @@ class GoodMorningService : Service() {
 
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 14)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 42)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
 
         return Thread {
             while (true) {
@@ -87,25 +89,34 @@ class GoodMorningService : Service() {
 
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
+
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
                     if(flagSending) continue
                     flagSending = true
-                    goodMorningNotification()
 
-                    val totalMinute = ((nowHour * 60) + nowMinute) + 45
-
-                    randomHour = totalMinute / 60
-                    randomMinute    = totalMinute % 60
+                    var title = sharedPreferences.getString(KEY_TITLE, Notifaction.generateTitleOfGoodMorning())
+                    var text = sharedPreferences.getString(KEY_TEXT, Notifaction.generateTextOfGoodMorning())
+                    goodMorningNotification(title.toString(), text.toString())
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute")
-                        Handler(Looper.getMainLooper()).postDelayed({ flagSending = false }, 600_000)
-                    }
+                        val totalMinute = ((nowHour * 60) + nowMinute) + 45
 
-                    sharedPreferences.edit()
-                        .putInt(KEY_HOUR, randomHour)
-                        .putInt(KEY_MINUTE, randomMinute)
-                        .apply()
+                        randomHour = totalMinute / 60
+                        randomMinute = totalMinute % 60
+
+                        title = Notifaction.generateTitleOfGoodMorning()
+                        text = Notifaction.generateTextOfGoodMorning()
+
+                        NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute, $title : $text")
+                        sharedPreferences.edit()
+                            .putInt(KEY_HOUR, randomHour)
+                            .putInt(KEY_MINUTE, randomMinute)
+                            .putString(KEY_TITLE, title)
+                            .putString(KEY_TEXT, text)
+                            .apply()
+
+                        flagSending = false
+                    }
                 }
                 Thread.sleep(300_000) // 10 минут = 600_000
 
@@ -140,7 +151,7 @@ class GoodMorningService : Service() {
         }
     }
 
-    private fun goodMorningNotification() {
+    private fun goodMorningNotification(title : String, text : String) {
         val notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
             val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, this@GoodMorningService)
@@ -149,8 +160,8 @@ class GoodMorningService : Service() {
                 .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
                 .setLargeIcon(circleImageApelsinka)
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle(Notifaction.generateTitleOfGoodMorning())
-                .setContentText(Notifaction.generateTextOfGoodMorning())
+                .setContentTitle(title)
+                .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
 
