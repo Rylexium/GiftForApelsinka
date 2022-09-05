@@ -121,7 +121,7 @@ class GoodMorningService : Service() {
 
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 6)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 30)
 
                         val previous = "Текущие доброе утро : $title : $text"
 
@@ -141,7 +141,7 @@ class GoodMorningService : Service() {
                     }
                 }
                 try {
-                    Thread.sleep(120_000) // 10 минут = 600_000
+                    Thread.sleep(300_000) // 10 минут = 600_000
                 }catch (e : java.lang.Exception){}
 //                goodMorningNotification() //debug
 //

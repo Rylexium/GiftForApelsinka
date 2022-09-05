@@ -115,7 +115,7 @@ class RandomQuestionService : Service() {
                     CoroutineScope(Dispatchers.IO).launch {
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 10)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 25)
 
                         val previousText = "Текущие случайный вопрос : $text"
 
@@ -132,7 +132,7 @@ class RandomQuestionService : Service() {
                         flagSending.set(false)
                     }
                     try {
-                        Thread.sleep(120_000) // 5 минуты
+                        Thread.sleep(300_000) // 5 минуты
                     }catch (e : java.lang.Exception){}
                 }
 //                    var max = 16
