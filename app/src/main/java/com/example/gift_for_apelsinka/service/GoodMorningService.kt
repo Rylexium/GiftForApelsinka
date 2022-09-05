@@ -96,7 +96,7 @@ class GoodMorningService : Service() {
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 32)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 41)
 
         return Thread {
             while (running.get()) {
@@ -135,7 +135,7 @@ class GoodMorningService : Service() {
                     }
                 }
                 try {
-                    Thread.sleep(120_000) // 10 минут = 600_000
+                    Thread.sleep(180_000) // 10 минут = 600_000
                 }catch (e : java.lang.Exception){}
 //                goodMorningNotification() //debug
 //

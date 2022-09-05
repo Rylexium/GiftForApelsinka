@@ -96,7 +96,7 @@ class RandomQuestionService : Service() {
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)
 
         return Thread {
             while (running.get()) {

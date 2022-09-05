@@ -1,11 +1,13 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
@@ -22,12 +24,13 @@ import com.example.gift_for_apelsinka.util.WorkWithServices.createChannelAndHidd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class NotificationFromServerService : Service() {
     private var backgroundThread : Thread? = null
     private var channelId = 10
-    private var killThread = false
+    private var running = AtomicBoolean(false)
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
 
@@ -53,12 +56,12 @@ class NotificationFromServerService : Service() {
     }
 
     private fun initTask() {
-        killThread = false
-        if(backgroundThread == null) {
+        if(!running.get()) {
             Log.e("NotificationFromServerService", "backgroundThreadStarted")
             backgroundThread = task()
             backgroundThread?.start()
         }
+        else stopSelf()
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -67,20 +70,26 @@ class NotificationFromServerService : Service() {
 
     override fun onDestroy() {
         Log.e("NotificationFromServerService", "onDestroy")
-        killThread = true
+        running.set(true)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
         backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.e("NotificationFromServerService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        killThread = true
+        running.set(true)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
         backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
@@ -134,8 +143,7 @@ class NotificationFromServerService : Service() {
     @SuppressLint("HardwareIds")
     private fun task() : Thread {
         return Thread {
-            while (true) {
-                if(killThread) break
+            while (running.get()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val notifications =
                         NetworkNotifications
@@ -166,7 +174,9 @@ class NotificationFromServerService : Service() {
                         if(notifications.size != 1) notify(0, summaryNotification)
                     }
                 }
-                Thread.sleep(5_000)
+                try {
+                    Thread.sleep(5_000)
+                }catch (e : java.lang.Exception){}
             }
         }
     }
