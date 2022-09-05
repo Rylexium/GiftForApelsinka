@@ -38,10 +38,12 @@ class LocationService : Service() {
 
     val NOTIFICATION_CHANNEL_ID = "Другое"
     val channelName = "Другое"
+    private lateinit var notificationManager : NotificationManager
 
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("LocationService", "onCreate")
+        notificationManager = this@LocationService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         startMyOwnForeground()
     }
     @RequiresApi(Build.VERSION_CODES.O)

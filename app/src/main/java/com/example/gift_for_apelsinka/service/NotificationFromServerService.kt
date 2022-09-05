@@ -31,9 +31,12 @@ class NotificationFromServerService : Service() {
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
 
+    private lateinit var notificationManager : NotificationManager
+
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("NotificationFromServerService", "onCreate")
+        notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         startMyOwnForeground()
     }
 
@@ -44,14 +47,18 @@ class NotificationFromServerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e("NotificationFromServerService", "onStartCommand")
         initTask()
         return START_STICKY
     }
 
     private fun initTask() {
         killThread = false
-        backgroundThread = task()
-        backgroundThread?.start()
+        if(backgroundThread == null) {
+            Log.e("NotificationFromServerService", "backgroundThreadStarted")
+            backgroundThread = task()
+            backgroundThread?.start()
+        }
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -59,15 +66,19 @@ class NotificationFromServerService : Service() {
     }
 
     override fun onDestroy() {
+        Log.e("NotificationFromServerService", "onDestroy")
         killThread = true
+        backgroundThread = null
         WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.e("NotificationFromServerService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
         killThread = true
+        backgroundThread = null
         WorkWithServices.restartService(this, this.javaClass)
         WorkWithServices.startAllServices(this)
     }
@@ -114,7 +125,6 @@ class NotificationFromServerService : Service() {
             .build()
     }
     private fun notifForSdkO() {
-        val notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)

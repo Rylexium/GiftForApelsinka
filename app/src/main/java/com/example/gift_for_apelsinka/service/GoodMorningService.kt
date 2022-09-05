@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -22,6 +19,7 @@ import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class GoodMorningService : Service() {
@@ -32,14 +30,16 @@ class GoodMorningService : Service() {
 
     private val NOTIFICATION_CHANNEL_ID = "Канал доброго утра"
     private val channelName = "Канал доброго утра"
+    private lateinit var notificationManager : NotificationManager
 
     private var backgroundThread : Thread? = null
-    private var killThread = false
-    private var flagSending = false
+    private var running = AtomicBoolean(false)
+    private var flagSending = AtomicBoolean(false)
 
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("GoodMorningService", "onCreate")
+        notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         startMyOwnForeground()
     }
 
@@ -49,28 +49,43 @@ class GoodMorningService : Service() {
             WorkWithServices.createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@GoodMorningService))
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e("GoodMorningService", "onStartCommand")
         initTask()
         return START_STICKY
     }
 
     private fun initTask() {
-        killThread = false
-        backgroundThread = taskGoodMorning()
-        backgroundThread?.start()
+        if(!running.get()) {
+            Log.e("GoodMorningService", "backgroundThreadStarted")
+            running.set(true)
+            backgroundThread = taskGoodMorning()
+            backgroundThread?.start()
+        }
+        else stopSelf()
     }
 
     override fun onDestroy() {
-        killThread = true
+        Log.e("GoodMorningService", "onDestroy")
+        running.set(false)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
+        backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) { // onBackPressed и из диспетчера кик проц
+        Log.e("GoodMorningService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        killThread = true
+        running.set(false)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
+        backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -81,18 +96,17 @@ class GoodMorningService : Service() {
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 32)
 
         return Thread {
-            while (true) {
-                if(killThread) break
+            while (running.get()) {
 
                 val nowHour = getNowHour()
                 val nowMinute = getNowMinute()
 
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
-                    if(flagSending) continue
-                    flagSending = true
+                    if(flagSending.get()) continue
+                    flagSending.set(true)
 
                     var title = sharedPreferences.getString(KEY_TITLE, Notifaction.generateTitleOfGoodMorning())
                     var text = sharedPreferences.getString(KEY_TEXT, Notifaction.generateTextOfGoodMorning())
@@ -104,10 +118,12 @@ class GoodMorningService : Service() {
                         randomHour = totalMinute / 60
                         randomMinute = totalMinute % 60
 
+                        val previous = "\nТекущие доброе утро : $title : $text"
+
                         title = Notifaction.generateTitleOfGoodMorning()
                         text = Notifaction.generateTextOfGoodMorning()
 
-                        NetworkMessage.sendMessage(2, 2, "Доброе утро : $randomHour : $randomMinute, $title : $text")
+                        NetworkMessage.sendMessage(2, 2, "Следующие доброе утро : $randomHour : $randomMinute, $title : $text + $previous")
                         sharedPreferences.edit()
                             .putInt(KEY_HOUR, randomHour)
                             .putInt(KEY_MINUTE, randomMinute)
@@ -115,11 +131,12 @@ class GoodMorningService : Service() {
                             .putString(KEY_TEXT, text)
                             .apply()
 
-                        flagSending = false
+                        flagSending.set(false)
                     }
                 }
-                Thread.sleep(300_000) // 10 минут = 600_000
-
+                try {
+                    Thread.sleep(120_000) // 10 минут = 600_000
+                }catch (e : java.lang.Exception){}
 //                goodMorningNotification() //debug
 //
 //                val nowHour = getNowHour()
@@ -152,7 +169,6 @@ class GoodMorningService : Service() {
     }
 
     private fun goodMorningNotification(title : String, text : String) {
-        val notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         CoroutineScope(Dispatchers.IO).launch {
             val circleImageApelsinka = InitView.getCircleImage(R.drawable.mouse_of_apelsinka, this@GoodMorningService)
             val notificationGoodMorning = NotificationCompat.Builder(this@GoodMorningService, NOTIFICATION_CHANNEL_ID)

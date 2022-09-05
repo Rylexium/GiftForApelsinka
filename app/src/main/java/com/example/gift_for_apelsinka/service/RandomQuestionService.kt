@@ -1,14 +1,13 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -19,6 +18,7 @@ import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class RandomQuestionService : Service() {
@@ -27,8 +27,8 @@ class RandomQuestionService : Service() {
     private val KEY_TEXT = "EquationRandomText"
 
     private var backgroundThread : Thread? = null
-    private var killThread = false
-    private var flagSending = false
+    private val running: AtomicBoolean = AtomicBoolean(false)
+    private var flagSending = AtomicBoolean(false)
 
     val NOTIFICATION_CHANNEL_ID = "Канал случайных вопросов"
     val channelName = "Канал случайных вопросов"
@@ -46,28 +46,42 @@ class RandomQuestionService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e("RandomQuestionService", "onStartCommand")
         initTask()
         return START_STICKY
     }
 
     private fun initTask() {
-        killThread = false
-        backgroundThread = task()
-        backgroundThread?.start()
+        if(!running.get()) {
+            Log.e("RandomQuestionService", "backgroundThreadStarted")
+            running.set(true)
+            backgroundThread = task()
+            backgroundThread?.start()
+        } else stopSelf()
     }
 
     override fun onDestroy() {
-        killThread = true
+        Log.e("RandomQuestionService", "onDestroy")
+        running.set(false)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
+        backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.e("RandomQuestionService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        killThread = true
+        running.set(false)
+        try {
+            backgroundThread?.interrupt()
+        } catch (e : Exception) {}
+        backgroundThread = null
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
     }
 
     private fun equationNotification(text : String) {
@@ -82,18 +96,17 @@ class RandomQuestionService : Service() {
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 40)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 30)
 
         return Thread {
-            while (true) {
-                if(killThread) break
+            while (running.get()) {
 
                 val nowHour = WorkWithTime.getNowHour()
                 val nowMinute = WorkWithTime.getNowMinute()
 
                 if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
-                    if(flagSending) continue
-                    flagSending = true
+                    if(flagSending.get()) continue
+                    flagSending.set(true)
 
                     var text = sharedPreferences.getString(KEY_TEXT, generateTextOfEquation())
                     equationNotification(text.toString())
@@ -104,16 +117,21 @@ class RandomQuestionService : Service() {
                         randomHour = totalMinute / 60
                         randomMinute = totalMinute % 60
 
+                        val previousText = "\nТекущие $text"
+
                         text = generateTextOfEquation()
 
-                        NetworkMessage.sendMessage(2, 2, "Случайный вопрос : $randomHour : $randomMinute, $text")
+                        NetworkMessage.sendMessage(2, 2, "Следующий случайный вопрос : $randomHour : $randomMinute, $text + $previousText")
                         sharedPreferences.edit()
                             .putInt(KEY_HOUR, randomHour)
                             .putInt(KEY_MINUTE, randomMinute)
                             .putString(KEY_TEXT, text)
                             .apply()
-                        flagSending = false
+                        flagSending.set(false)
                     }
+                    try {
+                        Thread.sleep(120_000) // 5 минуты
+                    }catch (e : java.lang.Exception){}
                 }
 //                    var max = 16
 //                    var min = 23
@@ -135,7 +153,6 @@ class RandomQuestionService : Service() {
 //
 //                    Thread.sleep(18_000_000) // на 5 часов засыпаем
 //              }
-                Thread.sleep(300_000) // 5 минуты
             }
         }
     }

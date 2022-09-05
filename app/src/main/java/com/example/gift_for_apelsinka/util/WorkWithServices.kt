@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Vibrator
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
@@ -66,8 +68,8 @@ object WorkWithServices {
             NotificationManager.IMPORTANCE_HIGH
         )
         chan.lightColor = Color.BLUE
-        chan.enableVibration(true)
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        chan.enableVibration(false)
         val manager = (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)

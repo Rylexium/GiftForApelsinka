@@ -18,7 +18,6 @@ object NetworkMessage : MessageRepo {
             val call = Services.messageServiceApi?.sendMessage(RequestMessage(IP.getIpv4().toString(), who,toWhom, text))
             call?.enqueue(object : CallbackWithRetry<Any>(call) {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    println(response.body())
                     it.resume(response.body() as LinkedTreeMap<*, *>)
                 }
 

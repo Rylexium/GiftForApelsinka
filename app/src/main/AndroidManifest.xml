@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- PowerManager -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -26,19 +27,16 @@
             android:name=".service.GoodMorningService"
             android:enabled="true"
             android:exported="false"
-            android:process=":newprocc"
             />
         <service
             android:name=".service.RandomQuestionService"
             android:enabled="true"
             android:exported="false"
-            android:process=":newprocc"
             />
         <service
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
-            android:process=":newprocc"
             />
         <service
             android:name=".service.LocationService"
