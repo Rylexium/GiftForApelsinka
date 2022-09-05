@@ -98,7 +98,7 @@ class RandomQuestionService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
             Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.MINUTE, timetable.get(Calendar.MINUTE) + 30)
+        timetable.set(Calendar.MINUTE, 50)
 
         return Thread {
             while (running.get()) {
