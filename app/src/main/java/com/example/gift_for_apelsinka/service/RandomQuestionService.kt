@@ -98,7 +98,7 @@ class RandomQuestionService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
             Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.MINUTE, 50)
+        timetable.set(Calendar.MINUTE, 55)
 
         return Thread {
             while (running.get()) {
@@ -115,7 +115,7 @@ class RandomQuestionService : Service() {
                     CoroutineScope(Dispatchers.IO).launch {
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 1)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 10)
 
                         val previousText = "Текущие случайный вопрос : $text"
 

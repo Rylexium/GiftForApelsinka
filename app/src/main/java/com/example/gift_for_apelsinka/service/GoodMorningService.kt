@@ -102,7 +102,7 @@ class GoodMorningService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.MINUTE, 55)
+        timetable.set(Calendar.MINUTE, 58)
 
         return Thread {
             while (running.get()) {
@@ -121,7 +121,7 @@ class GoodMorningService : Service() {
 
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 1)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 6)
 
                         val previous = "Текущие доброе утро : $title : $text"
 
