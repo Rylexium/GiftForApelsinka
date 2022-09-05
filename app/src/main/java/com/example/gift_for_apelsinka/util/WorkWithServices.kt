@@ -7,10 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.Vibrator
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.GoodMorningService
 import com.example.gift_for_apelsinka.service.LocationService
@@ -60,6 +58,7 @@ object WorkWithServices {
         val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000] = pendingIntent
     }
+
     @SuppressLint("NewApi")
     fun createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID : String, channelName : String, context: Context): Notification {
         val chan = NotificationChannel(
@@ -74,11 +73,14 @@ object WorkWithServices {
         manager.createNotificationChannel(chan)
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         val notification: Notification = notificationBuilder.setOngoing(true)
-            .setSmallIcon(R.drawable.icon_of_developer)
+            .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setPriority(NotificationManager.IMPORTANCE_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
+            .setVibrate(longArrayOf(0))
+            .setOnlyAlertOnce(true)
             .build()
         notification.flags = notification.flags or Notification.VISIBILITY_SECRET
+
         return notification
     }
 }

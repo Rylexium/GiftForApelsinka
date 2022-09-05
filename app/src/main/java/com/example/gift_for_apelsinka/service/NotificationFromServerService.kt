@@ -58,6 +58,7 @@ class NotificationFromServerService : Service() {
     private fun initTask() {
         if(!running.get()) {
             Log.e("NotificationFromServerService", "backgroundThreadStarted")
+            running.set(true)
             backgroundThread = task()
             backgroundThread?.start()
         }

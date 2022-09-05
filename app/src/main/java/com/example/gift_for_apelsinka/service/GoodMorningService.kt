@@ -1,7 +1,9 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -95,8 +97,8 @@ class GoodMorningService : Service() {
 
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 41)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 10)
 
         return Thread {
             while (running.get()) {
@@ -118,12 +120,12 @@ class GoodMorningService : Service() {
                         randomHour = totalMinute / 60
                         randomMinute = totalMinute % 60
 
-                        val previous = "\nТекущие доброе утро : $title : $text"
+                        val previous = "Текущие доброе утро : $title : $text"
 
                         title = Notifaction.generateTitleOfGoodMorning()
                         text = Notifaction.generateTextOfGoodMorning()
 
-                        NetworkMessage.sendMessage(2, 2, "Следующие доброе утро : $randomHour : $randomMinute, $title : $text + $previous")
+                        NetworkMessage.sendMessage(2, 2, "$previous\nСледующие доброе утро : $randomHour : $randomMinute, $title : $text $previous")
                         sharedPreferences.edit()
                             .putInt(KEY_HOUR, randomHour)
                             .putInt(KEY_MINUTE, randomMinute)

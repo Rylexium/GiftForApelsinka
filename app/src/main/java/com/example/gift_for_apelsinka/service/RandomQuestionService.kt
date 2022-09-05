@@ -95,8 +95,8 @@ class RandomQuestionService : Service() {
 
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 18)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 45)
+        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
+        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 15)
 
         return Thread {
             while (running.get()) {
@@ -117,11 +117,11 @@ class RandomQuestionService : Service() {
                         randomHour = totalMinute / 60
                         randomMinute = totalMinute % 60
 
-                        val previousText = "\nТекущие $text"
+                        val previousText = "Текущие $text"
 
                         text = generateTextOfEquation()
 
-                        NetworkMessage.sendMessage(2, 2, "Следующий случайный вопрос : $randomHour : $randomMinute, $text + $previousText")
+                        NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : $randomHour : $randomMinute, $text + $previousText")
                         sharedPreferences.edit()
                             .putInt(KEY_HOUR, randomHour)
                             .putInt(KEY_MINUTE, randomMinute)
