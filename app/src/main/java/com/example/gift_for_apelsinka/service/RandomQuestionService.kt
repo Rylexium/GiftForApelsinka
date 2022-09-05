@@ -98,7 +98,8 @@ class RandomQuestionService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
             Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.MINUTE, 55)
+        timetable.set(Calendar.HOUR_OF_DAY, 9)
+        timetable.set(Calendar.MINUTE, 30)
 
         return Thread {
             while (running.get()) {
@@ -115,7 +116,7 @@ class RandomQuestionService : Service() {
                     CoroutineScope(Dispatchers.IO).launch {
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 25)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 10)
 
                         val previousText = "Текущие случайный вопрос : $text"
 
@@ -160,9 +161,9 @@ class RandomQuestionService : Service() {
     }
 
     private fun getNotification(text : String) = runBlocking {
-        val id = when((1..3).random()) {
-            1 -> R.drawable.developer
-            2 -> R.drawable.icon_of_developer
+        val id = when(Random().nextInt(3)) {
+            0 -> R.drawable.developer
+            1 -> R.drawable.icon_of_developer
             else -> { R.drawable.lexa1 }
         }
         val circleImage = async { InitView.getCircleImage(id, this@RandomQuestionService) }

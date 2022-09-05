@@ -102,6 +102,7 @@ class GoodMorningService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
+        timetable.set(Calendar.HOUR_OF_DAY, 8)
         timetable.set(Calendar.MINUTE, 58)
 
         return Thread {
