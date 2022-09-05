@@ -17,13 +17,14 @@ import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction.generateTextOfEquation
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime
+import com.google.gson.Gson
 import kotlinx.coroutines.*
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 
 class RandomQuestionService : Service() {
-    private val KEY_HOUR = "EquationRandomHour"
-    private val KEY_MINUTE = "EquationRandomMinute"
+    private val KEY_TIMETABLE = "EquationRandomTimetable"
     private val KEY_TEXT = "EquationRandomText"
 
     private var backgroundThread : Thread? = null
@@ -95,16 +96,16 @@ class RandomQuestionService : Service() {
 
     private fun task() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 15)
+        val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
+            Calendar.getInstance())), Calendar::class.java)
+        timetable.set(Calendar.MINUTE, timetable.get(Calendar.MINUTE) + 30)
 
         return Thread {
             while (running.get()) {
 
-                val nowHour = WorkWithTime.getNowHour()
-                val nowMinute = WorkWithTime.getNowMinute()
+                val nowCalendar = Calendar.getInstance()
 
-                if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
+                if(nowCalendar >= timetable) {
                     if(flagSending.get()) continue
                     flagSending.set(true)
 
@@ -112,19 +113,20 @@ class RandomQuestionService : Service() {
                     equationNotification(text.toString())
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        val totalMinute = ((nowHour * 60) + nowMinute) + 45
+                        //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+                        timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 1)
 
-                        randomHour = totalMinute / 60
-                        randomMinute = totalMinute % 60
-
-                        val previousText = "Текущие $text"
+                        val previousText = "Текущие случайный вопрос : $text"
 
                         text = generateTextOfEquation()
 
-                        NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : $randomHour : $randomMinute, $text + $previousText")
+                        NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : " +
+                                "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text")
+
+                        val timetableJson = Gson().toJson(timetable)
                         sharedPreferences.edit()
-                            .putInt(KEY_HOUR, randomHour)
-                            .putInt(KEY_MINUTE, randomMinute)
+                            .putString(KEY_TIMETABLE, timetableJson)
                             .putString(KEY_TEXT, text)
                             .apply()
                         flagSending.set(false)

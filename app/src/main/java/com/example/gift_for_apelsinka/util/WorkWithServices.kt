@@ -61,17 +61,22 @@ object WorkWithServices {
 
     @SuppressLint("NewApi")
     fun createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID : String, channelName : String, context: Context): Notification {
-        val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            channelName,
-            NotificationManager.IMPORTANCE_HIGH
-        )
+        val chan = NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH)
+
         chan.lightColor = Color.BLUE
         chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        chan.enableVibration(false)
+        chan.enableVibration(true)
+
         val manager = (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
-        val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+
+        val hiddenChannel = NotificationChannel("Другое", "Другое", NotificationManager.IMPORTANCE_NONE)
+        hiddenChannel.lightColor = Color.BLUE
+        hiddenChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        hiddenChannel.enableVibration(false)
+        manager.createNotificationChannel(hiddenChannel)
+
+        val notificationBuilder = NotificationCompat.Builder(context, "Другое")
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.ic_baseline_wb_sunny_24)
             .setPriority(NotificationManager.IMPORTANCE_MAX)

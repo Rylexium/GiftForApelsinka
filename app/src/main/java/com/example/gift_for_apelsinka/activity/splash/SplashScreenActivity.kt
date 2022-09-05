@@ -15,6 +15,7 @@ import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
+import java.util.*
 import kotlin.random.Random
 
 @SuppressLint("CustomSplashScreen")

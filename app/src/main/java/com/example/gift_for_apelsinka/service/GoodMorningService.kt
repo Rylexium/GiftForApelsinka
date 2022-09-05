@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -18,15 +19,17 @@ import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowHour
 import com.example.gift_for_apelsinka.util.WorkWithTime.getNowMinute
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 
 class GoodMorningService : Service() {
-    private val KEY_HOUR = "GoodMorningRandomHour"
-    private val KEY_MINUTE = "GoodMorningRandomMinute"
+    private val KEY_TIMETABLE = "GoodMorningRandomTimetable"
+
     private val KEY_TITLE = "GoodMorningRandomTitle"
     private val KEY_TEXT = "GoodMorningRandomText"
 
@@ -97,16 +100,16 @@ class GoodMorningService : Service() {
 
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        var randomHour = sharedPreferences.getInt(KEY_HOUR, 20)
-        var randomMinute = sharedPreferences.getInt(KEY_MINUTE, 10)
+
+        val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
+        timetable.set(Calendar.MINUTE, timetable.get(Calendar.MINUTE) + 20)
 
         return Thread {
             while (running.get()) {
 
-                val nowHour = getNowHour()
-                val nowMinute = getNowMinute()
+                val nowCalendar = Calendar.getInstance()
 
-                if((nowHour * 60 + nowMinute) >= (randomHour * 60 + randomMinute)) {
+                if(nowCalendar >= timetable) {
                     if(flagSending.get()) continue
                     flagSending.set(true)
 
@@ -115,20 +118,21 @@ class GoodMorningService : Service() {
                     goodMorningNotification(title.toString(), text.toString())
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        val totalMinute = ((nowHour * 60) + nowMinute) + 45
 
-                        randomHour = totalMinute / 60
-                        randomMinute = totalMinute % 60
+                        //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+                        timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 1)
 
                         val previous = "Текущие доброе утро : $title : $text"
 
                         title = Notifaction.generateTitleOfGoodMorning()
                         text = Notifaction.generateTextOfGoodMorning()
 
-                        NetworkMessage.sendMessage(2, 2, "$previous\nСледующие доброе утро : $randomHour : $randomMinute, $title : $text $previous")
+                        NetworkMessage.sendMessage(2, 2,
+                            "$previous\nСледующие доброе утро : ${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $title : $text")
+                        val timetableJson = Gson().toJson(timetable)
                         sharedPreferences.edit()
-                            .putInt(KEY_HOUR, randomHour)
-                            .putInt(KEY_MINUTE, randomMinute)
+                            .putString(KEY_TIMETABLE, timetableJson)
                             .putString(KEY_TITLE, title)
                             .putString(KEY_TEXT, text)
                             .apply()
@@ -137,7 +141,7 @@ class GoodMorningService : Service() {
                     }
                 }
                 try {
-                    Thread.sleep(180_000) // 10 минут = 600_000
+                    Thread.sleep(120_000) // 10 минут = 600_000
                 }catch (e : java.lang.Exception){}
 //                goodMorningNotification() //debug
 //
