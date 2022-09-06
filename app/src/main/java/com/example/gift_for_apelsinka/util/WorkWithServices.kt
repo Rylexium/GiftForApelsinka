@@ -70,7 +70,7 @@ object WorkWithServices {
         val manager = (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager)
         manager.createNotificationChannel(chan)
 
-        val hiddenChannel = NotificationChannel("Другое", "Другое", NotificationManager.IMPORTANCE_NONE)
+        val hiddenChannel = NotificationChannel("Другое", "Другое", NotificationManager.IMPORTANCE_LOW)
         hiddenChannel.lightColor = Color.BLUE
         hiddenChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         hiddenChannel.enableVibration(false)

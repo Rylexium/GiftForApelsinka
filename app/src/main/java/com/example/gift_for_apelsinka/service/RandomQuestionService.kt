@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -19,6 +21,7 @@ import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithTime
 import com.google.gson.Gson
 import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -27,12 +30,16 @@ class RandomQuestionService : Service() {
     private val KEY_TIMETABLE = "EquationRandomTimetable"
     private val KEY_TEXT = "EquationRandomText"
 
-    private var backgroundThread : Thread? = null
-    private val running: AtomicBoolean = AtomicBoolean(false)
-    private var flagSending = AtomicBoolean(false)
+    private var task : Handler? = null
+    private var runnable : Runnable? = null
 
     val NOTIFICATION_CHANNEL_ID = "Канал случайных вопросов"
     val channelName = "Канал случайных вопросов"
+
+    private val defaultHour = 17
+    private val defaultMinute = 23
+    private val DELAY_NEXT_NOTIFICATIONS = 5 // minute
+    private val DELAY = 80_000L // millisec
 
     @SuppressLint("NewApi")
     override fun onCreate() {
@@ -53,21 +60,18 @@ class RandomQuestionService : Service() {
     }
 
     private fun initTask() {
-        if(!running.get()) {
+        if(task == null) {
             Log.e("RandomQuestionService", "backgroundThreadStarted")
-            running.set(true)
-            backgroundThread = task()
-            backgroundThread?.start()
+            task = Handler(Looper.getMainLooper())
+            runnable = runnableTask()
+            task?.postDelayed(runnable!!, DELAY)
         } else stopSelf()
     }
 
     override fun onDestroy() {
         Log.e("RandomQuestionService", "onDestroy")
-        running.set(false)
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
+        task?.removeCallbacksAndMessages(null)
+        task = null
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
         super.onDestroy()
@@ -76,66 +80,57 @@ class RandomQuestionService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.e("RandomQuestionService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        running.set(false)
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
+        task?.removeCallbacks(runnable!!)
+        task = null
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
     }
 
     private fun equationNotification(text : String) {
         val notificationManager = this@RandomQuestionService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(notifChannel)
         }
         notificationManager.notify(6, getNotification(text))
     }
 
-    private fun task() : Thread {
+    private fun runnableTask() : Runnable {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
-        val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
-            Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.HOUR_OF_DAY, 9)
-        timetable.set(Calendar.MINUTE, 30)
+        val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
+        timetable.set(Calendar.HOUR_OF_DAY, defaultHour)
+        timetable.set(Calendar.MINUTE, defaultMinute)
+        return Runnable {
+            val nowCalendar = Calendar.getInstance()
 
-        return Thread {
-            while (running.get()) {
+            if (nowCalendar >= timetable) {
 
-                val nowCalendar = Calendar.getInstance()
-
-                if(nowCalendar >= timetable) {
-                    if(flagSending.get()) continue
-                    flagSending.set(true)
-
+                CoroutineScope(Dispatchers.IO).launch {
                     var text = sharedPreferences.getString(KEY_TEXT, generateTextOfEquation())
                     equationNotification(text.toString())
 
-                    CoroutineScope(Dispatchers.IO).launch {
-                        //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
-                        timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 10)
+                    //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+                    timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
+                    timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_NEXT_NOTIFICATIONS)
 
-                        val previousText = "Текущие случайный вопрос : $text"
+                    val previousText = "Текущие случайный вопрос : $text"
 
-                        text = generateTextOfEquation()
+                    text = generateTextOfEquation()
 
-                        NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : " +
-                                "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text")
+                    NetworkMessage.sendMessage(
+                        2, 2, "$previousText\nСледующий случайный вопрос : " +
+                                "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text"
+                    )
 
-                        val timetableJson = Gson().toJson(timetable)
-                        sharedPreferences.edit()
-                            .putString(KEY_TIMETABLE, timetableJson)
-                            .putString(KEY_TEXT, text)
-                            .apply()
-                        flagSending.set(false)
-                    }
-                    try {
-                        Thread.sleep(300_000) // 5 минуты
-                    }catch (e : java.lang.Exception){}
+                    val timetableJson = Gson().toJson(timetable)
+                    sharedPreferences.edit()
+                        .putString(KEY_TIMETABLE, timetableJson)
+                        .putString(KEY_TEXT, text)
+                        .apply()
                 }
+            }
+        }
+    }
 //                    var max = 16
 //                    var min = 23
 //                    randomHour = java.util.Random().nextInt(((max - min) + 1) + min)
@@ -156,9 +151,9 @@ class RandomQuestionService : Service() {
 //
 //                    Thread.sleep(18_000_000) // на 5 часов засыпаем
 //              }
-            }
-        }
-    }
+
+
+
 
     private fun getNotification(text : String) = runBlocking {
         val id = when(Random().nextInt(3)) {
