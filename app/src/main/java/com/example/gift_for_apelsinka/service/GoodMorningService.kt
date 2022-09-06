@@ -44,7 +44,7 @@ class GoodMorningService : Service() {
     private var runnable : Runnable? = null
 
     private val defaultHour = 17
-    private val defaultMinute = 24
+    private val defaultMinute = 35
     private val DELAY_NEXT_NOTIFICATIONS = 7 // minute
     private val DELAY = 60_000L // millisec
 

@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 
 class NotificationFromServerService : Service() {
-    private var backgroundThread: Thread? = null
     private var channelId = 10
     private var running = AtomicBoolean(false)
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"

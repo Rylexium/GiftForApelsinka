@@ -37,7 +37,7 @@ class RandomQuestionService : Service() {
     val channelName = "Канал случайных вопросов"
 
     private val defaultHour = 17
-    private val defaultMinute = 23
+    private val defaultMinute = 37
     private val DELAY_NEXT_NOTIFICATIONS = 5 // minute
     private val DELAY = 80_000L // millisec
 
