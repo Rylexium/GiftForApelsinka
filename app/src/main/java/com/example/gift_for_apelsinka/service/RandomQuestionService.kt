@@ -24,8 +24,8 @@ class RandomQuestionService : Service() {
     private val KEY_TIMETABLE = "EquationRandomTimetable"
     private val KEY_TEXT = "EquationRandomText"
 
-    private val defaultHour = 20
-    private val defaultMinute = 20
+    private val defaultHour = 1
+    private val defaultMinute = 38
     private val DELAY = 120_000L //millisecond
     private val DELAY_FOR_NEXT_NOTIFICATION = 25 //minute
 
@@ -128,6 +128,7 @@ class RandomQuestionService : Service() {
 
                     try {
                         Thread.sleep(DELAY) // 5 минуты
+                        WorkWithServices.wakeUp(this)
                     } catch (e : java.lang.Exception){}
                 }
             }

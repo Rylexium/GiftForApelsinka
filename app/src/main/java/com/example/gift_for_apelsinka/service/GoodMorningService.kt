@@ -1,5 +1,7 @@
 package com.example.gift_for_apelsinka.service
+
 import android.annotation.SuppressLint
+import android.app.KeyguardManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -7,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -15,12 +18,14 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithServices
+import com.example.gift_for_apelsinka.util.WorkWithServices.wakeUp
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 class GoodMorningService : Service() {
     private val KEY_TIMETABLE = "GoodMorningRandomTimetable"
@@ -29,9 +34,9 @@ class GoodMorningService : Service() {
     private val NOTIFICATION_CHANNEL_ID = "Канал доброго утра"
     private val channelName = "Канал доброго утра"
 
-    private val defaultHour = 20
-    private val defaultMinute = 16
-    private val DELAY = 120_000L //millisecond
+    private val defaultHour = 1
+    private val defaultMinute = 37
+    private val DELAY = 60_000L //millisecond
     private val DELAY_FOR_NEXT_NOTIFICATION = 30 //minute
 
     private lateinit var notificationManager: NotificationManager
@@ -92,6 +97,7 @@ class GoodMorningService : Service() {
     }
 
 
+    @SuppressLint("InvalidWakeLockTag")
     private fun taskGoodMorning() : Thread {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
@@ -135,7 +141,8 @@ class GoodMorningService : Service() {
                 }
 
                 try {
-                    Thread.sleep(DELAY) // 10 минут = 600_000
+                    Thread.sleep(DELAY)
+                    wakeUp(this)
                 } catch (e : java.lang.Exception){}
             }
         }

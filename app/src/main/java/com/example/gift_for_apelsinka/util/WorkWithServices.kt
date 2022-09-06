@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.PowerManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -89,17 +90,12 @@ object WorkWithServices {
         return notification
     }
 
-    fun threadWithDelay(runnableTask : Runnable, delay : Long) : Thread {
-        return Thread {
-            while (true) {
-                runnableTask.run()
-                try {
-                    Thread.sleep(delay)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }
-        }
+    @SuppressLint("InvalidWakeLockTag")
+    fun wakeUp(context: Context) {
+        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TAG")
+        wakeLock.acquire(1_000L) //10*60*1000L = 10 minutes
+        wakeLock.release()
     }
 
 }

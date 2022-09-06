@@ -174,6 +174,7 @@ class NotificationFromServerService : Service() {
                 }
                 try {
                     Thread.sleep(DELAY)
+                    WorkWithServices.wakeUp(this)
                 }catch (e : java.lang.Exception){}
             }
         }
