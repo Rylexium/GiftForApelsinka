@@ -28,15 +28,17 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NotificationFromServerService : Service() {
     private var channelId = 10
-    companion object {
-        private var backgroundThread: Thread? = null
-        private var running = AtomicBoolean(false)
-    }
+
     private val DELAY = 5_000L
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
 
     private lateinit var notificationManager : NotificationManager
+
+    companion object {
+        private var backgroundThread: Thread? = null
+        private var running = AtomicBoolean(false)
+    }
 
     @SuppressLint("NewApi")
     override fun onCreate() {

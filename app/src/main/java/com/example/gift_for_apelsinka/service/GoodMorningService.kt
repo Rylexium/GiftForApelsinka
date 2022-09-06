@@ -36,7 +36,6 @@ class GoodMorningService : Service() {
 
     private lateinit var notificationManager: NotificationManager
 
-
     companion object {
         private var backgroundThread: Thread? = null
         private var running = AtomicBoolean(false)

@@ -30,6 +30,10 @@ class LocationService : Service() {
     private var hasNetwork : Boolean = false
     private var hasGps : Boolean = false
 
+    val NOTIFICATION_CHANNEL_ID = "Другое"
+    val channelName = "Другое"
+    private lateinit var notificationManager : NotificationManager
+
     companion object {
         private var backgroundWorkThread: Thread? = null
         private var backgroundInitThread: Thread? = null
@@ -37,9 +41,6 @@ class LocationService : Service() {
         private var runningBackgroundWorkThread = AtomicBoolean(false)
         private var runningBackgroundInitThread = AtomicBoolean(false)
     }
-    val NOTIFICATION_CHANNEL_ID = "Другое"
-    val channelName = "Другое"
-    private lateinit var notificationManager : NotificationManager
 
     @SuppressLint("NewApi")
     override fun onCreate() {

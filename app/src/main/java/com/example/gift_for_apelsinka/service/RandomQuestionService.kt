@@ -24,11 +24,6 @@ class RandomQuestionService : Service() {
     private val KEY_TIMETABLE = "EquationRandomTimetable"
     private val KEY_TEXT = "EquationRandomText"
 
-    companion object {
-        private var backgroundThread: Thread? = null
-        private var running = AtomicBoolean(false)
-    }
-
     private val defaultHour = 20
     private val defaultMinute = 20
     private val DELAY = 120_000L //millisecond
@@ -36,6 +31,11 @@ class RandomQuestionService : Service() {
 
     val NOTIFICATION_CHANNEL_ID = "Канал случайных вопросов"
     val channelName = "Канал случайных вопросов"
+
+    companion object {
+        private var backgroundThread: Thread? = null
+        private var running = AtomicBoolean(false)
+    }
 
     @SuppressLint("NewApi")
     override fun onCreate() {
