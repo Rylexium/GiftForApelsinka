@@ -9,6 +9,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -34,6 +35,7 @@ class NotificationFromServerService : Service() {
     private val channelName = "Канал уведомлений от сервера"
 
     private lateinit var notificationManager : NotificationManager
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     companion object {
         private var backgroundThread: Thread? = null
@@ -44,6 +46,9 @@ class NotificationFromServerService : Service() {
     override fun onCreate() {
         Log.e("NotificationFromServerService", "onCreate")
         notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::NotificationFromServerService")
+        }
         startMyOwnForeground()
     }
 
@@ -142,6 +147,7 @@ class NotificationFromServerService : Service() {
     private fun task() : Thread {
         return Thread {
             while (true) {
+                wakeLock.acquire()
                 CoroutineScope(Dispatchers.IO).launch {
                     val notifications =
                         NetworkNotifications
@@ -173,8 +179,8 @@ class NotificationFromServerService : Service() {
                     }
                 }
                 try {
+                    wakeLock.release()
                     Thread.sleep(DELAY)
-                    WorkWithServices.wakeUp(this)
                 }catch (e : java.lang.Exception){}
             }
         }

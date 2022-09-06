@@ -1,7 +1,6 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
-import android.app.KeyguardManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -18,7 +17,6 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithServices
-import com.example.gift_for_apelsinka.util.WorkWithServices.wakeUp
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +38,7 @@ class GoodMorningService : Service() {
     private val DELAY_FOR_NEXT_NOTIFICATION = 30 //minute
 
     private lateinit var notificationManager: NotificationManager
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     companion object {
         private var backgroundThread: Thread? = null
@@ -51,6 +50,9 @@ class GoodMorningService : Service() {
     override fun onCreate() {
         Log.e("GoodMorningService", "onCreate")
         notificationManager = this@GoodMorningService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::GoodMorningService")
+        }
         startMyOwnForeground()
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -108,6 +110,7 @@ class GoodMorningService : Service() {
         return Thread {
             while (running.get()) {
 
+                wakeLock.acquire()
                 val nowCalendar = Calendar.getInstance()
 
                 if(nowCalendar >= timetable) {
@@ -141,8 +144,8 @@ class GoodMorningService : Service() {
                 }
 
                 try {
+                    wakeLock.release()
                     Thread.sleep(DELAY)
-                    wakeUp(this)
                 } catch (e : java.lang.Exception){}
             }
         }
