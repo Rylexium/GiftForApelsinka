@@ -2,11 +2,11 @@ package com.example.gift_for_apelsinka.service
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -15,13 +15,12 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class LocationService : Service() {
     private var currentLocation: Location? = null
@@ -31,11 +30,13 @@ class LocationService : Service() {
     private var hasNetwork : Boolean = false
     private var hasGps : Boolean = false
 
-    private var backgroundWorkThread : Thread? = null
-    private var backgroundInitThread : Thread? = null
-    private var killWorkThread = false
-    private var killInitThread = false
+    companion object {
+        private var backgroundWorkThread: Thread? = null
+        private var backgroundInitThread: Thread? = null
 
+        private var runningBackgroundWorkThread = AtomicBoolean(false)
+        private var runningBackgroundInitThread = AtomicBoolean(false)
+    }
     val NOTIFICATION_CHANNEL_ID = "Другое"
     val channelName = "Другое"
     private lateinit var notificationManager : NotificationManager
@@ -58,36 +59,43 @@ class LocationService : Service() {
     }
 
     private fun initTask() {
-        killWorkThread = false
-        killInitThread = false
-
-        backgroundInitThread = init()
-        backgroundWorkThread = work()
-
-        backgroundInitThread?.start()
-        backgroundWorkThread?.start()
+        if(!runningBackgroundInitThread.get()) {
+            backgroundInitThread = init()
+            backgroundInitThread?.start()
+        }
+        if(!runningBackgroundWorkThread.get()) {
+            backgroundWorkThread = work()
+            backgroundWorkThread?.start()
+        }
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.e("LocationService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        killWorkThread = true
-        killInitThread = true
-        WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
     }
 
     override fun onDestroy() {
-        killWorkThread = true
-        killInitThread = true
+        Log.e("LocationService", "onDestroy")
+
+        runningBackgroundWorkThread.set(false)
+        runningBackgroundInitThread.set(false)
+
+        try {
+            backgroundInitThread?.interrupt()
+            backgroundWorkThread?.interrupt()
+        } catch (e : java.lang.Exception) {}
+
+        backgroundInitThread = null
+        backgroundWorkThread = null
+
+        stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
-        WorkWithServices.startAllServices(this)
         super.onDestroy()
     }
 
     private fun init(): Thread {
         return Thread {
             while (true) {
-                if(killInitThread) break
                 try {
                     locationByGps = null
                     locationByNetwork = null
@@ -122,16 +130,18 @@ class LocationService : Service() {
                         locationByNetwork = lastKnownLocationByNetwork
                     }
                 } catch (e : Exception) { }
-                Thread.sleep(80_000) // 80_000
+                try {
+                    Thread.sleep(80_000) // 80_000
+                } catch (e : java.lang.Exception) {}
             }
         }
     }
     private fun work() : Thread {
         return Thread {
-            init()
             while (true) {
-                if(killWorkThread) break
-                Thread.sleep(60_000) // 60_000
+                try {
+                    Thread.sleep(60_000) // 60_000
+                } catch (e : java.lang.Exception) {}
 
                 if(locationByGps == null && locationByNetwork == null) continue
 

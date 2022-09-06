@@ -29,6 +29,11 @@ class RandomQuestionService : Service() {
         private var running = AtomicBoolean(false)
     }
 
+    private val defaultHour = 20
+    private val defaultMinute = 20
+    private val DELAY = 120_000L //millisecond
+    private val DELAY_FOR_NEXT_NOTIFICATION = 25 //minute
+
     val NOTIFICATION_CHANNEL_ID = "Канал случайных вопросов"
     val channelName = "Канал случайных вопросов"
 
@@ -59,11 +64,14 @@ class RandomQuestionService : Service() {
 
     override fun onDestroy() {
         Log.e("RandomQuestionService", "onDestroy")
+
         running.set(false)
         try {
             backgroundThread?.interrupt()
         } catch (e : Exception) {}
+
         backgroundThread = null
+
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
         super.onDestroy()
@@ -71,13 +79,6 @@ class RandomQuestionService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.e("RandomQuestionService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        running.set(false)
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
-        stopSelf()
-        WorkWithServices.restartService(this, this.javaClass)
     }
 
     private fun equationNotification(text : String) {
@@ -93,8 +94,8 @@ class RandomQuestionService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(
             Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.HOUR_OF_DAY, 9)
-        timetable.set(Calendar.MINUTE, 30)
+        timetable.set(Calendar.HOUR_OF_DAY, defaultHour)
+        timetable.set(Calendar.MINUTE, defaultMinute)
 
         return Thread {
             while (running.get()) {
@@ -109,7 +110,7 @@ class RandomQuestionService : Service() {
                     CoroutineScope(Dispatchers.IO).launch {
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 10)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_FOR_NEXT_NOTIFICATION)
 
                         val previousText = "Текущие случайный вопрос : $text"
 
@@ -126,7 +127,7 @@ class RandomQuestionService : Service() {
                     }
 
                     try {
-                        Thread.sleep(40_000) // 5 минуты
+                        Thread.sleep(DELAY) // 5 минуты
                     } catch (e : java.lang.Exception){}
                 }
             }

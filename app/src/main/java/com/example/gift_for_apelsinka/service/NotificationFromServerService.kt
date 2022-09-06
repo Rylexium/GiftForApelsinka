@@ -32,6 +32,7 @@ class NotificationFromServerService : Service() {
         private var backgroundThread: Thread? = null
         private var running = AtomicBoolean(false)
     }
+    private val DELAY = 5_000L
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
 
@@ -66,31 +67,25 @@ class NotificationFromServerService : Service() {
         else stopSelf()
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.e("NotificationFromServerService", "onTaskRemoved")
+        super.onTaskRemoved(rootIntent)
     }
 
     override fun onDestroy() {
         Log.e("NotificationFromServerService", "onDestroy")
-        running.set(true)
+
+        running.set(false)
+
         try {
             backgroundThread?.interrupt()
         } catch (e : Exception) {}
+
         backgroundThread = null
+
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
         super.onDestroy()
-    }
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.e("NotificationFromServerService", "onTaskRemoved")
-        super.onTaskRemoved(rootIntent)
-        running.set(true)
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
-        stopSelf()
-        WorkWithServices.restartService(this, this.javaClass)
     }
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
@@ -144,7 +139,7 @@ class NotificationFromServerService : Service() {
     @SuppressLint("HardwareIds")
     private fun task() : Thread {
         return Thread {
-            while (running.get()) {
+            while (true) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val notifications =
                         NetworkNotifications
@@ -176,9 +171,12 @@ class NotificationFromServerService : Service() {
                     }
                 }
                 try {
-                    Thread.sleep(5_000)
+                    Thread.sleep(DELAY)
                 }catch (e : java.lang.Exception){}
             }
         }
+    }
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
     }
 }

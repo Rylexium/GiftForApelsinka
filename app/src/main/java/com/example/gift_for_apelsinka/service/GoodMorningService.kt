@@ -1,6 +1,5 @@
 package com.example.gift_for_apelsinka.service
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -29,7 +28,14 @@ class GoodMorningService : Service() {
     private val KEY_TEXT = "GoodMorningRandomText"
     private val NOTIFICATION_CHANNEL_ID = "Канал доброго утра"
     private val channelName = "Канал доброго утра"
+
+    private val defaultHour = 20
+    private val defaultMinute = 16
+    private val DELAY = 120_000L //millisecond
+    private val DELAY_FOR_NEXT_NOTIFICATION = 30 //minute
+
     private lateinit var notificationManager: NotificationManager
+
 
     companion object {
         private var backgroundThread: Thread? = null
@@ -66,11 +72,14 @@ class GoodMorningService : Service() {
 
     override fun onDestroy() {
         Log.e("GoodMorningService", "onDestroy")
+
         running.set(false)
         try {
             backgroundThread?.interrupt()
         } catch (e : Exception) {}
+
         backgroundThread = null
+
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
         super.onDestroy()
@@ -78,13 +87,6 @@ class GoodMorningService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) { // onBackPressed и из диспетчера кик проц
         Log.e("GoodMorningService", "onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        running.set(false)
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
-        stopSelf()
-        WorkWithServices.restartService(this, this.javaClass)
     }
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -95,8 +97,8 @@ class GoodMorningService : Service() {
         val sharedPreferences = getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
         val timetable = Gson().fromJson(sharedPreferences.getString(KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
-        timetable.set(Calendar.HOUR_OF_DAY, 8)
-        timetable.set(Calendar.MINUTE, 58)
+        timetable.set(Calendar.HOUR_OF_DAY, defaultHour)
+        timetable.set(Calendar.MINUTE, defaultMinute)
 
         return Thread {
             while (running.get()) {
@@ -113,7 +115,7 @@ class GoodMorningService : Service() {
 
                         //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
                         timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 30)
+                        timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_FOR_NEXT_NOTIFICATION)
 
                         val previous = "Текущие доброе утро : $title : $text"
 
@@ -134,7 +136,7 @@ class GoodMorningService : Service() {
                 }
 
                 try {
-                    Thread.sleep(30_000) // 10 минут = 600_000
+                    Thread.sleep(DELAY) // 10 минут = 600_000
                 } catch (e : java.lang.Exception){}
             }
         }
