@@ -88,4 +88,18 @@ object WorkWithServices {
 
         return notification
     }
+
+    fun threadWithDelay(runnableTask : Runnable, delay : Long) : Thread {
+        return Thread {
+            while (true) {
+                runnableTask.run()
+                try {
+                    Thread.sleep(delay)
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
 }
