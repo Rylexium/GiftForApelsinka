@@ -151,10 +151,10 @@ class GoodMorningService : Service() {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .build()
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
+                val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
                 notificationManager.createNotificationChannel(notifChannel)
             }
             notificationManager.notify(5, notificationGoodMorning)

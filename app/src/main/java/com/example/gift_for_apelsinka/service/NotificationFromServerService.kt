@@ -133,7 +133,7 @@ class NotificationFromServerService : Service() {
     }
     private fun notifForSdkO() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
+            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(notifChannel)
         }
     }

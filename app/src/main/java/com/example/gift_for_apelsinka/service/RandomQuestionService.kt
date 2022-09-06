@@ -84,7 +84,7 @@ class RandomQuestionService : Service() {
     private fun equationNotification(text : String) {
         val notificationManager = this@RandomQuestionService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
+            val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(notifChannel)
         }
         notificationManager.notify(6, getNotification(text))
@@ -148,7 +148,7 @@ class RandomQuestionService : Service() {
             .setWhen(System.currentTimeMillis())
             .setContentTitle("Вопросик")
             .setContentText(text)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
     }
     override fun onBind(p0: Intent?): IBinder? {
