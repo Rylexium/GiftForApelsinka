@@ -1,10 +1,12 @@
 package com.example.gift_for_apelsinka.service.receiver
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -26,8 +28,15 @@ class RandomQuestionReceiver : BroadcastReceiver() {
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
 
+    @SuppressLint("WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
-        notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (context == null) return
+
+        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RandomQuestionReceiver::TAG")
+        wakeLock.acquire()
+
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val sharedPreferences = context.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         ctx = context
 
@@ -67,7 +76,8 @@ class RandomQuestionReceiver : BroadcastReceiver() {
 
                 val pendingIntent =
                     WorkWithServices.getPendingIntent(context, RandomQuestionReceiver::class.java)
-                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nowCalendar.timeInMillis, pendingIntent)
+                wakeLock.release()
             }
         }
     }

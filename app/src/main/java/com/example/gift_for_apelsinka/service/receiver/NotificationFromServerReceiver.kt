@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -29,9 +30,12 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
 
     private lateinit var notificationManager : NotificationManager
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint("HardwareIds", "WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
+        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationFromServerReceiver::TAG")
+        wakeLock.acquire()
 
         this.context = context
         notificationManager =  context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -65,13 +69,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
                 }
                 if(notifications.size != 1) notify(0, summaryNotification)
             }
-
-            val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-            val pendingIntent = WorkWithServices.getPendingIntent(context, NotificationFromServerReceiver::class.java)
-            val nowCalendar = Calendar.getInstance().apply {
-                set(Calendar.SECOND, get(Calendar.SECOND) + 15)
-            }
-            alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
+            wakeLock.release()
         }
 
     }

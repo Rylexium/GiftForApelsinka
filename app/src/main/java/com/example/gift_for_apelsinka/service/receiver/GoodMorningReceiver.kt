@@ -1,11 +1,14 @@
 package com.example.gift_for_apelsinka.service.receiver
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.app.AlarmManager.AlarmClockInfo
+import android.app.AlarmManager.RTC_WAKEUP
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.NOTIFICATION_CHANNEL_ID_GOOD_MORNING
@@ -31,8 +34,15 @@ class GoodMorningReceiver : BroadcastReceiver() {
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
 
+    @SuppressLint("WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
-        notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (context == null) return
+
+        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GoodMorningReceiver::TAG")
+        wakeLock.acquire()
+
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val sharedPreferences = context.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
         ctx = context
 
@@ -74,7 +84,8 @@ class GoodMorningReceiver : BroadcastReceiver() {
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
                 val pendingIntent = getPendingIntent(context, GoodMorningReceiver::class.java)
-                alarmManager.setAlarmClock(AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
+                alarmManager.setAndAllowWhileIdle(RTC_WAKEUP, nowCalendar.timeInMillis, pendingIntent)
+                wakeLock.release()
             }
         }
     }

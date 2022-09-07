@@ -20,7 +20,6 @@ import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
 
 object WorkWithServices {
 
-    @SuppressLint("ShortAlarm")
     fun startAllServices(context : Context) {
         val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
@@ -31,7 +30,7 @@ object WorkWithServices {
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, RandomQuestionReceiver::class.java))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, NotificationFromServerReceiver::class.java))
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 5_000L, 60_000L, getPendingIntent(context, NotificationFromServerReceiver::class.java))
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
