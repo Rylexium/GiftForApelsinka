@@ -25,16 +25,13 @@ object WorkWithServices {
         val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_GOOD_MORNING, channelNameGoodMorning, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
-            PendingIntent.getBroadcast(context, 2, Intent(context, GoodMorningReceiver::class.java), 0))
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, GoodMorningReceiver::class.java))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_RANDOM_QUESTION, channelNameRandomQuestion, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
-            PendingIntent.getBroadcast(context, 3, Intent(context, RandomQuestionReceiver::class.java), 0))
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, RandomQuestionReceiver::class.java))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
-            PendingIntent.getBroadcast(context, 4, Intent(context, NotificationFromServerReceiver::class.java), 0))
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, NotificationFromServerReceiver::class.java))
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -100,5 +97,8 @@ object WorkWithServices {
         wakeLock.acquire(1_000L) //10*60*1000L = 10 minutes
         wakeLock.release()
     }
-
+    fun getPendingIntent(context: Context, receiver : Class<*>): PendingIntent? {
+        return PendingIntent.getBroadcast(context, 2, Intent(context, receiver),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
 }

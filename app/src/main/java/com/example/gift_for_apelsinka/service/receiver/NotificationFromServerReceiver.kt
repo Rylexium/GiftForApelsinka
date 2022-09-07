@@ -17,6 +17,7 @@ import com.example.gift_for_apelsinka.cache.channelNameNotificationFromServer
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
+import com.example.gift_for_apelsinka.util.WorkWithServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
             }
 
             val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-            val pendingIntent = PendingIntent.getBroadcast(context, 4, Intent(context, RandomQuestionReceiver::class.java), 0)
+            val pendingIntent = WorkWithServices.getPendingIntent(context, NotificationFromServerReceiver::class.java)
             val nowCalendar = Calendar.getInstance().apply {
                 set(Calendar.SECOND, get(Calendar.SECOND) + 15)
             }

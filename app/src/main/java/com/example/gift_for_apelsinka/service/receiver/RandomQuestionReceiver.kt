@@ -13,6 +13,7 @@ import com.example.gift_for_apelsinka.cache.channelNameRandomQuestion
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
+import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.util.*
@@ -64,7 +65,8 @@ class RandomQuestionReceiver : BroadcastReceiver() {
 
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
-                val pendingIntent = PendingIntent.getBroadcast(context, 3, Intent(context, RandomQuestionReceiver::class.java), 0)
+                val pendingIntent =
+                    WorkWithServices.getPendingIntent(context, RandomQuestionReceiver::class.java)
                 alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
             }
         }

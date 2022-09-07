@@ -13,6 +13,7 @@ import com.example.gift_for_apelsinka.cache.channelNameGoodMorning
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
+import com.example.gift_for_apelsinka.util.WorkWithServices.getPendingIntent
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +73,7 @@ class GoodMorningReceiver : BroadcastReceiver() {
 
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
-                val pendingIntent = PendingIntent.getBroadcast(context, 2, Intent(context, GoodMorningReceiver::class.java), 0)
+                val pendingIntent = getPendingIntent(context, GoodMorningReceiver::class.java)
                 alarmManager.setAlarmClock(AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
             }
         }
