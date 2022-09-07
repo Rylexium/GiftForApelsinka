@@ -71,7 +71,7 @@ class GoodMorningReceiver : BroadcastReceiver() {
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
                 val pendingIntent = PendingIntent.getBroadcast(context, 2, Intent(context, GoodMorningReceiver::class.java), 0)
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timetable.timeInMillis, pendingIntent)
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, timetable.timeInMillis, pendingIntent)
             }
         }
     }
