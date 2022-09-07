@@ -25,11 +25,11 @@ object WorkWithServices {
         val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_GOOD_MORNING, channelNameGoodMorning, context)
-        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
             PendingIntent.getBroadcast(context, 2, Intent(context, GoodMorningReceiver::class.java), 0))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_RANDOM_QUESTION, channelNameRandomQuestion, context)
-        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
             PendingIntent.getBroadcast(context, 3, Intent(context, RandomQuestionReceiver::class.java), 0))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
