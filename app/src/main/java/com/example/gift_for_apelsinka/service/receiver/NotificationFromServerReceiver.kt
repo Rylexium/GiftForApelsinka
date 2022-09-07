@@ -65,15 +65,12 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
                 if(notifications.size != 1) notify(0, summaryNotification)
             }
 
-//            val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-//
-//            val nowCalendar = Calendar.getInstance()
-//            Log.e("now", nowCalendar.timeInMillis.toString())
-//            nowCalendar.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + 1)
-//            nowCalendar.set(Calendar.SECOND, 0)
-//            val pendingIntent = PendingIntent.getBroadcast(context, 1, Intent(context, NotificationFromServerReceiver::class.java), 0)
-//            Log.e("", nowCalendar.timeInMillis.toString())
-//            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nowCalendar.timeInMillis, pendingIntent)
+            val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+            val pendingIntent = PendingIntent.getBroadcast(context, 4, Intent(context, RandomQuestionReceiver::class.java), 0)
+            val nowCalendar = Calendar.getInstance().apply {
+                set(Calendar.SECOND, get(Calendar.SECOND) + 15)
+            }
+            alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
         }
 
     }

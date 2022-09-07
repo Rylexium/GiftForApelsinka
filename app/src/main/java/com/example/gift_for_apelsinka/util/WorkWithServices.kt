@@ -33,7 +33,7 @@ object WorkWithServices {
             PendingIntent.getBroadcast(context, 3, Intent(context, RandomQuestionReceiver::class.java), 0))
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0L, 15_000L,
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L,
             PendingIntent.getBroadcast(context, 4, Intent(context, NotificationFromServerReceiver::class.java), 0))
 
         if(!isServiceRunning(context, LocationService::class.java)) {

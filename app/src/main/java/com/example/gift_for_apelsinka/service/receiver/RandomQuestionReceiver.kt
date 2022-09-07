@@ -65,7 +65,7 @@ class RandomQuestionReceiver : BroadcastReceiver() {
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
                 val pendingIntent = PendingIntent.getBroadcast(context, 3, Intent(context, RandomQuestionReceiver::class.java), 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timetable.timeInMillis, pendingIntent)
+                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.service.receiver
 
 import android.app.*
+import android.app.AlarmManager.AlarmClockInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 class GoodMorningReceiver : BroadcastReceiver() {
     private val KEY_TIMETABLE = "GoodMorningRandomTimetable"
@@ -71,7 +73,7 @@ class GoodMorningReceiver : BroadcastReceiver() {
                 val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
 
                 val pendingIntent = PendingIntent.getBroadcast(context, 2, Intent(context, GoodMorningReceiver::class.java), 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timetable.timeInMillis, pendingIntent)
+                alarmManager.setAlarmClock(AlarmClockInfo(nowCalendar.timeInMillis, pendingIntent), pendingIntent)
             }
         }
     }
