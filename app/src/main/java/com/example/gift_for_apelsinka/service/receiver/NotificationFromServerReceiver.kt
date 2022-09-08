@@ -19,6 +19,7 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotificat
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
+import com.example.gift_for_apelsinka.util.WorkWithServices.alarmTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
 
     private lateinit var notificationManager : NotificationManager
 
-    @SuppressLint("HardwareIds", "WakelockTimeout")
+    @SuppressLint("HardwareIds")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
 

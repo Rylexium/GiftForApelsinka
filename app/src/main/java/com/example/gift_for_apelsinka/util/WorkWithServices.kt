@@ -31,7 +31,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 7)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 6)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 5)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(GoodMorningReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -43,7 +43,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 10)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 6)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 8)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(RandomQuestionReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -127,9 +127,10 @@ object WorkWithServices {
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
     }
 
+    @SuppressLint("ShortAlarm")
     private fun repeatingTask(context : Context, receiver : Class<*>) {
         val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60_000L,
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 5_000L,
             getPendingIntent(context, receiver))
     }
 }
