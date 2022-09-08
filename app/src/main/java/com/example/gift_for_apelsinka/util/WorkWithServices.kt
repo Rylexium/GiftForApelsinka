@@ -3,12 +3,12 @@ package com.example.gift_for_apelsinka.util
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
+import android.app.AlarmManager.AlarmClockInfo
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.SystemClock
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -31,7 +31,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 7)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 5)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 3)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(GoodMorningReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -43,7 +43,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 10)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 8)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 5)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(RandomQuestionReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -53,7 +53,7 @@ object WorkWithServices {
 
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        repeatingTask(context, NotificationFromServerReceiver::class.java)
+        setUpAlarm(context, NotificationFromServerReceiver::class.java, 5_000)
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -127,10 +127,15 @@ object WorkWithServices {
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
     }
 
-    @SuppressLint("ShortAlarm")
-    private fun repeatingTask(context : Context, receiver : Class<*>) {
-        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 5_000L,
-            getPendingIntent(context, receiver))
+    fun setUpAlarm(context: Context, receiver: Class<*>, timeInterval: Int) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val pi = PendingIntent.getBroadcast(context, timeInterval, Intent(context, receiver), 0)
+
+        am.set(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + timeInterval, pi)
+//        am.cancel(pi)
+//        val alarmClockInfo = AlarmClockInfo(SystemClock.elapsedRealtime() + timeInterval, pi)
+//        am.setAlarmClock(alarmClockInfo, pi)
     }
 }

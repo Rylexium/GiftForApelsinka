@@ -29,7 +29,7 @@ class GoodMorningReceiver : BroadcastReceiver() {
     private val KEY_TITLE = "GoodMorningRandomTitle"
     private val KEY_TEXT = "GoodMorningRandomText"
 
-    private val DELAY_FOR_NEXT_NOTIFICATION = 30 //minute
+    private val DELAY_FOR_NEXT_NOTIFICATION = 60 //minute
 
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
