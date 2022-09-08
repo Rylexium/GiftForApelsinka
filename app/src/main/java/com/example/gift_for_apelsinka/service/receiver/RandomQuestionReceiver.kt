@@ -95,6 +95,7 @@ class RandomQuestionReceiver : BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
             .setContentTitle("Вопросик")
             .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
     }

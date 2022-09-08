@@ -91,6 +91,7 @@ class GoodMorningReceiver : BroadcastReceiver() {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(text))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .build()
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

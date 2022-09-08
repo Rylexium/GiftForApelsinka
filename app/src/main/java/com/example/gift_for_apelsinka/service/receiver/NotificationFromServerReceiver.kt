@@ -74,13 +74,14 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
 
 
     private suspend fun getCircleImage(notif : com.example.gift_for_apelsinka.retrofit.requestmodel.Notification): Bitmap {
-        val image = if(notif.image != null) ConvertClass.convertStringToBitmap(notif.image) else {
-            when(java.util.Random().nextInt(5)) {
-                1 -> R.drawable.mouse_of_apelsinka
-                2 -> R.drawable.developer
-                3 -> R.drawable.icon_of_developer
-                else -> { R.drawable.oscar5 }
-            }
+        val image = if(notif.image != null) ConvertClass.convertStringToBitmap(notif.image)
+                    else {
+                        when(Random().nextInt(5)) {
+                            1 -> R.drawable.mouse_of_apelsinka
+                            2 -> R.drawable.developer
+                            3 -> R.drawable.icon_of_developer
+                            else -> { R.drawable.oscar5 }
+                    }
         }
         return InitView.getCircleImage(image, context)
     }
@@ -93,6 +94,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
             .setWhen(notif.time ?: System.currentTimeMillis())
             .setContentTitle(notif.title)
             .setContentText(notif.text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notif.text))
             .setGroup("group")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
