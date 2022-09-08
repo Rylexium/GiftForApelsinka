@@ -121,7 +121,7 @@ object WorkWithServices {
         val periodMillis = timetable.timeInMillis - Calendar.getInstance().timeInMillis
 
         val pendingIntent = getPendingIntent(context, receiver)
-        alarmManager.setExactAndAllowWhileIdle(
+        alarmManager.setAndAllowWhileIdle(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
     }
