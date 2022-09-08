@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -16,14 +17,17 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkMessage
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.Notifaction
 import com.example.gift_for_apelsinka.util.WorkWithServices
+import com.example.gift_for_apelsinka.util.WorkWithServices.alarmTask
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.util.*
 
 class RandomQuestionReceiver : BroadcastReceiver() {
-    private val KEY_TIMETABLE = "EquationRandomTimetable"
+    companion object {
+        val KEY_TIMETABLE = "EquationRandomTimetable"
+    }
     private val KEY_TEXT = "EquationRandomText"
-    private val DELAY_FOR_NEXT_NOTIFICATION = 30 //minute
+    private val DELAY_FOR_NEXT_NOTIFICATION = 45 //minute
 
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
@@ -31,10 +35,6 @@ class RandomQuestionReceiver : BroadcastReceiver() {
     @SuppressLint("WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
-
-        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RandomQuestionReceiver::TAG")
-        wakeLock.acquire()
 
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val sharedPreferences = context.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
@@ -44,42 +44,32 @@ class RandomQuestionReceiver : BroadcastReceiver() {
 
         val nowCalendar = Calendar.getInstance()
 
-        Log.e("now", Calendar.getInstance().time.toString() + " " + Calendar.getInstance().timeInMillis)
-        Log.e("timetable", timetable.time.toString() + " " + timetable.timeInMillis.toString())
+        var text = sharedPreferences.getString(KEY_TEXT, Notifaction.generateTextOfEquation())
 
-        if(nowCalendar >= timetable) {
+        CoroutineScope(Dispatchers.IO).launch {
+            equationNotification(text.toString())
 
-            var text = sharedPreferences.getString(KEY_TEXT, Notifaction.generateTextOfEquation())
+            //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+            timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
+            timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_FOR_NEXT_NOTIFICATION)
+            timetable.set(Calendar.SECOND, 0)
+            timetable.set(Calendar.MILLISECOND, 0)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                equationNotification(text.toString())
+            val previousText = "Текущие случайный вопрос : $text"
 
-                //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
-                timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-                timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_FOR_NEXT_NOTIFICATION)
-                timetable.set(Calendar.SECOND, 0)
+            text = Notifaction.generateTextOfEquation()
 
-                val previousText = "Текущие случайный вопрос : $text"
+            NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : " +
+                    "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text")
 
-                text = Notifaction.generateTextOfEquation()
+            sharedPreferences.edit()
+                .putString(KEY_TIMETABLE, Gson().toJson(timetable))
+                .putString(KEY_TEXT, text)
+                .apply()
 
-                NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : " +
-                        "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text")
-
-                val timetableJson = Gson().toJson(timetable)
-                sharedPreferences.edit()
-                    .putString(KEY_TIMETABLE, timetableJson)
-                    .putString(KEY_TEXT, text)
-                    .apply()
-
-                val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-
-                val pendingIntent =
-                    WorkWithServices.getPendingIntent(context, RandomQuestionReceiver::class.java)
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nowCalendar.timeInMillis, pendingIntent)
-                wakeLock.release()
-            }
+            alarmTask(context, timetable, RandomQuestionReceiver::class.java)
         }
+
     }
 
     private fun equationNotification(text : String) {

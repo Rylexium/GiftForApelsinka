@@ -46,9 +46,27 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.receiver.GoodMorningReceiver"/>
-        <receiver android:name=".service.receiver.RandomQuestionReceiver"/>
-        <receiver android:name=".service.receiver.NotificationFromServerReceiver"/>
+
+        <receiver android:name=".service.receiver.GoodMorningReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.receiver.RandomQuestionReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.receiver.NotificationFromServerReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.util.ShowPictureActivity"

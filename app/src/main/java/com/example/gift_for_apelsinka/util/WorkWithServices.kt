@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.PowerManager
+import android.os.SystemClock
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
@@ -16,21 +16,43 @@ import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.receiver.GoodMorningReceiver
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
+import com.google.gson.Gson
+import java.util.*
 
 
 object WorkWithServices {
 
     fun startAllServices(context : Context) {
-        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        // смотрим есть ли что-то в shared если нет, то запускаем
+        val sharedPreferences = context.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
-        createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_GOOD_MORNING, channelNameGoodMorning, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, GoodMorningReceiver::class.java))
+        if(sharedPreferences?.getString(GoodMorningReceiver.KEY_TIMETABLE, null) == null) {
+            val timetable = Calendar.getInstance().apply {
+//                set(Calendar.HOUR_OF_DAY, 11)
+//                set(Calendar.MINUTE, 7)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 6)
+//                set(Calendar.MILLISECOND, 0)
+            }
+            sharedPreferences.edit().putString(GoodMorningReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
+            createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_GOOD_MORNING, channelNameGoodMorning, context)
+            alarmTask(context, timetable, GoodMorningReceiver::class.java)
+        }
 
-        createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_RANDOM_QUESTION, channelNameRandomQuestion, context)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0L, getPendingIntent(context, RandomQuestionReceiver::class.java))
+        if(sharedPreferences?.getString(RandomQuestionReceiver.KEY_TIMETABLE, null) == null) {
+            val timetable = Calendar.getInstance().apply {
+//                set(Calendar.HOUR_OF_DAY, 11)
+//                set(Calendar.MINUTE, 10)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 6)
+//                set(Calendar.MILLISECOND, 0)
+            }
+            sharedPreferences.edit().putString(RandomQuestionReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
+            createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_RANDOM_QUESTION, channelNameRandomQuestion, context)
+            alarmTask(context, timetable, RandomQuestionReceiver::class.java)
+        }
+
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 5_000L, 60_000L, getPendingIntent(context, NotificationFromServerReceiver::class.java))
+        repeatingTask(context, NotificationFromServerReceiver::class.java)
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -89,15 +111,24 @@ object WorkWithServices {
         return notification
     }
 
-    @SuppressLint("InvalidWakeLockTag")
-    fun wakeUp(context: Context) {
-        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TAG")
-        wakeLock.acquire(1_000L) //10*60*1000L = 10 minutes
-        wakeLock.release()
-    }
-    fun getPendingIntent(context: Context, receiver : Class<*>): PendingIntent? {
-        return PendingIntent.getBroadcast(context, 2, Intent(context, receiver),
+    private fun getPendingIntent(context: Context, receiver : Class<*>): PendingIntent? {
+        return PendingIntent.getBroadcast(context, 0, Intent(context, receiver),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    fun alarmTask(context: Context, timetable : Calendar, receiver : Class<*>) {
+        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        val periodMillis = timetable.timeInMillis - Calendar.getInstance().timeInMillis
+
+        val pendingIntent = getPendingIntent(context, receiver)
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
+    }
+
+    private fun repeatingTask(context : Context, receiver : Class<*>) {
+        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60_000L,
+            getPendingIntent(context, receiver))
     }
 }

@@ -33,9 +33,6 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
     @SuppressLint("HardwareIds", "WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
-        val pm = context.getSystemService(Service.POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationFromServerReceiver::TAG")
-        wakeLock.acquire()
 
         this.context = context
         notificationManager =  context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -69,7 +66,6 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
                 }
                 if(notifications.size != 1) notify(0, summaryNotification)
             }
-            wakeLock.release()
         }
 
     }
