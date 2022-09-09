@@ -35,7 +35,6 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
     @SuppressLint("HardwareIds", "UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
-        if (!isConnected(context)) return
 
         this.context = context
         notificationManager =  context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -122,14 +121,5 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
             val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(notifChannel)
         }
-    }
-    private fun isConnected(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        var networkInfo: NetworkInfo? = null
-        if (connectivityManager != null) {
-            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-        }
-        return networkInfo?.isConnected ?: false
     }
 }
