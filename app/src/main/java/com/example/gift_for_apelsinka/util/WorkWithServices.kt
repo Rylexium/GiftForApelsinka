@@ -135,4 +135,12 @@ object WorkWithServices {
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
     }
+    fun alarmTaskRepeating(context: Context, periodMillis : Long, receiver : Class<*>) {
+        val alarmManager = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+
+        val pendingIntent = getPendingIntent(context, receiver)
+        alarmManager.setRepeating(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime(), periodMillis, pendingIntent)
+    }
 }

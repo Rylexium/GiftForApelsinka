@@ -1,6 +1,7 @@
 package com.example.gift_for_apelsinka.service
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -8,10 +9,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import android.os.IBinder
+import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithServices.createChannelAndHiddenNotification
@@ -28,7 +30,9 @@ class NotificationFromServerService : Service() {
     private var receiver: BroadcastReceiver? = null
 
     companion object {
-        private var backgroundThread: Thread? = null
+        private val thread = HandlerThread("threadHandler")
+        private var handler : Handler? = null
+        private lateinit var runnable : Runnable
         private var running = AtomicBoolean(false)
     }
 
@@ -46,8 +50,8 @@ class NotificationFromServerService : Service() {
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        startForeground(3,
-            createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@NotificationFromServerService))
+        val notification = createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID, channelName, this@NotificationFromServerService)
+        startForeground(3, notification)
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.e("NotificationFromServerService", "onStartCommand")
@@ -58,8 +62,18 @@ class NotificationFromServerService : Service() {
         if(!running.get()) {
             Log.e("NotificationFromServerService", "backgroundThreadStarted")
             running.set(true)
-            backgroundThread = task()
-            backgroundThread?.start()
+
+            thread.start()
+            handler = Handler(thread.looper)
+            runnable = Runnable {
+                sendBroadcast(Intent("scan_notifications"))
+                handler?.postDelayed(runnable, DELAY)
+            }
+            handler?.postDelayed(runnable, 0)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                this.onDestroy()
+            }, 120_000L)
         }
         else stopSelf()
     }
@@ -71,11 +85,9 @@ class NotificationFromServerService : Service() {
         Log.e("NotificationFromServerService", "onDestroy")
         running.set(false)
 
-        try {
-            backgroundThread?.interrupt()
-        } catch (e : Exception) {}
-        backgroundThread = null
+        handler?.removeCallbacks(runnable)
 
+        handler = null
         if(receiver != null) {
             unregisterReceiver(receiver)
             receiver = null
@@ -84,18 +96,6 @@ class NotificationFromServerService : Service() {
         stopSelf()
         WorkWithServices.restartService(this, this.javaClass)
         super.onDestroy()
-    }
-
-    @SuppressLint("HardwareIds")
-    private fun task() : Thread {
-        return Thread {
-            while (true) {
-                sendBroadcast(Intent("scan_notifications"))
-                try {
-                    Thread.sleep(DELAY)
-                } catch (e : java.lang.Exception){}
-            }
-        }
     }
 
     override fun onBind(p0: Intent?): IBinder? {

@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
@@ -23,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
+
 class NotificationFromServerReceiver : BroadcastReceiver() {
     private lateinit var context : Context
     private var channelId = 10
@@ -32,6 +35,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
     @SuppressLint("HardwareIds", "UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
+        if (!isConnected(context)) return
 
         this.context = context
         notificationManager =  context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -118,5 +122,14 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
             val notifChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(notifChannel)
         }
+    }
+    private fun isConnected(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var networkInfo: NetworkInfo? = null
+        if (connectivityManager != null) {
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        }
+        return networkInfo?.isConnected ?: false
     }
 }

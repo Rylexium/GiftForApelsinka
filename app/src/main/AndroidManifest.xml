@@ -37,7 +37,6 @@
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
-            android:process=":proc"
             />
 
         <receiver
