@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NotificationFromServerService : Service() {
 
-    private val DELAY = 10_000L
+    private val DELAY = 5_000L
     private val NOTIFICATION_CHANNEL_ID = "Канал уведомлений от сервера"
     private val channelName = "Канал уведомлений от сервера"
 
@@ -66,6 +66,7 @@ class NotificationFromServerService : Service() {
             })
 
             thread = HandlerThread("threadHandler")
+            thread!!.isDaemon = true
             thread?.start()
             handler = Handler(thread!!.looper)
             runnable = Runnable {
@@ -76,7 +77,7 @@ class NotificationFromServerService : Service() {
 
             Handler(Looper.getMainLooper()).postDelayed({
                 stopSelf()
-            }, 60_000L)
+            }, 65_000L)
         }
         else stopSelf()
     }
@@ -90,7 +91,7 @@ class NotificationFromServerService : Service() {
 
         handler?.removeCallbacks(runnable)
         try {
-            thread?.interrupt()
+            thread?.quitSafely()
             thread = null
         } catch (e : Exception) {}
         handler = null
