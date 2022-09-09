@@ -17,6 +17,7 @@ import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import com.example.gift_for_apelsinka.util.WorkWithServices.createChannelAndHiddenNotification
+import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -30,7 +31,7 @@ class NotificationFromServerService : Service() {
     private var receiver: BroadcastReceiver? = null
 
     companion object {
-        private val thread = HandlerThread("threadHandler")
+        private var thread : HandlerThread? = null
         private var handler : Handler? = null
         private lateinit var runnable : Runnable
         private var running = AtomicBoolean(false)
@@ -40,12 +41,6 @@ class NotificationFromServerService : Service() {
     override fun onCreate() {
         Log.e("NotificationFromServerService", "onCreate")
         notificationManager = this@NotificationFromServerService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        receiver = NotificationFromServerReceiver()
-        registerReceiver(receiver, IntentFilter().apply {
-            addAction("android.intent.action.BOOT_COMPLETED")
-            addAction("android.intent.action.NOTIFY")
-            addAction("scan_notifications")
-        })
         startMyOwnForeground()
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,8 +58,16 @@ class NotificationFromServerService : Service() {
             Log.e("NotificationFromServerService", "backgroundThreadStarted")
             running.set(true)
 
-            thread.start()
-            handler = Handler(thread.looper)
+            receiver = NotificationFromServerReceiver()
+            registerReceiver(receiver, IntentFilter().apply {
+                addAction("android.intent.action.BOOT_COMPLETED")
+                addAction("android.intent.action.NOTIFY")
+                addAction("scan_notifications")
+            })
+
+            thread = HandlerThread("threadHandler")
+            thread?.start()
+            handler = Handler(thread!!.looper)
             runnable = Runnable {
                 sendBroadcast(Intent("scan_notifications"))
                 handler?.postDelayed(runnable, DELAY)
@@ -72,8 +75,8 @@ class NotificationFromServerService : Service() {
             handler?.postDelayed(runnable, 0)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                this.onDestroy()
-            }, 120_000L)
+                stopSelf()
+            }, 60_000L)
         }
         else stopSelf()
     }
@@ -86,7 +89,10 @@ class NotificationFromServerService : Service() {
         running.set(false)
 
         handler?.removeCallbacks(runnable)
-
+        try {
+            thread?.interrupt()
+            thread = null
+        } catch (e : Exception) {}
         handler = null
         if(receiver != null) {
             unregisterReceiver(receiver)
