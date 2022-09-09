@@ -33,6 +33,12 @@
             android:stopWithTask="false"
             />
 
+        <service
+            android:name=".service.NotificationFromServerService"
+            android:enabled="true"
+            android:exported="false"
+            />
+
         <receiver
             android:name=".service.receiver.MyReceiver"
             android:enabled="true"
@@ -62,8 +68,10 @@
         </receiver>
 
         <receiver android:name=".service.receiver.NotificationFromServerReceiver"
+            android:enabled="true"
             android:exported="true" >
             <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
         </receiver>

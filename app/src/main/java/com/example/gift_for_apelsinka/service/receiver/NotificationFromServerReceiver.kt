@@ -18,7 +18,6 @@ import com.example.gift_for_apelsinka.cache.channelNameNotificationFromServer
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
-import com.example.gift_for_apelsinka.util.WorkWithServices.setUpAlarm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,11 +26,10 @@ import java.util.*
 class NotificationFromServerReceiver : BroadcastReceiver() {
     private lateinit var context : Context
     private var channelId = 10
-    private val DELAY_SCAN = 8_000
 
     private lateinit var notificationManager : NotificationManager
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint("HardwareIds", "UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
 
@@ -44,10 +42,7 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
                     .getNotifications(
                         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)) ?: return@launch
 
-            if(notifications.isEmpty()) {
-                setUpAlarm(context, NotificationFromServerReceiver::class.java, DELAY_SCAN)
-                return@launch
-            }
+            if(notifications.isEmpty()) return@launch
 
             val listNotification : MutableList<Notification> = mutableListOf()
             val listData : MutableList<String> = mutableListOf()
@@ -70,7 +65,6 @@ class NotificationFromServerReceiver : BroadcastReceiver() {
                 }
                 if(notifications.size != 1) notify(0, summaryNotification)
             }
-            setUpAlarm(context, NotificationFromServerReceiver::class.java, DELAY_SCAN)
         }
     }
 

@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.*
 import com.example.gift_for_apelsinka.service.LocationService
+import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.receiver.GoodMorningReceiver
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
@@ -53,7 +54,9 @@ object WorkWithServices {
 
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        setUpAlarm(context, NotificationFromServerReceiver::class.java, 5_000)
+        if(!isServiceRunning(context, NotificationFromServerService::class.java)) {
+            context.startService(Intent(context, NotificationFromServerService::class.java))
+        }
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -125,17 +128,5 @@ object WorkWithServices {
         alarmManager.setAndAllowWhileIdle(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)
-    }
-
-    fun setUpAlarm(context: Context, receiver: Class<*>, timeInterval: Int) {
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pi = PendingIntent.getBroadcast(context, timeInterval, Intent(context, receiver), 0)
-
-        am.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + timeInterval, pi)
-//        am.cancel(pi)
-//        val alarmClockInfo = AlarmClockInfo(SystemClock.elapsedRealtime() + timeInterval, pi)
-//        am.setAlarmClock(alarmClockInfo, pi)
     }
 }
