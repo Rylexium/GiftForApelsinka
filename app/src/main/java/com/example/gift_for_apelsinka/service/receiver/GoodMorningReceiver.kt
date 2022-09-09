@@ -34,7 +34,6 @@ class GoodMorningReceiver : BroadcastReceiver() {
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
 
-    @SuppressLint("WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
 

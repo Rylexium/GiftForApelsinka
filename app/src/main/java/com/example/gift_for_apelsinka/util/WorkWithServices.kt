@@ -25,10 +25,13 @@ import java.util.*
 object WorkWithServices {
 
     fun startAllServices(context : Context) {
-        // смотрим есть ли что-то в shared если нет, то запускаем
         val sharedPreferences = context.getSharedPreferences("preference_key", Context.MODE_PRIVATE)
 
-        if(sharedPreferences?.getString(GoodMorningReceiver.KEY_TIMETABLE, null) == null) {
+        // смотрим есть ли что-то в shared если нет ИЛИ если есть и время меньше текущего, то запускаем
+        if(sharedPreferences?.getString(GoodMorningReceiver.KEY_TIMETABLE, null) == null
+            ||
+            Gson().fromJson(sharedPreferences.getString(GoodMorningReceiver.KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
+                .timeInMillis <= Calendar.getInstance().timeInMillis) {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 7)
@@ -40,7 +43,10 @@ object WorkWithServices {
             alarmTask(context, timetable, GoodMorningReceiver::class.java)
         }
 
-        if(sharedPreferences?.getString(RandomQuestionReceiver.KEY_TIMETABLE, null) == null) {
+        if(sharedPreferences?.getString(RandomQuestionReceiver.KEY_TIMETABLE, null) == null
+            ||
+            Gson().fromJson(sharedPreferences.getString(RandomQuestionReceiver.KEY_TIMETABLE, Gson().toJson(Calendar.getInstance())), Calendar::class.java)
+                .timeInMillis <= Calendar.getInstance().timeInMillis) {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 10)
