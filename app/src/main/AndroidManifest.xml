@@ -37,6 +37,7 @@
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
+            android:process=":proc"
             />
 
         <receiver
@@ -70,7 +71,6 @@
         <receiver android:name=".service.receiver.NotificationFromServerReceiver"
             android:enabled="true"
             android:exported="true"
-            android:process=":proc"
             >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
