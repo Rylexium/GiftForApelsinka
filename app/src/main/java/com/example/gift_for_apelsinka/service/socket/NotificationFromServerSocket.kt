@@ -37,7 +37,7 @@ object NotificationFromServerSocket {
     fun initSocket(context : Context) {
         try {
             mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
-                .withServerHeartbeat(1_000_000) // 2 hour = 7_200_000
+                .withServerHeartbeat(7_200_000) // 2 hour = 7_200_000
             resetSubscriptions()
 
             if (mStompClient == null) {
@@ -70,12 +70,10 @@ object NotificationFromServerSocket {
                         LifecycleEvent.Type.OPENED -> Log.d(TAG, "Stomp connection opened")
                         LifecycleEvent.Type.ERROR -> {
                             Log.e(TAG, "Error", lifecycleEvent.exception)
-                            resetSubscriptions()
                         }
                         LifecycleEvent.Type.FAILED_SERVER_HEARTBEAT,
                         LifecycleEvent.Type.CLOSED -> {
                             Log.d(TAG, "Stomp connection closed")
-                            resetSubscriptions()
                         }
                     }
                 }
