@@ -3,7 +3,6 @@ package com.example.gift_for_apelsinka.util
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
-import android.app.AlarmManager.AlarmClockInfo
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,8 +15,8 @@ import com.example.gift_for_apelsinka.cache.*
 import com.example.gift_for_apelsinka.service.LocationService
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.receiver.GoodMorningReceiver
-import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
+import com.example.gift_for_apelsinka.service.socket.NotificationFromServerSocket
 import com.google.gson.Gson
 import java.util.*
 
