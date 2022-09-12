@@ -12,6 +12,7 @@ import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NotificationDelivered
 import com.example.gift_for_apelsinka.retrofit.requestmodel.response.NotificationList
+import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
 import com.example.gift_for_apelsinka.util.WorkWithServices.alarmTask
@@ -92,7 +93,7 @@ object NotificationFromServerSocket {
             compositeDisposable!!.add(lifecycleSubscribe)
             compositeDisposable!!.add(topicSubscribe)
 
-            if (!mStompClient!!.isConnected) {
+            if (!mStompClient!!.isConnected && NetworkChangeReceiver.isOnline(context)) {
                 mStompClient!!.connect()
                 backgroundThread = Thread {
                     while (!mStompClient!!.isConnected) { }

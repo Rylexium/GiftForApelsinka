@@ -3,6 +3,8 @@ package com.example.gift_for_apelsinka.activity.splash
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.ImageView
@@ -13,6 +15,8 @@ import com.example.gift_for_apelsinka.activity.main.MainActivity
 import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
 import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
+import com.example.gift_for_apelsinka.service.receiver.MyReceiver
+import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import java.util.*
@@ -36,6 +40,15 @@ class SplashScreenActivity : AppCompatActivity() {
         initComponents()
         initData()
         startMainActivity()
+        registerBroadCastReceiver()
+    }
+
+    private fun registerBroadCastReceiver() {
+        registerReceiver(NetworkChangeReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        registerReceiver(MyReceiver(), IntentFilter().apply {
+            addAction(Intent.ACTION_BOOT_COMPLETED)
+            addAction(Intent.ACTION_REBOOT)
+        })
     }
 
     @SuppressLint("HardwareIds")

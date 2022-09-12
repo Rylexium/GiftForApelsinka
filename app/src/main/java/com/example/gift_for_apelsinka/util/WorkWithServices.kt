@@ -59,9 +59,7 @@ object WorkWithServices {
 
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
-        if(!isServiceRunning(context, NotificationFromServerService::class.java)) {
-            context.startService(Intent(context, NotificationFromServerService::class.java))
-        }
+        startService(context, NotificationFromServerService::class.java)
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -81,6 +79,11 @@ object WorkWithServices {
             }
         }
         return false
+    }
+
+    fun startService(context: Context, serviceClass : Class<*>) {
+        if(!isServiceRunning(context, serviceClass))
+            context.startService(Intent(context, serviceClass))
     }
 
     fun restartService(context: Context, serviceClass : Class<*>) {
