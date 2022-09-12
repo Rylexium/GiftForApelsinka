@@ -12,8 +12,10 @@ class NetworkChangeReceiver : BroadcastReceiver() {
         if(context == null) return
 
         try {
-            if (isOnline(context))
+            if (isOnline(context)) {
+                context.stopService(Intent(context, NotificationFromServerService::class.java))
                 context.startService(Intent(context, NotificationFromServerService::class.java))
+            }
             else
                 context.stopService(Intent(context, NotificationFromServerService::class.java))
         } catch (e: java.lang.NullPointerException) {
