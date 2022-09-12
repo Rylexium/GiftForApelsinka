@@ -27,7 +27,7 @@ class NotificationFromServerService : Service() {
     @SuppressLint("NewApi")
     override fun onCreate() {
         Log.e("NotificationFromServerService", "onCreate")
-        alarmTaskRepeating(this, 960000, NotificationFromServerReceiver::class.java) //restart service every 16 minutes
+        //alarmTaskRepeating(this, 960000, NotificationFromServerReceiver::class.java) //restart service every 16 minutes
         startMyOwnForeground()
     }
     @RequiresApi(Build.VERSION_CODES.O)

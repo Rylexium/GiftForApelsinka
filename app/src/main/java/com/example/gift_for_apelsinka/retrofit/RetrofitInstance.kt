@@ -1,10 +1,11 @@
 package com.example.gift_for_apelsinka.retrofit
 
+import com.example.gift_for_apelsinka.cache.HEROKU_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    val BASE_URL = "https://gift-apelsinka-app.herokuapp.com/api/"
+    private const val BASE_URL = HEROKU_URL
     private var retrofit: Retrofit? = null
     fun getRetrofit(): Retrofit? {
         if (retrofit == null) {

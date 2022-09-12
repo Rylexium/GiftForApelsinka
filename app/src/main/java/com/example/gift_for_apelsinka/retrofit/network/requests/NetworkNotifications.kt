@@ -5,7 +5,9 @@ import com.example.gift_for_apelsinka.retrofit.CallbackWithRetry
 import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.repo.NotificationsRepo
 import com.example.gift_for_apelsinka.retrofit.requestmodel.Notification
+import com.example.gift_for_apelsinka.retrofit.requestmodel.NotificationDelivered
 import com.example.gift_for_apelsinka.retrofit.requestmodel.response.NotificationList
+import com.google.gson.internal.LinkedTreeMap
 import retrofit2.Call
 import retrofit2.Response
 import kotlin.coroutines.resume
@@ -21,6 +23,19 @@ object NetworkNotifications : NotificationsRepo {
                 }
 
                 override fun onFailure(call: Call<NotificationList>, t: Throwable) {
+                }
+            })
+        }
+    }
+    override suspend fun notificationDelivered(notificationDelivered : NotificationDelivered) : LinkedTreeMap<*, *> {
+        return suspendCoroutine {
+            val call = Services.notificationsServiceApi?.notificationDelivered(notificationDelivered)
+            call?.enqueue(object : CallbackWithRetry<Any>(call) {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    it.resume(response.body() as LinkedTreeMap<*, *>)
+                }
+
+                override fun onFailure(call: Call<Any>, t: Throwable) {
                 }
             })
         }
