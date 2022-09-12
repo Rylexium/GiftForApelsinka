@@ -16,5 +16,5 @@ val channelNameRandomQuestion = "Канал случайных вопросов"
 val NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER = "Канал уведомлений от сервера"
 val channelNameNotificationFromServer = "Канал уведомлений от сервера"
 
-const val LOCALHOST_URL = "http://10.0.2.2:8080/api"
-const val HEROKU_URL = "https://gift-apelsinka-app.herokuapp.com/api"
+const val LOCALHOST_URL = "http://10.0.2.2:8080/api/"
+const val HEROKU_URL = "https://gift-apelsinka-app.herokuapp.com/api/"
