@@ -27,7 +27,7 @@ class RandomQuestionReceiver : BroadcastReceiver() {
         val KEY_TIMETABLE = "EquationRandomTimetable"
     }
     private val KEY_TEXT = "EquationRandomText"
-    private val DELAY_FOR_NEXT_NOTIFICATION = 90 //minute
+    private val DELAY_FOR_NEXT_NOTIFICATION = 240 //minute
 
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager

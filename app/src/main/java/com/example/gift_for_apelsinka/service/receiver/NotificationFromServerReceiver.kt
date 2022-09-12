@@ -9,20 +9,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
-import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER
 import com.example.gift_for_apelsinka.cache.channelNameNotificationFromServer
-import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.util.ConvertClass
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 
 
