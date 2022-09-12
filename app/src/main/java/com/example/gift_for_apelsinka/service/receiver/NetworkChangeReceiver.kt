@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
-import com.example.gift_for_apelsinka.util.WorkWithServices
 
 
 class NetworkChangeReceiver : BroadcastReceiver() {
@@ -14,7 +13,9 @@ class NetworkChangeReceiver : BroadcastReceiver() {
 
         try {
             if (isOnline(context))
-                WorkWithServices.startService(context, NotificationFromServerService::class.java)
+                context.startService(Intent(context, NotificationFromServerService::class.java))
+            else
+                context.stopService(Intent(context, NotificationFromServerService::class.java))
         } catch (e: java.lang.NullPointerException) {
             e.printStackTrace()
         }
