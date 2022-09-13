@@ -4,10 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import android.util.Log
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
-import com.example.gift_for_apelsinka.util.WorkWithServices
-import java.lang.Exception
 
 
 class NetworkChangeReceiver : BroadcastReceiver() {

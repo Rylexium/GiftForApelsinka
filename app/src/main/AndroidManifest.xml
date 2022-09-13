@@ -55,10 +55,10 @@
         </receiver>
 
         <receiver android:name=".service.receiver.NetworkChangeReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <action android:name="android.intent.action.BATTERY_CHANGED"/>
             </intent-filter>
         </receiver>
 

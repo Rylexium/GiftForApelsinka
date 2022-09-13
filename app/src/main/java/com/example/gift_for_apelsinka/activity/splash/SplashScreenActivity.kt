@@ -19,7 +19,6 @@ import com.example.gift_for_apelsinka.service.receiver.MyReceiver
 import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
-import java.util.*
 import kotlin.random.Random
 
 @SuppressLint("CustomSplashScreen")
@@ -46,7 +45,6 @@ class SplashScreenActivity : AppCompatActivity() {
     private fun registerBroadCastReceiver() {
         registerReceiver(NetworkChangeReceiver(), IntentFilter().apply {
             addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-            addAction(Intent.ACTION_BATTERY_CHANGED)
         })
         registerReceiver(MyReceiver(), IntentFilter().apply {
             addAction(Intent.ACTION_BOOT_COMPLETED)

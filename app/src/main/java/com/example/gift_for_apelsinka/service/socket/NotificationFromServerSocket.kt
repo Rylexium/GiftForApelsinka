@@ -5,32 +5,27 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.getSystemService
 import com.example.gift_for_apelsinka.cache.HEROKU_URL
 import com.example.gift_for_apelsinka.cache.androidId
 import com.example.gift_for_apelsinka.cache.setAndroidId
-import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NotificationDelivered
 import com.example.gift_for_apelsinka.retrofit.requestmodel.response.NotificationList
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
-import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
-import com.example.gift_for_apelsinka.util.WorkWithServices.alarmTask
 import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.socket.client.IO
-import io.socket.client.Socket
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.dto.StompMessage
-import java.util.*
 
 object NotificationFromServerSocket {
     const val SOCKET_URL = "$HEROKU_URL/v1/notifications/websocket"
@@ -89,6 +84,8 @@ object NotificationFromServerSocket {
                             context.stopService(Intent(context, NotificationFromServerService::class.java))
                             NotificationFromServerService.running = false
                             NotificationFromServerService.isKillOS = false
+                            if(NetworkChangeReceiver.isOnline(context))
+                                context.startService(Intent(context, NotificationFromServerService::class.java))
                         }
                     }
                 }
