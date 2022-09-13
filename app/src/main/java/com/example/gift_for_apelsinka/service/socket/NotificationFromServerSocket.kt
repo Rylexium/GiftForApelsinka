@@ -3,6 +3,7 @@ package com.example.gift_for_apelsinka.service.socket
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.core.content.getSystemService
 import com.example.gift_for_apelsinka.cache.HEROKU_URL
@@ -12,6 +13,7 @@ import com.example.gift_for_apelsinka.retrofit.Services
 import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotifications
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NotificationDelivered
 import com.example.gift_for_apelsinka.retrofit.requestmodel.response.NotificationList
+import com.example.gift_for_apelsinka.service.NotificationFromServerService
 import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
 import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
@@ -80,12 +82,13 @@ object NotificationFromServerSocket {
                         LifecycleEvent.Type.OPENED -> Log.d(TAG, "Stomp connection opened")
                         LifecycleEvent.Type.ERROR -> {
                             Log.e(TAG, "Error", lifecycleEvent.exception)
-                            initSocket(context)
                         }
                         LifecycleEvent.Type.FAILED_SERVER_HEARTBEAT,
                         LifecycleEvent.Type.CLOSED -> {
                             Log.d(TAG, "Stomp connection closed")
-                            initSocket(context)
+                            context.stopService(Intent(context, NotificationFromServerService::class.java))
+                            NotificationFromServerService.running = false
+                            NotificationFromServerService.isKillOS = false
                         }
                     }
                 }

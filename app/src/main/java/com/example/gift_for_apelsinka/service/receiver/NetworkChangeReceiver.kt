@@ -4,7 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.util.Log
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
+import com.example.gift_for_apelsinka.util.WorkWithServices
+import java.lang.Exception
 
 
 class NetworkChangeReceiver : BroadcastReceiver() {
@@ -13,12 +16,14 @@ class NetworkChangeReceiver : BroadcastReceiver() {
 
         try {
             if (isOnline(context)) {
-                context.stopService(Intent(context, NotificationFromServerService::class.java))
                 context.startService(Intent(context, NotificationFromServerService::class.java))
             }
-            else
+            else {
                 context.stopService(Intent(context, NotificationFromServerService::class.java))
-        } catch (e: java.lang.NullPointerException) {
+                NotificationFromServerService.running = false
+                NotificationFromServerService.isKillOS = false
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
