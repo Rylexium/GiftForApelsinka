@@ -41,7 +41,7 @@
             />
 
         <receiver
-            android:name=".service.receiver.MyReceiver"
+            android:name=".service.receiver.background.MyReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
@@ -54,7 +54,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.receiver.NetworkChangeReceiver"
+        <receiver android:name=".service.receiver.background.NetworkChangeReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -62,14 +62,24 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.receiver.GoodMorningReceiver"
+        <receiver android:name=".service.receiver.repeat.RestartNotificationFromServerService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.receiver.repeat.GoodMorningReceiver"
+            android:enabled="true"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.receiver.RandomQuestionReceiver"
+        <receiver android:name=".service.receiver.repeat.RandomQuestionReceiver"
+            android:enabled="true"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />

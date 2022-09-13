@@ -13,10 +13,9 @@ import androidx.core.app.NotificationCompat
 import com.example.gift_for_apelsinka.R
 import com.example.gift_for_apelsinka.cache.*
 import com.example.gift_for_apelsinka.service.LocationService
-import com.example.gift_for_apelsinka.service.NotificationFromServerService
-import com.example.gift_for_apelsinka.service.receiver.GoodMorningReceiver
-import com.example.gift_for_apelsinka.service.receiver.RandomQuestionReceiver
-import com.example.gift_for_apelsinka.service.socket.NotificationFromServerSocket
+import com.example.gift_for_apelsinka.service.receiver.repeat.GoodMorningReceiver
+import com.example.gift_for_apelsinka.service.receiver.repeat.RandomQuestionReceiver
+import com.example.gift_for_apelsinka.service.receiver.repeat.RestartNotificationFromServerService
 import com.google.gson.Gson
 import java.util.*
 
@@ -59,6 +58,9 @@ object WorkWithServices {
 
 
         createChannelAndHiddenNotification(NOTIFICATION_CHANNEL_ID_NOTIFICATION_FROM_SERVER, channelNameNotificationFromServer, context)
+        alarmTask(context,
+            Calendar.getInstance().apply { set(Calendar.MINUTE, get(Calendar.MINUTE) + 16) },
+            RestartNotificationFromServerService::class.java)
         // BroadCast запускает эту службу
 //        if(!isServiceRunning(context, NotificationFromServerService::class.java))
 //            context.startService(Intent(context, NotificationFromServerService::class.java))

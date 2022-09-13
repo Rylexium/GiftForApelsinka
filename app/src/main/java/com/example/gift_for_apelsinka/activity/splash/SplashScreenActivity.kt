@@ -15,8 +15,8 @@ import com.example.gift_for_apelsinka.activity.main.MainActivity
 import com.example.gift_for_apelsinka.cache.defaultPhotosApelsinka
 import com.example.gift_for_apelsinka.cache.setAndroidId
 import com.example.gift_for_apelsinka.db.initDB
-import com.example.gift_for_apelsinka.service.receiver.MyReceiver
-import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
+import com.example.gift_for_apelsinka.service.receiver.background.MyReceiver
+import com.example.gift_for_apelsinka.service.receiver.background.NetworkChangeReceiver
 import com.example.gift_for_apelsinka.util.InitView
 import com.example.gift_for_apelsinka.util.WorkWithServices
 import kotlin.random.Random

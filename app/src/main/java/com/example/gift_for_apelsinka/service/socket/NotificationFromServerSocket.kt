@@ -12,8 +12,8 @@ import com.example.gift_for_apelsinka.retrofit.network.requests.NetworkNotificat
 import com.example.gift_for_apelsinka.retrofit.requestmodel.NotificationDelivered
 import com.example.gift_for_apelsinka.retrofit.requestmodel.response.NotificationList
 import com.example.gift_for_apelsinka.service.NotificationFromServerService
-import com.example.gift_for_apelsinka.service.receiver.NetworkChangeReceiver
-import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver
+import com.example.gift_for_apelsinka.service.receiver.background.NetworkChangeReceiver
+import com.example.gift_for_apelsinka.service.receiver.NotificationFromServerReceiver.Companion.showNotifications
 import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -58,7 +58,7 @@ object NotificationFromServerSocket {
                         for(notification in listNotifications)
                             NetworkNotifications.notificationDelivered(NotificationDelivered(androidId.toString(), notification.id))
                         // Отображаем сообщения
-                        NotificationFromServerReceiver.showNotifications(
+                        showNotifications(
                             listNotifications,
                             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager,
                             context)
