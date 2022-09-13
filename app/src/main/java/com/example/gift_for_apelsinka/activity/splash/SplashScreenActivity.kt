@@ -44,7 +44,10 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun registerBroadCastReceiver() {
-        registerReceiver(NetworkChangeReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        registerReceiver(NetworkChangeReceiver(), IntentFilter().apply {
+            addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+            addAction(Intent.ACTION_BATTERY_CHANGED)
+        })
         registerReceiver(MyReceiver(), IntentFilter().apply {
             addAction(Intent.ACTION_BOOT_COMPLETED)
             addAction(Intent.ACTION_REBOOT)
