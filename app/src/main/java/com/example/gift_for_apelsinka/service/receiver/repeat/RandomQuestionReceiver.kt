@@ -23,7 +23,6 @@ class RandomQuestionReceiver : BroadcastReceiver() {
         val KEY_TIMETABLE = "EquationRandomTimetable"
     }
     private val KEY_TEXT = "EquationRandomText"
-    private val DELAY_FOR_NEXT_NOTIFICATION = 240 //minute
 
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
@@ -45,9 +44,13 @@ class RandomQuestionReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             equationNotification(text.toString())
 
-            //timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
-            timetable.set(Calendar.HOUR_OF_DAY, nowCalendar.get(Calendar.HOUR_OF_DAY))
-            timetable.set(Calendar.MINUTE, nowCalendar.get(Calendar.MINUTE) + DELAY_FOR_NEXT_NOTIFICATION)
+            timetable.timeInMillis = nowCalendar.timeInMillis
+
+            timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+            val max = 23
+            val min = 16
+            timetable.set(Calendar.HOUR_OF_DAY, Random().nextInt(max + 1 - min) + min)
+            timetable.set(Calendar.MINUTE, Random().nextInt(59))
             timetable.set(Calendar.SECOND, 0)
             timetable.set(Calendar.MILLISECOND, 0)
 
