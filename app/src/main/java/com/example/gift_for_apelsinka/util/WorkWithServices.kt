@@ -33,7 +33,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 7)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 3)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 2)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(GoodMorningReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -48,7 +48,7 @@ object WorkWithServices {
             val timetable = Calendar.getInstance().apply {
 //                set(Calendar.HOUR_OF_DAY, 11)
 //                set(Calendar.MINUTE, 10)
-                  set(Calendar.SECOND, get(Calendar.SECOND) + 5)
+                  set(Calendar.SECOND, get(Calendar.SECOND) + 4)
 //                set(Calendar.MILLISECOND, 0)
             }
             sharedPreferences.edit().putString(RandomQuestionReceiver.KEY_TIMETABLE, Gson().toJson(timetable)).apply()
@@ -61,9 +61,6 @@ object WorkWithServices {
         alarmTask(context,
             Calendar.getInstance().apply { set(Calendar.MINUTE, get(Calendar.MINUTE) + 16) },
             RestartNotificationFromServerService::class.java)
-        // BroadCast запускает эту службу
-//        if(!isServiceRunning(context, NotificationFromServerService::class.java))
-//            context.startService(Intent(context, NotificationFromServerService::class.java))
 
         if(!isServiceRunning(context, LocationService::class.java)) {
 
@@ -132,6 +129,8 @@ object WorkWithServices {
         val periodMillis = timetable.timeInMillis - Calendar.getInstance().timeInMillis
 
         val pendingIntent = getPendingIntent(context, receiver)
+
+        alarmManager.cancel(pendingIntent)
         alarmManager.setAndAllowWhileIdle(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + periodMillis, pendingIntent)

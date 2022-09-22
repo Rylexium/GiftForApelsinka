@@ -39,7 +39,7 @@ object NotificationFromServerSocket {
     fun initSocket(context : Context) {
         try {
             mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
-                .withServerHeartbeat(7_200_000) // 2 hour = 7_200_000
+                .withServerHeartbeat(2 * 7_200_000) // 2 hour = 7_200_000
             resetSubscriptions()
             setAndroidId(context)
 
@@ -77,13 +77,14 @@ object NotificationFromServerSocket {
                         LifecycleEvent.Type.OPENED -> Log.d(TAG, "Stomp connection opened")
                         LifecycleEvent.Type.ERROR -> {
                             Log.e(TAG, "Error", lifecycleEvent.exception)
+                            initSocket(context)
                         }
                         LifecycleEvent.Type.FAILED_SERVER_HEARTBEAT,
                         LifecycleEvent.Type.CLOSED -> {
                             Log.d(TAG, "Stomp connection closed")
-                            context.stopService(Intent(context, NotificationFromServerService::class.java))
                             NotificationFromServerService.running = false
                             NotificationFromServerService.isKillOS = false
+                            context.stopService(Intent(context, NotificationFromServerService::class.java))
                             if(NetworkChangeReceiver.isOnline(context))
                                 context.startService(Intent(context, NotificationFromServerService::class.java))
                         }

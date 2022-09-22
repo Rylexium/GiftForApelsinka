@@ -47,7 +47,7 @@ class NotificationFromServerService : Service() {
     private fun initTask() {
         if(!running) {
             Log.e("NotificationFromServerService", "backgroundThreadStarted")
-            NotificationFromServerSocket.initSocket(applicationContext)
+            NotificationFromServerSocket.initSocket(this)
             running = true
 //            handler.postDelayed(runnable, 100_000)
         }
@@ -73,7 +73,6 @@ class NotificationFromServerService : Service() {
                 isKillOS = true
             }
         }
-        handler.removeCallbacks(runnable)
         super.onDestroy()
     }
 

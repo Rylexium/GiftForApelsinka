@@ -38,6 +38,9 @@
             android:name=".service.NotificationFromServerService"
             android:enabled="true"
             android:exported="false"
+            android:process=":process"
+            android:foregroundServiceType="location"
+            android:stopWithTask="false"
             />
 
         <receiver
@@ -56,7 +59,8 @@
 
         <receiver android:name=".service.receiver.background.NetworkChangeReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
@@ -64,7 +68,8 @@
 
         <receiver android:name=".service.receiver.repeat.RestartNotificationFromServerService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
@@ -72,7 +77,8 @@
 
         <receiver android:name=".service.receiver.repeat.GoodMorningReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
@@ -80,7 +86,8 @@
 
         <receiver android:name=".service.receiver.repeat.RandomQuestionReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>

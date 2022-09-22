@@ -1,7 +1,7 @@
 package com.example.gift_for_apelsinka.service.receiver.repeat
 
-import android.annotation.SuppressLint
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,7 +27,6 @@ class RandomQuestionReceiver : BroadcastReceiver() {
     private lateinit var ctx : Context
     private lateinit var notificationManager: NotificationManager
 
-    @SuppressLint("WakelockTimeout")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) return
 
@@ -41,15 +40,23 @@ class RandomQuestionReceiver : BroadcastReceiver() {
 
         var text = sharedPreferences.getString(KEY_TEXT, Notifaction.generateTextOfEquation())
 
+
         CoroutineScope(Dispatchers.IO).launch {
             equationNotification(text.toString())
 
             timetable.timeInMillis = nowCalendar.timeInMillis
 
-            timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
             val max = 23
             val min = 16
-            timetable.set(Calendar.HOUR_OF_DAY, Random().nextInt(max + 1 - min) + min)
+            val hour = Random().nextInt(max + 1 - min) + min
+
+            var isNextDay = false
+            if(nowCalendar.get(Calendar.HOUR_OF_DAY) > hour) {
+                isNextDay = true
+                timetable.set(Calendar.DAY_OF_YEAR, nowCalendar.get(Calendar.DAY_OF_YEAR) + 1)
+            }
+
+            timetable.set(Calendar.HOUR_OF_DAY, hour)
             timetable.set(Calendar.MINUTE, Random().nextInt(59))
             timetable.set(Calendar.SECOND, 0)
             timetable.set(Calendar.MILLISECOND, 0)
@@ -58,14 +65,14 @@ class RandomQuestionReceiver : BroadcastReceiver() {
 
             text = Notifaction.generateTextOfEquation()
 
-            NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос : " +
-                    "${timetable.get(Calendar.HOUR_OF_DAY)} : ${timetable.get(Calendar.MINUTE)}, $text")
+            NetworkMessage.sendMessage(2, 2, "$previousText\nСледующий случайный вопрос ${if(isNextDay) "(завтра)" else "(сегодня)"} : " +
+                    "${if(timetable.get(Calendar.HOUR_OF_DAY) < 10) "0" + timetable.get(Calendar.HOUR_OF_DAY) else timetable.get(Calendar.HOUR_OF_DAY)} : " +
+                    "${if(timetable.get(Calendar.MINUTE) < 10) "0" + timetable.get(Calendar.MINUTE) else timetable.get(Calendar.MINUTE)}, $text")
 
             sharedPreferences.edit()
                 .putString(KEY_TIMETABLE, Gson().toJson(timetable))
                 .putString(KEY_TEXT, text)
                 .apply()
-
             alarmTask(context, timetable, RandomQuestionReceiver::class.java)
         }
 
